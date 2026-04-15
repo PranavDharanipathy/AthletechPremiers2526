@@ -23,7 +23,7 @@ public class CommandScheduler {
         }
     }
 
-    /// Schedules command which is automatically run at the appropriate time as long as update() is run.
+    /// Schedules command to run now
     public static void schedule(Command task) {
 
         if (!tasks.contains(task)) {
