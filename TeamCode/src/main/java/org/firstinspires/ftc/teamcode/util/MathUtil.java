@@ -156,7 +156,7 @@ public strictfp class MathUtil {
             }
         }
 
-        throw new IllegalArgumentException("No bounding values for input: value can be found from input array!");
+        throw new IllegalArgumentException("No bounding values for input: value cannot be found from input array!");
     }
 
     public static double interpolateLinear(double x, InterpolationData data) {
