@@ -162,9 +162,9 @@ public strictfp class MathUtil {
     public static double interpolateLinear(double x, InterpolationData data) {
 
         double x0 = data.dataPoints[0][0];
-        double x1 = data.dataPoints[1][0];
-
         double y0 = data.dataPoints[0][1];
+
+        double x1 = data.dataPoints[1][0];
         double y1 = data.dataPoints[1][1];
 
         return y0 + (y1 - y0) * ((x - x0) / (x1 - x0));
