@@ -75,8 +75,15 @@ public class Lift extends Subsystem {
 
     private boolean liftToggle = false;
 
+    private boolean initiallyRetract = true;
+
     @Override
     public void update() {
+
+        if (initiallyRetract) {
+            setState(LiftState.RETRACTED);
+            initiallyRetract = false;
+        }
 
         if (controller2.right_triggerHasJustBeenPressed) {
 
