@@ -302,17 +302,13 @@ public class TurretBase {
         powerOverride = power;
     }
 
+    /// @return the absolute value of the error
     public double getPositionError() {
         return Math.abs(error);
     }
 
     public double getError() {
         return error;
-    }
-
-    /// @return the absolute value of the error
-    public double getErrorAbs() {
-        return Math.abs(error);
     }
 
     /// @return What the error was when the PID started working towards the new target position

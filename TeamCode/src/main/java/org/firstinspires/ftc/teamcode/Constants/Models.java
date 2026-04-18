@@ -35,4 +35,27 @@ public class Models {
 
         return MathUtil.clamp(SCALE_WEIGHT * scaledAlpha + (1 - SCALE_WEIGHT) * NOMINAL_ALPHA, 0.7, 1);
     }
+
+    /// For turret hysteresis control - the amount of time in the future where the robot's pose
+    /// will be predicted based on its current pose and velocity as well as the turret's acceleration.
+    public static double getTHCPosePredictionTime(double turretCurrentPosition, double turretPositionError) {//THC is turret hysteresis control
+
+        final double NOMINAL_DT = 0.06; //dt in seconds
+        final double SHOOTING_TIME = 0.08; //time it takes for ball to leave the shooter once contacting the flywheel
+        final double MAX_VELOCITY = 0.08; //maximum velocity in rad/s
+        final double MAX_ACCEL = 0.08; //maximum velocity is rad/s^2
+
+        final double POSITIONAL_DIFFERENCE_SCALING = 1;
+        final double ADJUSTMENT_POTENTIAL_SCALING = 1;
+        final double DIRECTION_FORCE_SCALING = 1;
+
+        final double errorRad = Math.abs(Math.toRadians(turretPositionError / ShooterConstants.TURRET_TICKS_PER_DEGREE));
+
+        return
+                POSITIONAL_DIFFERENCE_SCALING * (errorRad / MAX_VELOCITY) +
+                        ADJUSTMENT_POTENTIAL_SCALING * (MAX_VELOCITY / MAX_ACCEL) +
+                        DIRECTION_FORCE_SCALING * ((turretCurrentPosition + Math.signum(turretPositionError)) / MAX_ACCEL) +
+                        SHOOTING_TIME +
+                        NOMINAL_DT;
+    }
 }

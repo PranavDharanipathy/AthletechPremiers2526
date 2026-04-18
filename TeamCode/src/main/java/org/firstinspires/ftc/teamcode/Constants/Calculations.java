@@ -59,7 +59,7 @@ public class Calculations {
         return new Pose(
                 currentRobotPose.getX() + (t * poseVelocity.getXVelocity()),
                 currentRobotPose.getY() + (t * poseVelocity.getYVelocity()),
-                currentRobotPose.getHeading() + (t * poseVelocity.getAngularVelocity())
+                MathUtil.normalizeAngleRad(currentRobotPose.getHeading() + (t * poseVelocity.getAngularVelocity()))
         );
     }
 
@@ -72,22 +72,6 @@ public class Calculations {
     /// @return robots translational velocity vector
     public static double getRobotTranslationalVelocity(PoseVelocity poseVelocity) {
         return Math.hypot(poseVelocity.getXVelocity(), poseVelocity.getYVelocity());
-    }
-
-    /// For turret hysteresis control - the amount of time in the future where the robot's pose
-    /// will be predicted based on its current pose and velocity as well as the turret's acceleration.
-    /// @param turretAcceleration is in rad/sec^2
-    public static double getFuturePosePredictionTimeTHC(double turretAcceleration) {//THC is turret hysteresis control
-
-        final double NORMAL_ACCEL = Math.toRadians(7.2);
-        final double NORMAL = 1.5;
-        final double MAX = 2.5;
-
-        final double turretAccel = Math.abs(turretAcceleration);
-
-        double futurePredictionTime = NORMAL * (1 + Math.sqrt(NORMAL_ACCEL / (turretAccel + 1e-3)));
-
-        return MathUtil.clamp(futurePredictionTime, NORMAL, MAX);
     }
 
     public static double routeTurret(double rawtt) {

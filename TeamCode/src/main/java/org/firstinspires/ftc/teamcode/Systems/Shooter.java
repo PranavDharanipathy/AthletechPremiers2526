@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Systems;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants.Calculations;
 import org.firstinspires.ftc.teamcode.Constants.CameraConstants;
 import org.firstinspires.ftc.teamcode.Constants.FieldConstants;
@@ -20,7 +19,7 @@ import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.TURRET_H
 
 import androidx.annotation.NonNull;
 
-import java.util.function.DoubleUnaryOperator;
+import java.util.function.DoubleBinaryOperator;
 
 public class Shooter implements EffectivelySubsystem {
 
@@ -79,9 +78,13 @@ public class Shooter implements EffectivelySubsystem {
         return goalCoordinates;
     }
 
+    private CurrentAlliance.ALLIANCE alliance;
+
     public void switchAlliance(CurrentAlliance.ALLIANCE alliance) {
 
-        if (alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE) {
+        this.alliance = alliance;
+
+        if (this.alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE) {
             goalCoordinates = FieldConstants.GoalCoordinates.BLUE;
         }
         else {
@@ -94,11 +97,13 @@ public class Shooter implements EffectivelySubsystem {
 
         camera.start();
 
-        goalCoordinates = alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? FieldConstants.GoalCoordinates.BLUE : FieldConstants.GoalCoordinates.RED;
+        this.alliance = alliance;
+
+        goalCoordinates = this.alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? FieldConstants.GoalCoordinates.BLUE : FieldConstants.GoalCoordinates.RED;
 
         camera.pipelineSwitch(CameraConstants.PIPELINES.GENERAL_GOAL_PIPELINE.getPipelineIndex());
 
-        turretPosition = turretStartPosition = turret.startPosition;
+        turretAimPosition = turretStartPosition = turret.startPosition;
 
         camera.start();
 
@@ -111,8 +116,7 @@ public class Shooter implements EffectivelySubsystem {
 
     private double hoodPosition;
 
-    private double turretPosition;
-    private double turretAcceleration = 0;
+    private double turretAimPosition;
 
     private double robotHeadingRad;
     public double tt;
@@ -124,7 +128,7 @@ public class Shooter implements EffectivelySubsystem {
     public Pose currentRobotPose;
     public Pose turretPose;
     private double turretTimeLookahead = 0;
-    private boolean isTurretLookingAhead = false; //initially the bot is stationary
+    private boolean shouldUseTHC = false; //initially the bot is stationary
 
     private double distanceToGoal;
 
@@ -145,21 +149,20 @@ public class Shooter implements EffectivelySubsystem {
         PoseVelocity robotVelocity = poseVelocityTracker.getPoseVelocity();
         double translationalVelocity = Calculations.getRobotTranslationalVelocity(robotVelocity.getXVelocity(), robotVelocity.getYVelocity());
         //turret
-        turretAcceleration = TurretHelper.getAcceleration(AngleUnit.RADIANS);
         double turretCurrentPosition = turret.getCurrentPosition(); //used to calculate turret pose
 
         goalAimUpdate();
 
         //hysteresis control is only used if the robot is moving fast enough
-        isTurretLookingAhead = Math.abs(translationalVelocity) > TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY[0] || Math.abs(robotVelocity.getAngularVelocity()) > TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY[1];
+        shouldUseTHC = Math.abs(translationalVelocity) > TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY[0] || Math.abs(robotVelocity.getAngularVelocity()) > TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY[1];
 
-        if (isTurretLookingAhead) {
+        if (false /*shouldUseTHC*/) {
 
-            if (!THCTuning) {
-                turretTimeLookahead = 0;//1.3;
+            if (THCTuning) {
+                turretTimeLookahead = customTHCTime;
             }
-            else { //are tuning
-                turretTimeLookahead = customTHC;
+            else {
+                turretTimeLookahead = Models.getTHCPosePredictionTime(turretCurrentPosition, turret.getError());
             }
 
             futureRobotPose = Calculations.getFutureRobotPose(
@@ -191,11 +194,13 @@ public class Shooter implements EffectivelySubsystem {
         double rawtt = angleToGoal - Math.toDegrees(robotHeadingRad);
         tt = Calculations.routeTurret(rawtt);
 
-        turretPosition = tt * ShooterConstants.TURRET_TICKS_PER_DEGREE + turretStartPosition;
-        double targetPosition = turretPosition;
+        turretAimPosition = tt * ShooterConstants.TURRET_TICKS_PER_DEGREE + turretStartPosition;
 
-        if (controller2.left_trigger(GeneralConstants.TRIGGER_THRESHOLD)) turret.setPosition(turretStartPosition);
-        else turret.setPosition(targetPosition);
+        double turretTargetPosition;
+        if (controller2.left_trigger(GeneralConstants.TRIGGER_THRESHOLD)) turretTargetPosition = turretStartPosition;
+        else turretTargetPosition = turretAimPosition;
+
+        turret.setPosition(turretTargetPosition);
 
         //flywheel
         if (controller1.left_bumperHasJustBeenPressed) shooterToggle = !shooterToggle;
@@ -258,6 +263,31 @@ public class Shooter implements EffectivelySubsystem {
 //            turretStartPosition-=ShooterConstants.TURRET_HOME_POSITION_INCREMENT;
 //        }
 
+        if (alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE) {
+            goalPositionalIncrementBlue();
+        }
+        else {
+            goalPositionalIncrementRed();
+        }
+    }
+
+    private void goalPositionalIncrementRed() {
+        if (controller2.dpad_leftHasJustBeenPressed) {
+            goalCoordinates.incrementAll(ShooterConstants.GOAL_X_POSITION_INCREMENT, 0);
+        }
+        else if (controller2.dpad_rightHasJustBeenPressed) {
+            goalCoordinates.incrementAll(-ShooterConstants.GOAL_X_POSITION_INCREMENT, 0);
+        }
+
+        if (controller2.dpad_upHasJustBeenPressed) {
+            goalCoordinates.incrementAll(0, -ShooterConstants.GOAL_Y_POSITION_INCREMENT);
+        }
+        else if (controller2.dpad_downHasJustBeenPressed) {
+            goalCoordinates.incrementAll(0, ShooterConstants.GOAL_Y_POSITION_INCREMENT);
+        }
+    }
+
+    private void goalPositionalIncrementBlue() {
         if (controller2.dpad_leftHasJustBeenPressed) {
             goalCoordinates.incrementAll(-ShooterConstants.GOAL_X_POSITION_INCREMENT, 0);
         }
@@ -282,7 +312,7 @@ public class Shooter implements EffectivelySubsystem {
     }
 
     public boolean isTurretLookingAhead() {
-        return isTurretLookingAhead;
+        return shouldUseTHC;
     }
 
     public double getTHCLookahead() {
@@ -295,10 +325,10 @@ public class Shooter implements EffectivelySubsystem {
         THCTuning = tuning;
     }
 
-    private double customTHC;
+    private double customTHCTime;
 
-    public void provideCustomTHCLookahead(DoubleUnaryOperator THCOperation) {
-        customTHC = THCOperation.applyAsDouble(turretAcceleration);
+    public void provideCustomTHCTime(DoubleBinaryOperator model) {
+        customTHCTime = model.applyAsDouble(turret.getCurrentPosition(), turret.getError());
     }
 
 }
