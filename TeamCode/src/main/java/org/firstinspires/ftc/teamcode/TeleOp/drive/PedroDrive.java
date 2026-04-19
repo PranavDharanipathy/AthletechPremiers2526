@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.Constants.GeneralConstants;
 import org.firstinspires.ftc.teamcode.Systems.CurrentAlliance;
 import org.firstinspires.ftc.teamcode.util.BetterGamepad;
+import org.firstinspires.ftc.teamcode.util.FastSigmoidCurve;
 import org.firstinspires.ftc.teamcode.util.Subsystem;
 
 public class PedroDrive extends Subsystem {
@@ -41,6 +42,8 @@ public class PedroDrive extends Subsystem {
         this.controller2 = controller2;
     }
 
+    private FastSigmoidCurve curve = new FastSigmoidCurve();
+
     @Override
     public void update() {
 
@@ -52,10 +55,19 @@ public class PedroDrive extends Subsystem {
                 follower.breakFollowing();
                 follower.startTeleOpDrive(true);
             }
+
+            double forward = deadbandJoystick(-controller1.left_stick_y());
+            double strafe = deadbandJoystick(controller1.left_stick_x());
+            double rotation = deadbandJoystick(controller1.right_stick_x());
+
+            double forwardSigmoid = Math.signum(forward) * curve.getOutput(Math.abs(forward));
+            double strafeSigmoid = Math.signum(strafe) * curve.getOutput(Math.abs(strafe));
+            double rotationSigmoid = Math.signum(rotation) * curve.getOutput(Math.abs(rotation));
+
             follower.setTeleOpDrive(
-                    -controller1.left_stick_y(),
-                    -controller1.left_stick_x(),
-                    -controller1.right_stick_x()
+                    forwardSigmoid,
+                    strafeSigmoid,
+                    rotationSigmoid
             );
         }
         else if (state == DriveState.DRIVE_TO_BASE) {
@@ -87,6 +99,10 @@ public class PedroDrive extends Subsystem {
                 );
             }
         }
+    }
+
+    private double deadbandJoystick(double value) {
+        return Math.abs(value) > GeneralConstants.JOYSTICK_MINIMUM ? value : 0;
     }
 
     private void stateTransitions() {
