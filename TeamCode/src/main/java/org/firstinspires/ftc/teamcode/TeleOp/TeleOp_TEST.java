@@ -29,7 +29,7 @@ public class TeleOp_TEST extends TeleOpBaseOpMode {
         initializeDevices();
         applyComponentTraits();
 
-        pedroDrive.provideComponents(follower, ALLIANCE, controller1, controller2);
+        pedroDrive.provideComponents(follower, controller1);
         intake.provideComponents(super.intake, transfer, controller1);
         blocker.provideComponents(super.blocker, controller1);
         tiltLift.provideComponents(lift, controller2);

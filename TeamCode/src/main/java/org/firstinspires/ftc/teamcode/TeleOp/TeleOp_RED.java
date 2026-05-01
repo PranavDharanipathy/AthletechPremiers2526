@@ -28,7 +28,7 @@ public class TeleOp_RED extends TeleOpBaseOpMode {
         initializeDevices();
         applyComponentTraits();
 
-        pedroDrive.provideComponents(follower, alliance.getAlliance(), controller1, controller2);
+        pedroDrive.provideComponents(follower, controller1);
         intake.provideComponents(super.intake, transfer, controller1);
         blocker.provideComponents(super.blocker, controller1);
         tiltLift.provideComponents(lift, controller2);

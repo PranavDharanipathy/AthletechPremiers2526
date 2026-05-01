@@ -8,10 +8,7 @@ import org.firstinspires.ftc.teamcode.util.MathUtil;
 public class FieldConstants {
 
     public static Pose RELOCALIZATION_POSE = new Pose(0, -56.1, Math.toRadians(-90));
-
-    public static Pose BLUE_BASE_POSE = new Pose(-36, 60);
-    public static Pose RED_BASE_POSE = new Pose(36, 60);
-
+    
     /**
      * x is forward-backward with forward being positive and backward being negative
      * <p>

@@ -31,9 +31,12 @@ public class Models {
 
         final double NOMINAL_ALPHA = 0.8;
 
+        final double MIN_ALPHA = 0.7;
+        final double MAX_ALPHA = 1.0;
+
         double scaledAlpha = (translationalVelMag / 50) * NOMINAL_ALPHA;
 
-        return MathUtil.clamp(SCALE_WEIGHT * scaledAlpha + (1 - SCALE_WEIGHT) * NOMINAL_ALPHA, 0.7, 1);
+        return MathUtil.clamp(SCALE_WEIGHT * scaledAlpha + (1.0 - SCALE_WEIGHT) * NOMINAL_ALPHA, MIN_ALPHA, MAX_ALPHA);
     }
 
     /// For turret hysteresis control - the amount of time in the future where the robot's pose

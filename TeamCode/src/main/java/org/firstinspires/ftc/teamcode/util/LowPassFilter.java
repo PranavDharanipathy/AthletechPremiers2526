@@ -4,6 +4,6 @@ package org.firstinspires.ftc.teamcode.util;
 public class LowPassFilter {
 
     public static double getFilteredValue(double previousFiltered, double raw, double alpha) {
-        return ((1 - alpha) * previousFiltered) + alpha * raw;
+        return ((1.0 - alpha) * previousFiltered) + alpha * raw;
     }
 }

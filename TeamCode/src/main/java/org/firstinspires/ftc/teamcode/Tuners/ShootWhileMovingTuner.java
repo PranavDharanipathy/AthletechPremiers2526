@@ -49,7 +49,7 @@ public class ShootWhileMovingTuner extends TeleOpBaseOpMode { //turret hysteresi
 
         intake.provideComponents(super.intake, transfer, controller1);
         blocker.provideComponents(super.blocker, controller1);
-        pedroDrive.provideComponents(follower, ALLIANCE, controller1, controller2);
+        pedroDrive.provideComponents(follower, controller1);
         shooter.provideComponents(flywheel, turret, hoodAngler, follower, camera, controller1, controller2);
         setUpLynxModule();
 
@@ -61,7 +61,7 @@ public class ShootWhileMovingTuner extends TeleOpBaseOpMode { //turret hysteresi
 
         new PostAutonomousRobotReset(this);
 
-        shooter.start(CurrentAlliance.ALLIANCE.BLUE_ALLIANCE);
+        shooter.start(ALLIANCE);
     }
 
     @Override
