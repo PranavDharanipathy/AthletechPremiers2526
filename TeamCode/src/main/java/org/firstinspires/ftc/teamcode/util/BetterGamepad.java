@@ -36,9 +36,9 @@ public class BetterGamepad {
 
     public boolean back() { return gamepad.back;}
 
-    public boolean options() { return gamepad.options || gamepad.options; }
+    public boolean options() { return gamepad.options; }
 
-    public boolean share() { return gamepad.share || gamepad.share; }
+    public boolean share() { return gamepad.share; }
 
     public boolean main_button() { return gamepad.guide || gamepad.ps; }
 
