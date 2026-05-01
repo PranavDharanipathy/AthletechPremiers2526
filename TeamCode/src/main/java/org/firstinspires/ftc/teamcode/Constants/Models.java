@@ -17,7 +17,7 @@ public class Models {
 
         final double PIECEWISE_SWITCH = 80.3;
 
-        double hoodPosition = 0.15;
+        double hoodPosition = 0.15; //somehowe this one position worked for every distance in the close zone.
 //                distanceToGoal <= PIECEWISE_SWITCH ?
 //                -0.00000917712 * FastMath.pow(distanceToGoal, 3) + 0.00218461 * FastMath.pow(distanceToGoal, 2) - 0.175314 * distanceToGoal + 4.88663 : // below/equal PIECEWISE_SWITCH
 //                -0.0000009500073 * FastMath.pow(distanceToGoal, 4) + 0.0003606123 * FastMath.pow(distanceToGoal, 3) - 0.05110807 * FastMath.pow(distanceToGoal, 2) + 3.210404 * distanceToGoal - 75.32115; // above PIECEWISE_SWITCH

@@ -42,24 +42,24 @@ public class FieldConstants {
         /// Added on the current pose
         public void incrementAll(double xIncPP, double yIncPP) { //PP means player perspective
 
-            closeAlliance = new Pose(MathUtil.increaseMagnitude(closeAlliance.getX(), yIncPP), MathUtil.increaseMagnitude(closeAlliance.getY(), xIncPP));
-            closeOpponent = new Pose(MathUtil.increaseMagnitude(closeOpponent.getX(), yIncPP), MathUtil.increaseMagnitude(closeOpponent.getY(), xIncPP));
-            far = new Pose(MathUtil.increaseMagnitude(far.getX(), yIncPP), MathUtil.increaseMagnitude(far.getY(), xIncPP));
+            closeAlliance = new Pose(MathUtil.increaseMagnitudeNumerical(closeAlliance.getX(), yIncPP), MathUtil.increaseMagnitudeNumerical(closeAlliance.getY(), xIncPP));
+            closeOpponent = new Pose(MathUtil.increaseMagnitudeNumerical(closeOpponent.getX(), yIncPP), MathUtil.increaseMagnitudeNumerical(closeOpponent.getY(), xIncPP));
+            far = new Pose(MathUtil.increaseMagnitudeNumerical(far.getX(), yIncPP), MathUtil.increaseMagnitudeNumerical(far.getY(), xIncPP));
         }
 
         /// Added on the current pose
         public void incrementCloseAlliance(double xIncPP, double yIncPP) {
-            closeAlliance = new Pose(MathUtil.increaseMagnitude(closeAlliance.getX(), yIncPP), MathUtil.increaseMagnitude(closeAlliance.getY(), xIncPP));
+            closeAlliance = new Pose(MathUtil.increaseMagnitudeNumerical(closeAlliance.getX(), yIncPP), MathUtil.increaseMagnitudeNumerical(closeAlliance.getY(), xIncPP));
         }
 
         /// Added on the current pose
         public void incrementCloseOpponent(double xIncPP, double yIncPP) {
-            closeOpponent = new Pose(MathUtil.increaseMagnitude(closeOpponent.getX(), yIncPP), MathUtil.increaseMagnitude(closeOpponent.getY(), xIncPP));
+            closeOpponent = new Pose(MathUtil.increaseMagnitudeNumerical(closeOpponent.getX(), yIncPP), MathUtil.increaseMagnitudeNumerical(closeOpponent.getY(), xIncPP));
         }
 
         /// Added on the current pose
         public void incrementFar(double xIncPP, double yIncPP) {
-            far = new Pose(MathUtil.increaseMagnitude(far.getX(), yIncPP), MathUtil.increaseMagnitude(far.getY(), xIncPP));
+            far = new Pose(MathUtil.increaseMagnitudeNumerical(far.getX(), yIncPP), MathUtil.increaseMagnitudeNumerical(far.getY(), xIncPP));
         }
 
         public Pose getCloseAllianceCoordinate() {

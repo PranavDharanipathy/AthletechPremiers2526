@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Tuners;
+package org.firstinspires.ftc.teamcode.Tuners.SOTOM;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.TeleOp.drive.PedroDrive;
 
 @Config
 @TeleOp(group = "tuning")
-public class ShootWhileMovingTuner extends TeleOpBaseOpMode { //turret hysteresis control
+public class ShootOnTheMoveTuner extends TeleOpBaseOpMode {
 
     public static CurrentAlliance.ALLIANCE ALLIANCE = CurrentAlliance.ALLIANCE.BLUE_ALLIANCE;
 
@@ -42,7 +42,6 @@ public class ShootWhileMovingTuner extends TeleOpBaseOpMode { //turret hysteresi
 
         initializeDevices();
         applyComponentTraits();
-
 
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.setMsTransmissionInterval(30);
@@ -80,21 +79,34 @@ public class ShootWhileMovingTuner extends TeleOpBaseOpMode { //turret hysteresi
         pedroDrive.update();
 
         telemetry.addData("turret lookahead time", shooter.getTHCLookahead());
-        telemetry.addData("robot current pose", shooter.currentRobotPose);
-        telemetry.addData("robot future pose", shooter.futureRobotPose);
+        telemetry.addData("robot current pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.currentRobotPose.getX(), shooter.currentRobotPose.getY(), shooter.currentRobotPose.getHeading());
+        telemetry.addData("robot future pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.futureRobotPose.getX(), shooter.currentRobotPose.getY(), shooter.currentRobotPose.getHeading());
+
+        telemetry.addData("robot current velocity", "x: %.2f, y: %.2f, heading: %.2f", shooter.poseSpeedTracker.getPoseVelocity().getXVelocity(), shooter.poseSpeedTracker.getPoseVelocity().getYVelocity(), shooter.poseSpeedTracker.getPoseVelocity().getAngularVelocity());
+        telemetry.addData("robot current acceleration", "x: %.2f, y: %.2f, heading: %.2f", shooter.poseSpeedTracker.getPoseAcceleration().getXAcceleration(), shooter.poseSpeedTracker.getPoseAcceleration().getYAcceleration(), shooter.poseSpeedTracker.getPoseAcceleration().getAngularAcceleration());
+
+        telemetry.addData("PD", PD);
+        telemetry.addData("A", A);
+        telemetry.addData("DF", DF);
+        telemetry.addData("ST", ST);
+        telemetry.addData("NDT", NDT);
+
         telemetry.update();
     }
+
+    private double PD, A, DF, ST, NDT;
 
     public double calculation(double turretCurrentPosition, double turretPositionError) {
 
         double errorRad = Math.abs(Math.toRadians(turretPositionError / ShooterConstants.TURRET_TICKS_PER_DEGREE));
 
-        return
-                POSITIONAL_DIFFERENCE_SCALING * (errorRad / MAX_VELOCITY) +
-                        ADJUSTMENT_POTENTIAL_SCALING * (MAX_VELOCITY / MAX_ACCEL) +
-                        DIRECTION_FORCE_SCALING * ((turretCurrentPosition + Math.signum(turretPositionError)) / MAX_ACCEL) +
-                        SHOOTING_TIME +
-                        NOMINAL_DT;
+        PD = POSITIONAL_DIFFERENCE_SCALING * (errorRad / MAX_VELOCITY);
+        A = ADJUSTMENT_POTENTIAL_SCALING * (MAX_VELOCITY / MAX_ACCEL);
+        DF = DIRECTION_FORCE_SCALING * ((turretCurrentPosition + Math.signum(turretPositionError)) / MAX_ACCEL);
+        ST = SHOOTING_TIME;
+        NDT = NOMINAL_DT;
+
+        return PD + A + DF + ST + NDT;
     }
 
 }

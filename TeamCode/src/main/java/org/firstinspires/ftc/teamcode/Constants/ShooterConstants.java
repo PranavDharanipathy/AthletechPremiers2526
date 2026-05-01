@@ -32,6 +32,16 @@ public class ShooterConstants {
     /// Index 0 is translational, index 1 in angular (in radians).
     /// <p>
     /// Translational is in inches per second and angular is in radians per second.
-    public static double[] TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY = {20, Math.toRadians(7)};
+    public static double[] THC_ENGAGE_VELOCITY = {20, Math.toRadians(7)};
+
+    /// Scalar value representing how influential acceleration is.
+    /// <p>
+    /// Should ONLY be tuned after the rest of THC.
+    public static double THC_ACCELERATION_INFLUENCE = 0;
+
+    /// Minimum acceleration required for acceleration to be used in pose prediction for THC.
+    /// <p>
+    /// Index 0 is translational, index 1 is heading.
+    public static double[] THC_ACCELERATION_THRESHOLD = {0, 0};
 
 }

@@ -9,13 +9,14 @@ import org.firstinspires.ftc.teamcode.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.Constants.GeneralConstants;
 import org.firstinspires.ftc.teamcode.Constants.Models;
 import org.firstinspires.ftc.teamcode.Constants.ShooterConstants;
+import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseAcceleration;
 import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseVelocity;
-import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseVelocityTracker;
+import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseSpeedTracker;
 import org.firstinspires.ftc.teamcode.util.BetterGamepad;
 import org.firstinspires.ftc.teamcode.util.BooleanTrigger;
 import org.firstinspires.ftc.teamcode.util.EffectivelySubsystem;
 
-import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY;
+import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.THC_ENGAGE_VELOCITY;
 
 import androidx.annotation.NonNull;
 
@@ -33,13 +34,13 @@ public class Shooter implements EffectivelySubsystem {
 
     private Follower follower;
     public Camera camera;
-    private PoseVelocityTracker poseVelocityTracker;
+    public PoseSpeedTracker poseSpeedTracker;
 
     public void provideComponents(Flywheel flywheel, TurretBase turret, HoodAngler hoodAngler, Follower follower, Camera unstartedCamera, BetterGamepad controller1, BetterGamepad controller2) {
 
         this.follower = follower;
         camera = unstartedCamera;
-        poseVelocityTracker = new PoseVelocityTracker(follower);
+        poseSpeedTracker = new PoseSpeedTracker(follower);
 
         this.flywheel = flywheel;
 
@@ -141,22 +142,24 @@ public class Shooter implements EffectivelySubsystem {
 
         if (controller2.yHasJustBeenPressed) relocalization(FieldConstants.RELOCALIZATION_POSE);
 
-        poseVelocityTracker.update();
+        poseSpeedTracker.update();
         TurretHelper.update(turret);
 
         currentRobotPose = camera.canUseMT2Pose() ? camera.getBotPoseMT2() : follower.getPose();
         robotHeadingRad = currentRobotPose.getHeading();
-        PoseVelocity robotVelocity = poseVelocityTracker.getPoseVelocity();
+        PoseVelocity robotVelocity = poseSpeedTracker.getPoseVelocity();
+        PoseAcceleration robotAcceleration = poseSpeedTracker.getPoseAcceleration();
+
         double translationalVelocity = Calculations.getRobotTranslationalVelocity(robotVelocity.getXVelocity(), robotVelocity.getYVelocity());
-        //turret
+
         double turretCurrentPosition = turret.getCurrentPosition(); //used to calculate turret pose
 
         goalAimUpdate();
 
         //hysteresis control is only used if the robot is moving fast enough
-        shouldUseTHC = Math.abs(translationalVelocity) > TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY[0] || Math.abs(robotVelocity.getAngularVelocity()) > TURRET_HYSTERESIS_CONTROL_ENGAGE_VELOCITY[1];
+        shouldUseTHC = Math.abs(translationalVelocity) > THC_ENGAGE_VELOCITY[0] || Math.abs(robotVelocity.getAngularVelocity()) > THC_ENGAGE_VELOCITY[1];
 
-        if (false /*shouldUseTHC*/) {
+        if (false /*shouldUseTHC*/) { //set to 'false /*shouldUseTHC*/' until THC is tuned, after which set to 'shouldUseTHC'
 
             if (THCTuning) {
                 turretTimeLookahead = customTHCTime;
@@ -168,7 +171,9 @@ public class Shooter implements EffectivelySubsystem {
             futureRobotPose = Calculations.getFutureRobotPose(
                     turretTimeLookahead,
                     currentRobotPose,
-                    robotVelocity
+                    robotVelocity,
+                    ShooterConstants.THC_ACCELERATION_INFLUENCE,
+                    robotAcceleration
             );
         }
         else {

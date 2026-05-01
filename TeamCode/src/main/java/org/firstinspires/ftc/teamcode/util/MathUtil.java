@@ -187,7 +187,7 @@ public strictfp class MathUtil {
         return new double[] {xNew, yNew};
     }
 
-    public static double increaseMagnitude(double value, double increment) {
+    public static double increaseMagnitudeNumerical(double value, double increment) {
         return value >= 0 ? value + increment : value - increment;
     }
 }

@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Constants.Calculations;
 import org.firstinspires.ftc.teamcode.Constants.CameraConstants;
 import org.firstinspires.ftc.teamcode.Constants.Models;
-import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseVelocityTracker;
+import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseSpeedTracker;
 import org.firstinspires.ftc.teamcode.util.BooleanTrigger;
 import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
@@ -42,9 +42,9 @@ public class Camera {
 
 
 
-    private ElapsedTime timer = new ElapsedTime();
+    private final ElapsedTime timer = new ElapsedTime();
     private final Follower follower;
-    private final PoseVelocityTracker poseVelocityTracker;
+    private final PoseSpeedTracker poseSpeedTracker;
     private final Limelight3A limelight;
 
     public Limelight3A ll() {
@@ -54,7 +54,7 @@ public class Camera {
     public Camera(Follower follower, Limelight3A limelight) {
 
         this.follower = follower;
-        poseVelocityTracker = new PoseVelocityTracker(follower);
+        poseSpeedTracker = new PoseSpeedTracker(follower);
         this.limelight = limelight;
 
         setPollRateHz(CameraConstants.CAMERA_POLL_RATE);
@@ -105,9 +105,9 @@ public class Camera {
 
         if (!isPipelineSwitched) reloadPipeline();
 
-        poseVelocityTracker.update();
+        poseSpeedTracker.update();
 
-        translationalVelMagFromOdo = Math.abs(Calculations.getRobotTranslationalVelocity(poseVelocityTracker.getPoseVelocity()));
+        translationalVelMagFromOdo = Math.abs(Calculations.getRobotTranslationalVelocity(poseSpeedTracker.getPoseVelocity()));
 
         isRobotOrientationUpdated = false;
 
@@ -226,6 +226,7 @@ public class Camera {
         return distanceToTag;
     }
 
+    /// Robot orientation can only possibly be updated if the robot is currently eligible for MT2
     public boolean isRobotOrientationUpdated() {
         return isRobotOrientationUpdated;
     }

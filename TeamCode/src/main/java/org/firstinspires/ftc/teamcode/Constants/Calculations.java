@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.Constants;
 
+import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.THC_ACCELERATION_THRESHOLD;
+
 import com.pedropathing.geometry.Pose;
 
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseAcceleration;
 import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseVelocity;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
@@ -54,12 +57,18 @@ public class Calculations {
         );
     }
 
-    public static Pose getFutureRobotPose(double t, Pose currentRobotPose, PoseVelocity poseVelocity) {
+    /// @param accelerationInfluence Scalar value representing how influential acceleration is.
+    public static Pose getFutureRobotPose(double t, Pose currentRobotPose, PoseVelocity poseVelocity, double accelerationInfluence, PoseAcceleration poseAcceleration) {
+
+        final double translationalAccel = Math.hypot(poseAcceleration.getXAcceleration(), poseAcceleration.getYAcceleration());
+
+        double translationalAccelInfluence = translationalAccel >= THC_ACCELERATION_THRESHOLD[0] ? accelerationInfluence : 0;
+        double headingAccelInfluence = poseAcceleration.getAngularAcceleration() >= THC_ACCELERATION_THRESHOLD[1] ? accelerationInfluence : 0;
 
         return new Pose(
-                currentRobotPose.getX() + (t * poseVelocity.getXVelocity()),
-                currentRobotPose.getY() + (t * poseVelocity.getYVelocity()),
-                MathUtil.normalizeAngleRad(currentRobotPose.getHeading() + (t * poseVelocity.getAngularVelocity()))
+                currentRobotPose.getX() + (t * poseVelocity.getXVelocity()) + (translationalAccelInfluence * poseAcceleration.getXAcceleration() * (t * t)),
+                currentRobotPose.getY() + (t * poseVelocity.getYVelocity()) + (translationalAccelInfluence * poseAcceleration.getYAcceleration() * (t * t)),
+                MathUtil.normalizeAngleRad(currentRobotPose.getHeading() + (t * poseVelocity.getAngularVelocity()) + (headingAccelInfluence * poseAcceleration.getAngularAcceleration() * (t * t)))
         );
     }
 
