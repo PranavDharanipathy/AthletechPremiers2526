@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Systems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Constants.GeneralConstants;
 import org.firstinspires.ftc.teamcode.Constants.IntakeConstants;
 import org.firstinspires.ftc.teamcode.util.BetterGamepad;
@@ -37,6 +38,13 @@ public class Intake extends Subsystem {
         else {
             intake.setPower(0);
             transfer.setVelocity(0);
+        }
+
+        if (transfer.getCurrent(CurrentUnit.MILLIAMPS) > IntakeConstants.TRANSFER_CURRENT_LIMIT) {
+            transfer.setMotorActivity(GeneralVeloMotor.MotorActivity.STOP);
+        }
+        else {
+            transfer.setMotorActivity(GeneralVeloMotor.MotorActivity.RUN);
         }
 
         transfer.update();

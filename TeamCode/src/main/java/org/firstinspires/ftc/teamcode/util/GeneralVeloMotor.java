@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+
 public class GeneralVeloMotor {
 
     private DcMotorEx motor;
@@ -38,6 +40,10 @@ public class GeneralVeloMotor {
         return currentVelocity;
     }
 
+    public double getCurrent(CurrentUnit currentUnit) {
+        return motor.getCurrent(currentUnit);
+    }
+
     private double kp, kd, kff;
     public double p, d, ff;
     private double prevTime = 0, currTime = 0;
@@ -62,6 +68,11 @@ public class GeneralVeloMotor {
         prevTime = currTime;
         currTime = getSeconds();
 
+        if (motorActivity == MotorActivity.STOP) {
+            motor.setPower(0);
+            return;
+        }
+
         double dt = currTime - prevTime;
 
         currentVelocity = motor.getVelocity();
@@ -81,6 +92,16 @@ public class GeneralVeloMotor {
         double power = p + d + ff;
 
         motor.setPower(power);
+    }
+
+    private MotorActivity motorActivity = MotorActivity.RUN;
+
+    public enum MotorActivity {
+        RUN, STOP
+    }
+
+    public void setMotorActivity(MotorActivity activity) {
+        motorActivity = activity;
     }
 
     public double getPower() {
