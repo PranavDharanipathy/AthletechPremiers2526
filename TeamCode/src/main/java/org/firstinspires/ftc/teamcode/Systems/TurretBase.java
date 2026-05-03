@@ -57,8 +57,8 @@ public class TurretBase {
         leftTurretBase.setDirection(ConfigurationConstants.TURRET_BASE_DIRECTIONS[0]);
         rightTurretBase.setDirection(ConfigurationConstants.TURRET_BASE_DIRECTIONS[1]);
 
-        leftTurretBase.setPwmRange(new PwmControl.PwmRange(500, 2500));
-        rightTurretBase.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        leftTurretBase.setPwmRange(new PwmControl.PwmRange(500d, 2500d));
+        rightTurretBase.setPwmRange(new PwmControl.PwmRange(500d, 2500d));
 
         encoder = new Encoder(hardwareMap.get(DcMotorEx.class, MapSetterConstants.turretExternalEncoderMotorPairName));
         encoder.setDirection(Encoder.Direction.REVERSE);
