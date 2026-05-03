@@ -36,4 +36,6 @@ public class MapSetterConstants {
     public static String intakeMotorDeviceName = "intake";
     public static String transferMotorDeviceName = "transfer";
 
+    public static String hoodAnalogEncoderDeviceName = "hood_analog";
+
 }
