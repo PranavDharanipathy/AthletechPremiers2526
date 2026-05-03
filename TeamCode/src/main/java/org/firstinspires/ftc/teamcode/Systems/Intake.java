@@ -14,12 +14,16 @@ public class Intake extends Subsystem {
     private DcMotor intake;
     private GeneralVeloMotor transfer;
 
+    private Blocker blockerSubsystem;
+
     private BetterGamepad controller1;
 
-    public void provideComponents(DcMotor intake, GeneralVeloMotor transfer, BetterGamepad controller1) {
+    public void provideComponents(DcMotor intake, Blocker blockerSubsystem, GeneralVeloMotor transfer, BetterGamepad controller1) {
 
         this.intake = intake;
         this.transfer = transfer;
+
+        this.blockerSubsystem = blockerSubsystem;
 
         this.controller1 = controller1;
     }
@@ -40,7 +44,7 @@ public class Intake extends Subsystem {
             transfer.setVelocity(0);
         }
 
-        if (transfer.getCurrent(CurrentUnit.MILLIAMPS) > IntakeConstants.TRANSFER_CURRENT_LIMIT) {
+        if (blockerSubsystem.getState() == Blocker.BlockerState.BLOCK && transfer.getCurrent(CurrentUnit.MILLIAMPS) > IntakeConstants.TRANSFER_CURRENT_LIMIT) {
             transfer.setMotorActivity(GeneralVeloMotor.MotorActivity.STOP);
         }
         else {

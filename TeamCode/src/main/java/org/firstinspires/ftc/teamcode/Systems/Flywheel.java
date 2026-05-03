@@ -216,7 +216,7 @@ public final class Flywheel {
 
         if (targetVelocity == 0) power = 0;
 
-        if (isMotorEnabled) {
+        if (isPIDEnabled) {
             leftFlywheel.setPower(power);
             rightFlywheel.setPower(power);
         }
@@ -241,22 +241,22 @@ public final class Flywheel {
 
     public void setPower(double power) {
 
-        if (isMotorEnabled) throw new IllegalArgumentException("Must disable PID mode!");
+        if (isPIDEnabled) throw new IllegalArgumentException("Must disable PID mode!");
 
         leftFlywheel.setPower(power);
         rightFlywheel.setPower(power);
     }
 
     // default mode is enabled
-    private boolean isMotorEnabled = true;
+    private boolean isPIDEnabled = true;
 
     /// @return if motor is enabled
-    public boolean getMotorEnabled() {
-        return isMotorEnabled;
+    public boolean getPIDEnabled() {
+        return isPIDEnabled;
     }
 
-    public void runMotor(RunningMotor isMotorEnabled) {
-        this.isMotorEnabled = isMotorEnabled.getValue();
+    public void runMotor(RunningMotor isPIDEnabled) {
+        this.isPIDEnabled = isPIDEnabled.getValue();
     }
 
     public double getVelocityEstimate() {
