@@ -73,18 +73,23 @@ public class Camera {
     }
 
     private boolean isPipelineSwitched = true;
-
     private int pipelineIndex;
+    private boolean onLocalizationPipeline = false;
     public void pipelineSwitch(int index) {
 
         if (index == pipelineIndex) return;
 
         pipelineIndex = index;
         isPipelineSwitched = limelight.pipelineSwitch(index);
+
+        if (index == CameraConstants.PIPELINES.OBELISK_PIPELINE.getPipelineIndex()) onLocalizationPipeline = true;
     }
 
     public void forcePipelineSwitch(int index) {
+
         isPipelineSwitched = limelight.pipelineSwitch(index);
+
+        if (index == CameraConstants.PIPELINES.OBELISK_PIPELINE.getPipelineIndex()) onLocalizationPipeline = true;
     }
     public void reloadPipeline() {
         isPipelineSwitched = limelight.reloadPipeline();
@@ -215,7 +220,7 @@ public class Camera {
     }
 
     public boolean canUseMT2Pose() {
-        return isEligibleForMT2() && hasValidResult() && isRobotOrientationUpdated() && botPoseMT2 != null;
+        return onLocalizationPipeline && isEligibleForMT2() && hasValidResult() && isRobotOrientationUpdated() && botPoseMT2 != null;
     }
 
     public boolean hasValidResult() {

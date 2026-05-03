@@ -49,7 +49,7 @@ public class TelemetrySubsystem implements EffectivelySubsystem {
         telem.addData("ZONE", shooter.getZone().toString());
         telem.addData(TelemetryMode.RAW_DATA, "on alliance side?", shooter.accessGoalCoordinates().onAllianceSide(shooter.futureRobotPose.getY()));
 
-        telem.addData(TelemetryMode.RAW_DATA, "hood position", shooter.hoodAngler.getPosition());
+        telem.addData(TelemetryMode.RAW_DATA, "hood position", shooter.hoodAngler.getTargetPosition());
 
         telem.addData(TelemetryMode.INFO, "flywheel current velocity", "%.0f", shooter.flywheel.getCurrentVelocity());
         telem.addData(TelemetryMode.INFO, "flywheel target velocity", shooter.flywheel.getTargetVelocity());

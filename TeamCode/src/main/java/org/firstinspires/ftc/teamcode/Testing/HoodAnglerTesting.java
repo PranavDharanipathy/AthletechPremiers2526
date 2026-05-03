@@ -32,7 +32,7 @@ public class HoodAnglerTesting extends LinearOpMode {
 
             hoodAngler.setPosition(POSITION);
 
-            telemetry.addData("position", hoodAngler.getPosition());
+            telemetry.addData("position", hoodAngler.getTargetPosition());
             telemetry.update();
         }
 

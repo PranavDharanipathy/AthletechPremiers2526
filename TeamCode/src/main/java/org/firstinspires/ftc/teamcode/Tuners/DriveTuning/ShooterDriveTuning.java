@@ -54,7 +54,7 @@ public class ShooterDriveTuning extends TeleOpBaseOpMode {
 
         telemetry.addData("Tick rate", TickrateChecker.getTimePerTick());
 
-        telemetry.addData("hood position", hoodAngler.getPosition());
+        telemetry.addData("hood position", hoodAngler.getTargetPosition());
 
         telemetry.addData("p", flywheel.p);
         telemetry.addData("i", flywheel.i);
