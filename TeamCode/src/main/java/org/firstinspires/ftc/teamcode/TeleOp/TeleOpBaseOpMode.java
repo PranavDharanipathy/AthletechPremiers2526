@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Constants.CameraConstants;
 import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
 import org.firstinspires.ftc.teamcode.Constants.DriveConstants;
 import org.firstinspires.ftc.teamcode.Constants.FieldConstants;
+import org.firstinspires.ftc.teamcode.Constants.HoodConstants;
 import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
 import org.firstinspires.ftc.teamcode.Systems.Blocker;
 import org.firstinspires.ftc.teamcode.Systems.Camera;
@@ -67,14 +68,6 @@ public abstract class TeleOpBaseOpMode extends OpMode {
         }
     }
 
-    /// Closes LynxModule
-    public void closeLynxModule() {
-
-        for (LynxModule hub : robotHubs) {
-            hub.close();
-        }
-    }
-
     /// Initializing devices
     public void initializeDevices() {
 
@@ -119,6 +112,11 @@ public abstract class TeleOpBaseOpMode extends OpMode {
         follower.setPose(FieldConstants.RELOCALIZATION_POSE);
 
         follower.update();
+
+        hoodAngler.setEncoderCalibration(
+                HoodConstants.HOOD_ANALOG_ENCODER_VOLTAGE_RANGE[0],
+                HoodConstants.HOOD_ANALOG_ENCODER_VOLTAGE_RANGE[1]
+        );
 
         intake.setDirection(ConfigurationConstants.INTAKE_MOTOR_DIRECTION);
         transfer.setDirection(ConfigurationConstants.TRANSFER_MOTOR_DIRECTION);
