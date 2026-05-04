@@ -7,9 +7,13 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
 import org.firstinspires.ftc.teamcode.Constants.DriveConstants;
+import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
+import org.firstinspires.ftc.teamcode.Systems.Flywheel;
 import org.firstinspires.ftc.teamcode.util.BetterGamepad;
 import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseAcceleration;
 import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseSpeedTracker;
@@ -19,7 +23,12 @@ import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseVelocity;
 @Config
 @Autonomous(group = "tuning")
 public class MaxSpeedTuner extends LinearOpMode {
-   private double maxVelocity = 0.0, maxAcceleration = 0.0;
+
+    public static boolean RUN_WITH_FLYWHEEL = false;
+
+    private Flywheel flywheel;
+
+    private double maxVelocity = 0.0, maxAcceleration = 0.0;
 
     private Follower follower;
     private PoseSpeedTracker poseSpeedTracker;
@@ -30,6 +39,20 @@ public class MaxSpeedTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
+        flywheel = new Flywheel(
+                hardwareMap.get(DcMotorEx.class, MapSetterConstants.leftFlywheelMotorDeviceName),
+                hardwareMap.get(DcMotorEx.class, MapSetterConstants.rightFlywheelMotorDeviceName)
+        );
+
+        flywheel.initVoltageSensor(hardwareMap);
+        flywheel.setInternalParameters(
+                ConfigurationConstants.FLYWHEEL_ASSEMBLY_TOTAL_WEIGHT,
+                ConfigurationConstants.FLYWHEEL_SHAFT_DIAMETER,
+                ConfigurationConstants.FLYWHEEL_MOTOR_CORE_VOLTAGE,
+                ConfigurationConstants.FLYWHEEL_MOTOR_RPM
+        );
+        flywheel.setVelocityPIDVSCoefficients(ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS);
 
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -45,6 +68,11 @@ public class MaxSpeedTuner extends LinearOpMode {
 
         telemetry.addLine("click 'a' on controller 1 to stop robot (must not hit the field barrier)");
         telemetry.update();
+
+        if (RUN_WITH_FLYWHEEL) {
+            flywheel.runMotor(Flywheel.RunningMotor.DISABLE);
+            flywheel.setPower(1);
+        }
 
         waitForStart();
 
@@ -71,6 +99,10 @@ public class MaxSpeedTuner extends LinearOpMode {
         }
 
         follower.setTeleOpDrive(0, 0, 0);
+
+        telemetry.addLine("Use 'Max Velocity' if it was run with flywheel.");
+
+        telemetry.addLine();
 
         telemetry.addData("Max Velocity", maxVelocity);
         telemetry.addData("Usable Max Velocity", maxVelocity * 0.95);

@@ -150,7 +150,7 @@ public class FlywheelTuner extends LinearOpMode {
 
             telemetry.addData("Left flywheel motor power", flywheel.getMotorPowers()[0]);
             telemetry.addData("Right flywheel motor power", flywheel.getMotorPowers()[1]);
-            telemetry.addData("Is motor enabled", flywheel.getMotorEnabled());
+            telemetry.addData("Is motor enabled", flywheel.getPIDEnabled());
             telemetry.update();
 
             sleep(LOOP_TIME);
