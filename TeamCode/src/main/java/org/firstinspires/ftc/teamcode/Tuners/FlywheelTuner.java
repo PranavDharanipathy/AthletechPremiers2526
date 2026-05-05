@@ -48,6 +48,7 @@ public class FlywheelTuner extends LinearOpMode {
     public static double VELOCITY_MARGIN_OF_ERROR = ConfigurationConstants.FLYWHEEL_VELOCITY_MARGIN_OF_ERROR;
     public static double STABILITY_MARGIN_OF_ERROR = ConfigurationConstants.FLYWHEEL_STABILITY_MARGIN_OF_ERROR;
 
+    public static double VOLTAGE_COMPENSATION_WEIGHT = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.voltageCompensationWeight;
     public static double VOLTAGE_FILTER_ALPHA = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.voltageFilterAlpha;
 
     public static double TOTAL_MASS_IN_GRAMS = ConfigurationConstants.FLYWHEEL_ASSEMBLY_TOTAL_WEIGHT;
@@ -105,6 +106,7 @@ public class FlywheelTuner extends LinearOpMode {
                     I_SWITCH,
                     P_SWITCH,
                     KI_SMASH,
+                    VOLTAGE_COMPENSATION_WEIGHT,
                     VOLTAGE_FILTER_ALPHA,
                     P_MIN, P_MAX,
                     I_MIN, I_MAX,

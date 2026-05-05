@@ -59,7 +59,8 @@ public class ConfigurationConstants {
             80,
             100,
             0.5,
-            0.3,
+            0.99,
+            0.65,
             -1, 1,
             -0.3, 0.3,
             -0.3, 0.3

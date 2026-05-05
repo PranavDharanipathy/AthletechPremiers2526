@@ -4,15 +4,6 @@ import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 public class Models {
 
-    public static double getScaledFlywheelKv(double unscaledKv, double currentVoltage) {
-
-        final double SCALE_WEIGHT = 0.5;
-
-        double scaledKv = (12.7 / currentVoltage) * unscaledKv;
-
-        return SCALE_WEIGHT * scaledKv + (1 - SCALE_WEIGHT) * unscaledKv;
-    }
-
     public static double getCloseHoodPosition(double distanceToGoal) {
 
         final double PIECEWISE_SWITCH = 80.3;

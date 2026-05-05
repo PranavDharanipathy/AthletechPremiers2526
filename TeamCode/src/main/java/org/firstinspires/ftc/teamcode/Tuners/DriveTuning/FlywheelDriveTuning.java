@@ -26,6 +26,7 @@ public class FlywheelDriveTuning extends TeleOpBaseOpMode {
     public static double I_SWITCH = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.iSwitch;
     public static double P_SWITCH = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.pSwitch;
     public static double KI_SMASH = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.kISmash;
+    public static double VOLTAGE_COMPENSATION_WEIGHT = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.voltageCompensationWeight;
     public static double VOLTAGE_FILTER_ALPHA = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.voltageFilterAlpha;
     public static double D_MIN = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.minD, D_MAX = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.maxD;
     public static double I_MIN = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.minI, I_MAX = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.maxI;
@@ -74,6 +75,7 @@ public class FlywheelDriveTuning extends TeleOpBaseOpMode {
                 I_SWITCH,
                 P_SWITCH,
                 KI_SMASH,
+                VOLTAGE_COMPENSATION_WEIGHT,
                 VOLTAGE_FILTER_ALPHA,
                 P_MIN, P_MAX,
                 I_MIN, I_MAX,

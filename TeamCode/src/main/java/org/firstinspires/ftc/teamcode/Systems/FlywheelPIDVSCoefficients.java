@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Systems;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.Constants.Models;
-import org.firstinspires.ftc.teamcode.util.DoubleM;
+import org.firstinspires.ftc.teamcode.util.MutableDouble;
 import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 
 /// Easier usage of the coefficients for the flywheel
@@ -22,6 +22,7 @@ public class FlywheelPIDVSCoefficients {
 
     public double kISmash;
 
+    public double voltageCompensationWeight;
     public double voltageFilterAlpha;
 
     public double minP, maxP;
@@ -46,6 +47,7 @@ public class FlywheelPIDVSCoefficients {
             double iSwitch,
             double pSwitch,
             double kISmash,
+            double voltageCompensationWeight,
             double voltageFilterAlpha,
             double minP,
             double maxP,
@@ -73,6 +75,7 @@ public class FlywheelPIDVSCoefficients {
 
         this.kISmash = kISmash;
 
+        this.voltageCompensationWeight = voltageCompensationWeight;
         this.voltageFilterAlpha = voltageFilterAlpha;
 
         this.minP = minP;
@@ -97,6 +100,7 @@ public class FlywheelPIDVSCoefficients {
             double iSwitch,
             double pSwitch,
             double kISmash,
+            double voltageCompensationWeight,
             double voltageFilterAlpha,
             double minP,
             double maxP,
@@ -124,6 +128,7 @@ public class FlywheelPIDVSCoefficients {
 
         this.kISmash = kISmash;
 
+        this.voltageCompensationWeight = voltageCompensationWeight;
         this.voltageFilterAlpha = voltageFilterAlpha;
 
         this.minP = minP;
@@ -144,7 +149,7 @@ public class FlywheelPIDVSCoefficients {
 
     private double kISwitchTargetVelocity;
 
-    public double ki(double targetVelocity, double currentVelocity, DoubleM errorSum) {
+    public double ki(double targetVelocity, double currentVelocity, MutableDouble errorSum) {
 
         if (kISwitchTargetVelocity == targetVelocity || Math.abs(targetVelocity - currentVelocity) < iSwitch) {
 
@@ -156,15 +161,22 @@ public class FlywheelPIDVSCoefficients {
         else return kiFar;
     }
 
-    private double filteredVoltage = 0;
+    private Double filteredVoltage = null;
 
     /// Run every loop
-    public double kv(VoltageSensor batteryVoltageSensor) {
+    public double kv(double currentVoltage, double startingVoltage) {
+
+        if (filteredVoltage == null) { //set to starting voltage if there is no voltage previously set
+            filteredVoltage = startingVoltage;
+        }
+        else {
+            filteredVoltage = LowPassFilter.getFilteredValue(filteredVoltage, currentVoltage, voltageFilterAlpha);
+        }
 
         if (tuning) return unscaledKv;
 
-        filteredVoltage = LowPassFilter.getFilteredValue(filteredVoltage, batteryVoltageSensor.getVoltage(), voltageFilterAlpha);
+        double scaledKv = (startingVoltage / filteredVoltage) * unscaledKv;
 
-        return Models.getScaledFlywheelKv(unscaledKv, filteredVoltage);
+        return LowPassFilter.getFilteredValue(unscaledKv, scaledKv, voltageCompensationWeight);
     }
 }
