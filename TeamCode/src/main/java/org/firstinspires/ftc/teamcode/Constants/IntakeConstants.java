@@ -13,4 +13,14 @@ public class IntakeConstants {
 
     /// In milliamps
     public static double TRANSFER_CURRENT_LIMIT = 9000;
+
+    public static class BallIdentifiers {
+
+        public static String PURPLE_ARTIFACT = "P";
+        public static String GREEN_ARTIFACT = "G";
+        public static String NO_ARTIFACT = "_";
+    }
+
+    public static float[] COLOR_SENSOR_GAINS = {2.0f, 2.0f, 2.0f};
+
 }

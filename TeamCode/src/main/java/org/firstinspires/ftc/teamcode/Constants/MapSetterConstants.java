@@ -38,4 +38,6 @@ public class MapSetterConstants {
 
     public static String hoodAnalogEncoderDeviceName = "hood_analog";
 
+    public static String[] intakeColorSensorArray = {"first_color" /*closest to shooter*/, "second_color", "third_color"};
+
 }

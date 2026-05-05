@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Systems;
+package org.firstinspires.ftc.teamcode.Systems.airsort;
 
 public class MotifShootCalculator {
 
@@ -6,9 +6,6 @@ public class MotifShootCalculator {
         GPP, PPG, PGP
     }
 
-    public enum BallOrder {
-        GPP, PPG, PGP
-    }
 
     public void getShootOrder(MOTIF motif, String motifInBot) {
 
