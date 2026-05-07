@@ -32,7 +32,7 @@ public class ShooterConstants {
     /// Index 0 is translational, index 1 in angular (in radians).
     /// <p>
     /// Translational is in inches per second and angular is in radians per second.
-    public static double[] THC_ENGAGE_VELOCITY = {20, Math.toRadians(7)};
+    public static double[] THC_ENGAGE_VELOCITY = {4, Math.toRadians(5)};
 
     /// Scalar value representing how influential acceleration is.
     /// <p>
