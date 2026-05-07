@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.Constants.Calculations;
 import org.firstinspires.ftc.teamcode.Constants.CameraConstants;
 import org.firstinspires.ftc.teamcode.Constants.Models;
 import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseSpeedTracker;
-import org.firstinspires.ftc.teamcode.util.BooleanTrigger;
 import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
@@ -101,7 +100,7 @@ public class Camera {
 
     private boolean eligibleForMT2 = false;
 
-    public void update(BooleanTrigger localizationTrigger) { // Assumes follower is already updated
+    public void update(boolean localizationTrigger) { // Assumes follower is already updated
 
         if (!isPipelineSwitched) reloadPipeline();
 
@@ -135,7 +134,7 @@ public class Camera {
             }
         }
 
-        relocalizeMT1(localizationTrigger.get());
+        relocalizeMT1(localizationTrigger);
 
     }
 

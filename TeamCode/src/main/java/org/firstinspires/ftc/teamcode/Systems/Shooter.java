@@ -6,16 +6,15 @@ import com.pedropathing.geometry.Pose;
 import org.firstinspires.ftc.teamcode.Constants.Calculations;
 import org.firstinspires.ftc.teamcode.Constants.CameraConstants;
 import org.firstinspires.ftc.teamcode.Constants.FieldConstants;
-import org.firstinspires.ftc.teamcode.Constants.GeneralConstants;
 import org.firstinspires.ftc.teamcode.Constants.Models;
 import org.firstinspires.ftc.teamcode.Constants.ShooterConstants;
 import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseAcceleration;
 import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseVelocity;
 import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseSpeedTracker;
 import org.firstinspires.ftc.teamcode.util.BetterGamepad;
-import org.firstinspires.ftc.teamcode.util.BooleanTrigger;
 import org.firstinspires.ftc.teamcode.util.EffectivelySubsystem;
 
+import static org.firstinspires.ftc.teamcode.Constants.CameraConstants.MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY;
 import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.THC_ENGAGE_VELOCITY;
 
 import androidx.annotation.NonNull;
@@ -24,7 +23,7 @@ import java.util.function.DoubleBinaryOperator;
 
 public class Shooter implements EffectivelySubsystem {
 
-    private BetterGamepad controller1, controller2;
+    private BetterGamepad controller1;
 
     public Flywheel flywheel;
 
@@ -36,7 +35,7 @@ public class Shooter implements EffectivelySubsystem {
     public Camera camera;
     public PoseSpeedTracker poseSpeedTracker;
 
-    public void provideComponents(Flywheel flywheel, TurretBase turret, HoodAngler hoodAngler, Follower follower, Camera unstartedCamera, BetterGamepad controller1, BetterGamepad controller2) {
+    public void provideComponents(Flywheel flywheel, TurretBase turret, HoodAngler hoodAngler, Follower follower, Camera unstartedCamera, BetterGamepad controller1) {
 
         this.follower = follower;
         camera = unstartedCamera;
@@ -49,7 +48,6 @@ public class Shooter implements EffectivelySubsystem {
         this.hoodAngler = hoodAngler;
 
         this.controller1 = controller1;
-        this.controller2 = controller2;
 
     }
 
@@ -111,7 +109,7 @@ public class Shooter implements EffectivelySubsystem {
         flywheel.reset();
     }
 
-    private final BooleanTrigger needToAttemptRelocalizationAtStartOfTeleOp = new BooleanTrigger(true);
+    private boolean performAutomaticInitialLocalization = true;
 
     private boolean shooterToggle = false;
 
@@ -135,26 +133,34 @@ public class Shooter implements EffectivelySubsystem {
 
     public void update() {
 
-        //getting robot pose/vel data
-        if (controller2.shareHasJustBeenPressed) camera.reloadPipeline();
-        camera.update(new BooleanTrigger(controller2.main_buttonHasJustBeenPressed).or(needToAttemptRelocalizationAtStartOfTeleOp));
-        if (needToAttemptRelocalizationAtStartOfTeleOp.get()) needToAttemptRelocalizationAtStartOfTeleOp.set(false);
-
-        if (controller2.yHasJustBeenPressed) relocalization(FieldConstants.RELOCALIZATION_POSE);
-
         poseSpeedTracker.update();
+
+        PoseVelocity robotVelocity = poseSpeedTracker.getPoseVelocity();
+        PoseAcceleration robotAcceleration = poseSpeedTracker.getPoseAcceleration();
+        double translationalVelocity = Calculations.getRobotTranslationalVelocity(robotVelocity.getXVelocity(), robotVelocity.getYVelocity());
+
         TurretHelper.update(turret);
+
+        if (
+                performAutomaticInitialLocalization
+                && translationalVelocity < MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY[0]
+                && robotVelocity.getAngularVelocity() < MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY[1]
+        ) {
+            camera.update(true);
+            performAutomaticInitialLocalization = false;
+        }
+        else {
+            camera.update(controller1.main_buttonHasJustBeenPressed);
+        }
+
+        //if (controller2.main_buttonHasJustBeenPressed) relocalization(FieldConstants.RELOCALIZATION_POSE);
 
         currentRobotPose = camera.canUseMT2Pose() ? camera.getBotPoseMT2() : follower.getPose();
         robotHeadingRad = currentRobotPose.getHeading();
-        PoseVelocity robotVelocity = poseSpeedTracker.getPoseVelocity();
-        PoseAcceleration robotAcceleration = poseSpeedTracker.getPoseAcceleration();
-
-        double translationalVelocity = Calculations.getRobotTranslationalVelocity(robotVelocity.getXVelocity(), robotVelocity.getYVelocity());
 
         double turretCurrentPosition = turret.getCurrentPosition(); //used to calculate turret pose
 
-        goalAimUpdate();
+        //goalAimUpdate();
 
         //hysteresis control is only used if the robot is moving fast enough
         shouldUseTHC = Math.abs(translationalVelocity) > THC_ENGAGE_VELOCITY[0] || Math.abs(robotVelocity.getAngularVelocity()) > THC_ENGAGE_VELOCITY[1];
@@ -192,34 +198,24 @@ public class Shooter implements EffectivelySubsystem {
             goalCoordinate = goalCoordinates.getFarCoordinate();
         }
 
-        double angleToGoal;
-
-        angleToGoal = Calculations.getAngleToGoal(turretPose.getX(), turretPose.getY(), goalCoordinate);
+        double angleToGoal = Calculations.getAngleToGoal(turretPose.getX(), turretPose.getY(), goalCoordinate);
 
         double rawtt = angleToGoal - Math.toDegrees(robotHeadingRad);
         tt = Calculations.routeTurret(rawtt);
 
         turretAimPosition = tt * ShooterConstants.TURRET_TICKS_PER_DEGREE + turretStartPosition;
 
-        double turretTargetPosition;
-        if (controller2.left_trigger(GeneralConstants.TRIGGER_THRESHOLD)) turretTargetPosition = turretStartPosition;
-        else turretTargetPosition = turretAimPosition;
-
-        turret.setPosition(turretTargetPosition);
+        turret.setPosition(turretAimPosition);
 
         //flywheel
         if (controller1.left_bumperHasJustBeenPressed) shooterToggle = !shooterToggle;
 
         // setting flywheel velocity
         if (controller1.yHasJustBeenPressed) { //close
-
             flywheelTargetVelocityZone = ZONE.CLOSE;
-            controller2.rumble(GeneralConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
         }
         else if (controller1.bHasJustBeenPressed) { //far
-
             flywheelTargetVelocityZone = ZONE.FAR;
-            controller2.rumble(GeneralConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
         }
 
         if (shooterToggle) flywheel.setVelocity(getFlywheelTargetVelocity(), true);
@@ -268,42 +264,42 @@ public class Shooter implements EffectivelySubsystem {
 //            turretStartPosition-=ShooterConstants.TURRET_HOME_POSITION_INCREMENT;
 //        }
 
-        if (alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE) {
-            goalPositionalIncrementBlue();
-        }
-        else {
-            goalPositionalIncrementRed();
-        }
+//        if (alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE) {
+//            goalPositionalIncrementBlue(controller2);
+//        }
+//        else {
+//            goalPositionalIncrementRed(controller2);
+//        }
     }
 
-    private void goalPositionalIncrementRed() {
-        if (controller2.dpad_leftHasJustBeenPressed) {
+    private void goalPositionalIncrementRed(BetterGamepad controller) {
+        if (controller.dpad_leftHasJustBeenPressed) {
             goalCoordinates.incrementAll(ShooterConstants.GOAL_X_POSITION_INCREMENT, 0);
         }
-        else if (controller2.dpad_rightHasJustBeenPressed) {
+        else if (controller.dpad_rightHasJustBeenPressed) {
             goalCoordinates.incrementAll(-ShooterConstants.GOAL_X_POSITION_INCREMENT, 0);
         }
 
-        if (controller2.dpad_upHasJustBeenPressed) {
+        if (controller.dpad_upHasJustBeenPressed) {
             goalCoordinates.incrementAll(0, -ShooterConstants.GOAL_Y_POSITION_INCREMENT);
         }
-        else if (controller2.dpad_downHasJustBeenPressed) {
+        else if (controller.dpad_downHasJustBeenPressed) {
             goalCoordinates.incrementAll(0, ShooterConstants.GOAL_Y_POSITION_INCREMENT);
         }
     }
 
-    private void goalPositionalIncrementBlue() {
-        if (controller2.dpad_leftHasJustBeenPressed) {
+    private void goalPositionalIncrementBlue(BetterGamepad controller) {
+        if (controller.dpad_leftHasJustBeenPressed) {
             goalCoordinates.incrementAll(-ShooterConstants.GOAL_X_POSITION_INCREMENT, 0);
         }
-        else if (controller2.dpad_rightHasJustBeenPressed) {
+        else if (controller.dpad_rightHasJustBeenPressed) {
             goalCoordinates.incrementAll(ShooterConstants.GOAL_X_POSITION_INCREMENT, 0);
         }
 
-        if (controller2.dpad_upHasJustBeenPressed) {
+        if (controller.dpad_upHasJustBeenPressed) {
             goalCoordinates.incrementAll(0, ShooterConstants.GOAL_Y_POSITION_INCREMENT);
         }
-        else if (controller2.dpad_downHasJustBeenPressed) {
+        else if (controller.dpad_downHasJustBeenPressed) {
             goalCoordinates.incrementAll(0, -ShooterConstants.GOAL_Y_POSITION_INCREMENT);
         }
     }
@@ -312,8 +308,12 @@ public class Shooter implements EffectivelySubsystem {
         follower.setPose(reZeroPose);
     }
 
-    public ZONE getZone() {
+    public ZONE getZoneSetting() {
         return flywheelTargetVelocityZone;
+    }
+
+    public ZONE getCurrentZoneBasedOnLocation() {
+        return currentRobotPose.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER ? ZONE.CLOSE : ZONE.FAR;
     }
 
     public boolean isTurretLookingAhead() {
