@@ -143,8 +143,8 @@ public class Shooter implements EffectivelySubsystem {
 
         if (
                 performAutomaticInitialLocalization
-                && translationalVelocity < MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY[0]
-                && robotVelocity.getAngularVelocity() < MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY[1]
+                && translationalVelocity <= MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY[0]
+                && robotVelocity.getAngularVelocity() <= MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY[1]
         ) {
             camera.update(true);
             performAutomaticInitialLocalization = false;
