@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
 import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
+import org.firstinspires.ftc.teamcode.util.DynamicTrapezoidalSum;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
@@ -36,6 +37,8 @@ public class TurretBase {
     public double dActivation = 0;
 
     private double iSwitch;
+
+    private DynamicTrapezoidalSum errorSum = new DynamicTrapezoidalSum();
 
     public double p, i, d, f, s;
 
@@ -264,9 +267,13 @@ public class TurretBase {
         if (Math.abs(error) <= iSwitch) ki = kiClose;
         else ki = kiFar;
 
-        if (dt != 0) i += ki * error * dt;
-        if (Math.signum(error) != Math.signum(prevError) && error != 0) i *= kISmash;
-        i = MathUtil.clamp(i, minI, maxI);
+        if (dt != 0) errorSum.updateSum(dt, error);
+        if (Math.signum(error) != Math.signum(prevError) && error != 0) {
+            errorSum.setSum(errorSum.getSum() * kISmash);
+        }
+        errorSum.setRawSum(MathUtil.clamp(errorSum.getSum(), (minI / ki) /*integrated error min*/, (maxI / ki) /*integrated error max*/));
+        i = ki * errorSum.getSum();
+        //i = MathUtil.clamp(ki * errorSum.getSum(), minI, maxI);
 
         //derivative
         double rawDerivative = (error - prevError) / dt;

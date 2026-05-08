@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
-import com.qualcomm.robotcore.hardware.VoltageSensor;
-
-import org.firstinspires.ftc.teamcode.Constants.Models;
+import org.firstinspires.ftc.teamcode.util.DynamicTrapezoidalSum;
 import org.firstinspires.ftc.teamcode.util.MutableDouble;
 import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 
@@ -149,11 +147,11 @@ public class FlywheelPIDVSCoefficients {
 
     private double kISwitchTargetVelocity;
 
-    public double ki(double targetVelocity, double currentVelocity, MutableDouble errorSum) {
+    public double ki(double targetVelocity, double currentVelocity, DynamicTrapezoidalSum errorSum) {
 
         if (kISwitchTargetVelocity == targetVelocity || Math.abs(targetVelocity - currentVelocity) < iSwitch) {
 
-            if (kISwitchTargetVelocity != targetVelocity) errorSum.set(0);
+            if (kISwitchTargetVelocity != targetVelocity) errorSum.setSum(0);
 
             kISwitchTargetVelocity = targetVelocity;
             return kiClose;

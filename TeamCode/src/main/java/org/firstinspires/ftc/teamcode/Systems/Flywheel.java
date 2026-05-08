@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
+import org.firstinspires.ftc.teamcode.util.DynamicTrapezoidalSum;
 import org.firstinspires.ftc.teamcode.util.MutableDouble;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
@@ -86,7 +87,7 @@ public final class Flywheel {
     }
 
     public double p = 0, i = 0, d = 0;
-    private MutableDouble errorSum = new MutableDouble(0);
+    private DynamicTrapezoidalSum errorSum = new DynamicTrapezoidalSum();
     public double v = 0;
     public double s = 0;
 
@@ -190,16 +191,18 @@ public final class Flywheel {
         p = kp * error;
         p = MathUtil.clamp(p, minP, maxP);
 
-        if (!Double.isNaN(error * dt) && targetVelocity != 0) errorSum.add(error * dt);
-        else errorSum.set(0); //integral is reset if it's NaN or if targetVelocity is equal to 0
+        if (!Double.isNaN(error * dt) && targetVelocity != 0) errorSum.updateSum(dt, error);
+        else errorSum.setSum(0); //integral is reset if it's NaN or if targetVelocity is equal to 0
 
         // i smashing
         if (Math.signum(error) != Math.signum(prevError)) {
-            errorSum.multiply(kISmash);
+            errorSum.setSum(errorSum.getSum() * kISmash);
         }
 
         // i is prevented from getting too high or too low
-        i = MathUtil.clamp(ki * errorSum.get(), minI, maxI);
+        errorSum.setRawSum(MathUtil.clamp(errorSum.getSum(), (minI / ki) /* integrated error min*/, (maxI / ki) /*integrated error max*/));
+        i = ki * errorSum.getSum();
+        //i = MathUtil.clamp(ki * errorSum.getSum(), minI, maxI);
 
         //derivative
         d = dt > 0 ? kd * (error - prevError) / dt : 0;
@@ -309,7 +312,7 @@ public final class Flywheel {
     }
 
     private void resetIntegral() {
-        errorSum.set(0);
+        errorSum.setSum(0);
         i = 0;
     }
 
