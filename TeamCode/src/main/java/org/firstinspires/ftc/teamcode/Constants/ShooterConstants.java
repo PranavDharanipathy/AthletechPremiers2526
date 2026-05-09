@@ -47,9 +47,6 @@ public class ShooterConstants {
     /// Index 0 is translational, index 1 is heading.
     public static double[] THC_ACCELERATION_THRESHOLD = {0, 0};
 
-    /// Index 0 is minimum voltage outputted and index 1 is maximum voltage outputted.
-    public static double[] HOOD_ANALOG_ENCODER_VOLTAGE_RANGE = {0, 3.3};
-
     public static List<Double> DISTANCES = new ArrayList<>();
     public static List<Double> HOOD_POSITIONS = new ArrayList<>();
 
