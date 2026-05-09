@@ -6,25 +6,21 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
 import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
 import org.firstinspires.ftc.teamcode.Constants.ShooterConstants;
-import org.firstinspires.ftc.teamcode.util.AnalogAbsoluteEncoder;
+import org.firstinspires.ftc.teamcode.util.AXONEncoder;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 public class HoodAngler {
 
     private Servo hoodServo;
 
-    private AnalogAbsoluteEncoder encoder;
+    private AXONEncoder encoder;
 
     public HoodAngler(HardwareMap hardwareMap, String hoodAnglerServoName) {
 
-        encoder = new AnalogAbsoluteEncoder(hardwareMap, MapSetterConstants.hoodAnalogEncoderDeviceName);
+        encoder = new AXONEncoder(hardwareMap, MapSetterConstants.hoodAnalogEncoderDeviceName);
 
         hoodServo = hardwareMap.get(Servo.class, hoodAnglerServoName);
         hoodServo.setDirection(ConfigurationConstants.HOOD_ANGLER_SERVO_DIRECTION);
-    }
-
-    public void setEncoderCalibration(double minV, double maxV) {
-        encoder.calibrate(minV, maxV);
     }
 
     public Servo.Direction getServoDirection() {
