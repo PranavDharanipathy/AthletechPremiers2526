@@ -9,9 +9,9 @@ import org.firstinspires.ftc.teamcode.Constants.Calculations;
 import org.firstinspires.ftc.teamcode.Constants.ShooterConstants;
 import org.firstinspires.ftc.teamcode.TeleOp.TeleOpBaseOpMode;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.PedroDrive;
-import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseAcceleration;
-import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseVelocity;
-import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseSpeedTracker;
+import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseAcceleration;
+import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseVelocity;
+import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseSpeedTracker;
 
 @TeleOp(group = "testing")
 public class PoseVelocityTrackerTesting extends TeleOpBaseOpMode {

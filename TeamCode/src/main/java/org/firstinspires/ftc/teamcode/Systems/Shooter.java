@@ -6,11 +6,12 @@ import com.pedropathing.geometry.Pose;
 import org.firstinspires.ftc.teamcode.Constants.Calculations;
 import org.firstinspires.ftc.teamcode.Constants.CameraConstants;
 import org.firstinspires.ftc.teamcode.Constants.FieldConstants;
+import org.firstinspires.ftc.teamcode.Constants.LocalizationConstants;
 import org.firstinspires.ftc.teamcode.Constants.Models;
 import org.firstinspires.ftc.teamcode.Constants.ShooterConstants;
-import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseAcceleration;
-import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseVelocity;
-import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseSpeedTracker;
+import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseAcceleration;
+import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseVelocity;
+import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseSpeedTracker;
 import org.firstinspires.ftc.teamcode.util.BetterGamepad;
 import org.firstinspires.ftc.teamcode.util.EffectivelySubsystem;
 
@@ -29,11 +30,13 @@ public class Shooter implements EffectivelySubsystem {
 
     public TurretBase turret;
 
-    public HoodAngler hoodAngler;
+    public Hood hood;
 
     private Follower follower;
     public Camera camera;
     public PoseSpeedTracker poseSpeedTracker;
+
+    public PoseEstimator poseEstimator;
 
     public void provideComponents(Flywheel flywheel, TurretBase turret, HoodAngler hoodAngler, Follower follower, Camera unstartedCamera, BetterGamepad controller1) {
 
@@ -45,7 +48,20 @@ public class Shooter implements EffectivelySubsystem {
 
         this.turret = turret;
 
-        this.hoodAngler = hoodAngler;
+        hood = new Hood(hoodAngler);
+        hood.setFlywheelVelocityAdjustmentParameters(
+                ShooterConstants.FLYWHEEL_VELOCITY_HOOD_CORRECTION_INFLUENCE,
+                ShooterConstants.FLYWHEEL_VELOCITY_HOOD_CORRECTION_MINIMUM,
+                ShooterConstants.FLYWHEEL_VELOCITY_HOOD_CORRECTION_MAXIMUM
+        );
+        hood.provideFlywheel(this.flywheel);
+
+        poseEstimator = new PoseEstimator(
+                follower.getPose(),
+                LocalizationConstants.ODOMETRY_STD_DEV,
+                LocalizationConstants.CAMERA_STD_DEV,
+                LocalizationConstants.PROCESS_NOISE_STD_DEV
+        );
 
         this.controller1 = controller1;
 
@@ -109,11 +125,10 @@ public class Shooter implements EffectivelySubsystem {
         flywheel.reset();
     }
 
-    private boolean performAutomaticInitialLocalization = true;
+    //stage of 0 means that the action is pending, 1 means that it's underway, 2 means that it's complete.
+    private int performingAutomaticLocalization = 0;
 
     private boolean shooterToggle = false;
-
-    private double hoodPosition;
 
     private double turretAimPosition;
 
@@ -137,25 +152,32 @@ public class Shooter implements EffectivelySubsystem {
 
         PoseVelocity robotVelocity = poseSpeedTracker.getPoseVelocity();
         PoseAcceleration robotAcceleration = poseSpeedTracker.getPoseAcceleration();
-        double translationalVelocity = Calculations.getRobotTranslationalVelocity(robotVelocity.getXVelocity(), robotVelocity.getYVelocity());
+        double translationalVelocity = Calculations.getRobotTranslationalVelocity(robotVelocity);
 
         TurretHelper.update(turret);
 
         if (
-                performAutomaticInitialLocalization
+                performingAutomaticLocalization == 0
                 && translationalVelocity <= MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY[0]
                 && robotVelocity.getAngularVelocity() <= MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY[1]
         ) {
-            camera.update(true);
-            performAutomaticInitialLocalization = false;
+            camera.update(true, poseEstimator::reset);
+            performingAutomaticLocalization = 1;
+        }
+        else if (performingAutomaticLocalization == 1 && camera.getMt1LocalizationOutcome() == Camera.MT1LocalizationOutcome.FAILED) {
+            camera.update(false);
+            performingAutomaticLocalization = 0;
         }
         else {
             camera.update(controller1.main_buttonHasJustBeenPressed);
+            performingAutomaticLocalization = 2;
         }
 
         //if (controller2.main_buttonHasJustBeenPressed) relocalization(FieldConstants.RELOCALIZATION_POSE);
 
-        currentRobotPose = camera.canUseMT2Pose() ? camera.getBotPoseMT2() : follower.getPose();
+        poseEstimator.update(follower, camera);
+
+        currentRobotPose = poseEstimator.getPose();
         robotHeadingRad = currentRobotPose.getHeading();
 
         double turretCurrentPosition = turret.getCurrentPosition(); //used to calculate turret pose
@@ -222,21 +244,21 @@ public class Shooter implements EffectivelySubsystem {
         else flywheel.setVelocity(0, true);
 
         //hood
-        if (flywheelTargetVelocityZone == ZONE.FAR) hoodPosition = ShooterConstants.HOOD_FAR_POSITION;
-        else {
+        hood.setAimZone(
+                currentRobotPose.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER
+                ? Hood.AimZone.CLOSE
+                : Hood.AimZone.FAR
+        );
 
-            FieldConstants.GoalCoordinatesForDistance goalCoordinatesForDistance =
-                    goalCoordinates == FieldConstants.GoalCoordinates.BLUE
-                            ? FieldConstants.GoalCoordinatesForDistance.BLUE
-                            : FieldConstants.GoalCoordinatesForDistance.RED;
+        FieldConstants.GoalCoordinatesForDistance goalCoordinatesForDistance =
+                goalCoordinates == FieldConstants.GoalCoordinates.BLUE
+                        ? FieldConstants.GoalCoordinatesForDistance.BLUE
+                        : FieldConstants.GoalCoordinatesForDistance.RED;
 
-            distanceToGoal = Calculations.getDistanceFromGoal(turretPose.getX(), turretPose.getY(), goalCoordinatesForDistance.getCoordinate());
-
-            hoodPosition = Models.getCloseHoodPosition(distanceToGoal);
-        }
+        distanceToGoal = Calculations.getDistanceFromGoal(turretPose.getX(), turretPose.getY(), goalCoordinatesForDistance.getCoordinate());
 
         //updating
-        hoodAngler.setSafePosition(hoodPosition);
+        hood.update(distanceToGoal);
         turret.update();
         flywheel.update();
 
@@ -305,7 +327,9 @@ public class Shooter implements EffectivelySubsystem {
     }
 
     private void relocalization(Pose reZeroPose) {
+
         follower.setPose(reZeroPose);
+        poseEstimator.reset(reZeroPose);
     }
 
     public ZONE getZoneSetting() {

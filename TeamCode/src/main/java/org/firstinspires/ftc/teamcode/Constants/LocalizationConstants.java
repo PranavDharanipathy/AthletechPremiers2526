@@ -16,9 +16,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Configurable
-public class DriveConstants {
+public class LocalizationConstants {
 
-    public static FollowerConstants followerConstants = new FollowerConstants()
+    public static FollowerConstants FOLLOWER_CONSTANTS = new FollowerConstants()
 
             .mass(14.2)
 
@@ -47,8 +47,8 @@ public class DriveConstants {
             .centripetalScaling(0.0004)
             ;
 
-    public static PathConstraints autoPathConstraints = new PathConstraints(0.994, 50, 1.4, 1.4);
-    public static MecanumConstants driveConstants = new MecanumConstants()
+    public static PathConstraints PATH_CONSTANTS = new PathConstraints(0.994, 50, 1.4, 1.4);
+    public static MecanumConstants DRIVE_CONSTANTS = new MecanumConstants()
             .maxPower(1)
             .rightFrontMotorName(MapSetterConstants.rightFrontMotorDeviceName)
             .rightRearMotorName(MapSetterConstants.rightBackMotorDeviceName)
@@ -62,7 +62,7 @@ public class DriveConstants {
             .xVelocity(82.51125978484868)
             .yVelocity(61.454884446512054);
 
-    public static PinpointConstants localizerConstants = new PinpointConstants()
+    public static PinpointConstants LOCALIZER_CONSTANTS = new PinpointConstants()
             .forwardPodY(2.83464)
             .strafePodX(-5.86613)
             .distanceUnit(DistanceUnit.INCH)
@@ -72,10 +72,15 @@ public class DriveConstants {
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
-        return new FollowerBuilder(followerConstants, hardwareMap)
-                .pathConstraints(autoPathConstraints)
-                .mecanumDrivetrain(driveConstants)
-                .pinpointLocalizer(localizerConstants)
+        return new FollowerBuilder(FOLLOWER_CONSTANTS, hardwareMap)
+                .pathConstraints(PATH_CONSTANTS)
+                .mecanumDrivetrain(DRIVE_CONSTANTS)
+                .pinpointLocalizer(LOCALIZER_CONSTANTS)
                 .build();
     }
+
+    public static double[] ODOMETRY_STD_DEV = new double[] {0, 0, 0};
+    public static double[] CAMERA_STD_DEV = new double[] {0, 0, 0};
+    public static double[] PROCESS_NOISE_STD_DEV = new double[] {0, 0, 0, 0, 0, 0};
+
 }

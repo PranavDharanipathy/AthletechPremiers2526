@@ -11,13 +11,13 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
-import org.firstinspires.ftc.teamcode.Constants.DriveConstants;
+import org.firstinspires.ftc.teamcode.Constants.LocalizationConstants;
 import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
 import org.firstinspires.ftc.teamcode.Systems.Flywheel;
 import org.firstinspires.ftc.teamcode.util.BetterGamepad;
-import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseAcceleration;
-import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseSpeedTracker;
-import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseVelocity;
+import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseAcceleration;
+import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseSpeedTracker;
+import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseVelocity;
 
 /// Gets the maximum velocity and maximum acceleration of the robot.
 @Config
@@ -58,7 +58,7 @@ public class MaxSpeedTuner extends LinearOpMode {
 
         controller1 = new BetterGamepad(gamepad1);
 
-        follower = DriveConstants.createFollower(hardwareMap);
+        follower = LocalizationConstants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose());
 
         poseSpeedTracker = new PoseSpeedTracker(follower);

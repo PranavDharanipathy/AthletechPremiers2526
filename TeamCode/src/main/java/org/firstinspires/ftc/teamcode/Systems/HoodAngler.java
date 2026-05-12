@@ -6,19 +6,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
 import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
 import org.firstinspires.ftc.teamcode.Constants.ShooterConstants;
-import org.firstinspires.ftc.teamcode.util.AXONEncoder;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 public class HoodAngler {
 
-    private Servo hoodServo;
-
-    private AXONEncoder encoder;
+    private final Servo hoodServo;
 
     public HoodAngler(HardwareMap hardwareMap, String hoodAnglerServoName) {
-
-        encoder = new AXONEncoder(hardwareMap, MapSetterConstants.hoodAnalogEncoderDeviceName);
-
+        
         hoodServo = hardwareMap.get(Servo.class, hoodAnglerServoName);
         hoodServo.setDirection(ConfigurationConstants.HOOD_ANGLER_SERVO_DIRECTION);
     }
@@ -35,11 +30,8 @@ public class HoodAngler {
         hoodServo.setPosition(MathUtil.clamp(position, ShooterConstants.HOOD_ANGLER_MAX_POSITION, ShooterConstants.HOOD_ANGLER_MIN_POSITION));
     }
 
-    public double getTargetPosition() {
+    public double getPosition() {
         return hoodServo.getPosition();
     }
 
-    public double getCurrentPosition() {
-        return (355d / 360d) * (encoder.getAngle() / 360d);
-    }
 }

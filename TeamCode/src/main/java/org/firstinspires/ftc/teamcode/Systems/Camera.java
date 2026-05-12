@@ -10,9 +10,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Constants.Calculations;
 import org.firstinspires.ftc.teamcode.Constants.CameraConstants;
 import org.firstinspires.ftc.teamcode.Constants.Models;
-import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseSpeedTracker;
+import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseSpeedTracker;
 import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
+
+import java.util.function.Consumer;
 
 public class Camera {
 
@@ -100,13 +102,17 @@ public class Camera {
 
     private boolean eligibleForMT2 = false;
 
-    public void update(boolean localizationTrigger) { // Assumes follower is already updated
-
-        if (!isPipelineSwitched) reloadPipeline();
+    @SafeVarargs
+    public final void update(boolean localizationTrigger, Consumer<Pose>... poseFunctionsOnMT1Relocalization) { // Assumes follower is already updated
 
         poseSpeedTracker.update();
 
-        translationalVelMagFromOdo = Math.abs(Calculations.getRobotTranslationalVelocity(poseSpeedTracker.getPoseVelocity()));
+        if (!isPipelineSwitched) {
+            reloadPipeline();
+            return;
+        }
+
+        translationalVelMagFromOdo = Calculations.getRobotTranslationalVelocity(poseSpeedTracker.getPoseVelocity());
 
         isRobotOrientationUpdated = false;
 
@@ -126,17 +132,23 @@ public class Camera {
                 botPoseMT2 = Calculations.convertPose3DtoPedroPose(llResult.getBotpose_MT2());
                 botPoseMT2 = botPoseMT2.withHeading(MathUtil.normalizeAngleRad(botPoseMT2.getHeading())); //normalizing heading
 
-                if (timer.seconds() >= CameraConstants.ODOMETRY_RELOCALIZATION_FREQUENCY) {
-                    follower.setX(botPoseMT2.getX());
-                    follower.setY(botPoseMT2.getY());
-                    timer.reset();
-                }
+//                if (automaticOdometryRelocalization && timer.seconds() >= CameraConstants.ODOMETRY_RELOCALIZATION_FREQUENCY && translationalVelMagFromOdo < CameraConstants.ODOMETRY_RELOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY) {
+//                    follower.setX(botPoseMT2.getX());
+//                    follower.setY(botPoseMT2.getY());
+//                    timer.reset();
+//                }
             }
         }
 
-        relocalizeMT1(localizationTrigger);
+        relocalizeMT1(localizationTrigger, poseFunctionsOnMT1Relocalization);
 
     }
+
+//    private boolean automaticOdometryRelocalization = true;
+//
+//    public void setAutomaticOdometryRelocalization(boolean automaticOdometryRelocalization) {
+//        this.automaticOdometryRelocalization = automaticOdometryRelocalization;
+//    }
 
     private Integer mt1LocalizationStep;
 
@@ -144,7 +156,7 @@ public class Camera {
     /// <p>
     /// Required for MT2
     /// @return MT1 localization step or {@code null} if it failed
-    public Integer localizeFollower() {
+    public Integer localizeFollower(Consumer<Pose>[] poseFunctionsOnMT1Relocalization) {
 
         LLResult llResult = limelight.getLatestResult();
 
@@ -152,7 +164,7 @@ public class Camera {
 
             Pose mt1Pose = Calculations.convertPose3DtoPedroPose(llResult.getBotpose());
 
-            if (mt1LocalizationStep == null /*failed*/ || mt1LocalizationStep == 4 /*completed*/) {
+            if (mt1LocalizationStep == null /*failed*/ || mt1LocalizationStep > CameraConstants.MT1_LOCALIZATION_STEPS /*completed*/) {
                 filteredMT1BotPose = mt1Pose;
                 mt1LocalizationStep = 1;
             }
@@ -162,8 +174,14 @@ public class Camera {
             }
 
             if (mt1LocalizationStep >= CameraConstants.MT1_LOCALIZATION_STEPS) {
+
                 follower.setPose(filteredMT1BotPose);
                 eligibleForMT2 = true;
+                botPoseMT2 = filteredMT1BotPose;
+
+                for (Consumer<Pose> poseFunction : poseFunctionsOnMT1Relocalization) {
+                    poseFunction.accept(filteredMT1BotPose);
+                }
             }
         }
         else mt1LocalizationStep = null;
@@ -172,16 +190,18 @@ public class Camera {
     }
 
     private boolean localizeMT1 = false;
+    public boolean hasRunOrRunningMT1Localization() { return localizeMT1; }
+
     private MT1LocalizationOutcome mt1LocalizationOutcome = MT1LocalizationOutcome.PENDING;
-    private void relocalizeMT1(boolean trigger) {
+    private void relocalizeMT1(boolean trigger, Consumer<Pose>[] poseFunctionsOnMT1Relocalization) {
 
         if (trigger) localizeMT1 = true;
 
         if (localizeMT1) {
 
-            Integer localizationStep = localizeFollower();
+            Integer localizationStep = localizeFollower(poseFunctionsOnMT1Relocalization);
 
-            if (localizationStep == null || localizationStep == 4) {
+            if (localizationStep == null || localizationStep > CameraConstants.MT1_LOCALIZATION_STEPS) {
                 mt1LocalizationOutcome = mt1LocalizationOutcome.transition(localizationStep);
                 localizeMT1 = false;
             }

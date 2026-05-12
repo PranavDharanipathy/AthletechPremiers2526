@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.util;
 import org.apache.commons.math3.util.FastMath;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public strictfp class MathUtil {
 
@@ -90,10 +91,10 @@ public strictfp class MathUtil {
     }
 
     public static double metersToCentimeters(double meters) {
-        return meters * 100;
+        return meters * 100d;
     }
     public static double metersToMillimeters(double meters) {
-        return meters * 1000;
+        return meters * 1000d;
     }
     public static double inchesToCentimeters(double inches) {
         return inches * 2.54;
@@ -189,5 +190,26 @@ public strictfp class MathUtil {
 
     public static double increaseMagnitudeNumerical(double value, double increment) {
         return value >= 0 ? value + increment : value - increment;
+    }
+
+    public static int getClosestIndex(List<Double> values, double skibidiValue) {
+
+        if (values == null || values.isEmpty()) {
+            throw new IllegalArgumentException("List cannot be null or empty");
+        }
+
+        int closestIndex = 0;
+        double smallestDiff = Math.abs(values.get(0) - skibidiValue);
+
+        for (int i = 1; i < values.size(); i++) {
+            double diff = Math.abs(values.get(i) - skibidiValue);
+
+            if (diff < smallestDiff) {
+                smallestDiff = diff;
+                closestIndex = i;
+            }
+        }
+
+        return closestIndex;
     }
 }

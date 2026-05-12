@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.util.pedroPathing;
+package org.firstinspires.ftc.teamcode.util.PedroPathing;
 
-import static org.firstinspires.ftc.teamcode.util.pedroPathing.Tuning.changes;
-import static org.firstinspires.ftc.teamcode.util.pedroPathing.Tuning.drawCurrent;
-import static org.firstinspires.ftc.teamcode.util.pedroPathing.Tuning.drawCurrentAndHistory;
-import static org.firstinspires.ftc.teamcode.util.pedroPathing.Tuning.follower;
-import static org.firstinspires.ftc.teamcode.util.pedroPathing.Tuning.stopRobot;
-import static org.firstinspires.ftc.teamcode.util.pedroPathing.Tuning.telemetryM;
+import static org.firstinspires.ftc.teamcode.util.PedroPathing.Tuning.changes;
+import static org.firstinspires.ftc.teamcode.util.PedroPathing.Tuning.drawCurrent;
+import static org.firstinspires.ftc.teamcode.util.PedroPathing.Tuning.drawCurrentAndHistory;
+import static org.firstinspires.ftc.teamcode.util.PedroPathing.Tuning.follower;
+import static org.firstinspires.ftc.teamcode.util.PedroPathing.Tuning.stopRobot;
+import static org.firstinspires.ftc.teamcode.util.PedroPathing.Tuning.telemetryM;
 
 import com.bylazar.configurables.PanelsConfigurables;
 import com.bylazar.configurables.annotations.Configurable;
@@ -31,7 +31,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Constants.DriveConstants;
+import org.firstinspires.ftc.teamcode.Constants.LocalizationConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,10 +94,10 @@ public class Tuning extends SelectableOpMode {
     @Override
     public void onSelect() {
         if (follower == null) {
-            follower = DriveConstants.createFollower(hardwareMap);
+            follower = LocalizationConstants.createFollower(hardwareMap);
             PanelsConfigurables.INSTANCE.refreshClass(this);
         } else {
-            follower = DriveConstants.createFollower(hardwareMap);
+            follower = LocalizationConstants.createFollower(hardwareMap);
         }
 
         follower.setStartingPose(new Pose());

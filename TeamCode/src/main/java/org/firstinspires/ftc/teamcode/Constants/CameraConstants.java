@@ -30,10 +30,9 @@ public class CameraConstants {
     public static int CAMERA_POLL_RATE = 85;
 
     public static double MT1_LOCALIZATION_STEPS = 3;
-    public static double ODOMETRY_RELOCALIZATION_FREQUENCY = 10; //in seconds
 
     /// The maximum velocity that the robot can be traveling at to still be eligible for MT1 localization.
     /// <p>
     /// Index 0 is translational, index 1 is heading.
-    public static double[] MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY = {6, 5};
+    public static double[] MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY = {8, 5};
 }

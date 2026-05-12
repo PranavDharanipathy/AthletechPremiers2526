@@ -6,8 +6,8 @@ import com.pedropathing.geometry.Pose;
 
 import org.apache.commons.math3.util.FastMath;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseAcceleration;
-import org.firstinspires.ftc.teamcode.util.pedroPathing.PoseVelocity;
+import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseAcceleration;
+import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseVelocity;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 public class Calculations {

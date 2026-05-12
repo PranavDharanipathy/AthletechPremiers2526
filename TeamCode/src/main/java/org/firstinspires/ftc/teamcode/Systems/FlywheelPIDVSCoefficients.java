@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
 import org.firstinspires.ftc.teamcode.util.DynamicTrapezoidalSum;
-import org.firstinspires.ftc.teamcode.util.MutableDouble;
 import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 
 /// Easier usage of the coefficients for the flywheel
