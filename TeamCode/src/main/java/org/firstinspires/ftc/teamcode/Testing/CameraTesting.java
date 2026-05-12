@@ -18,7 +18,6 @@ import org.firstinspires.ftc.teamcode.util.TickrateChecker;
 @TeleOp(group = "testing")
 public class CameraTesting extends TeleOpBaseOpMode {
 
-    public static CurrentAlliance.ALLIANCE ALLIANCE = CurrentAlliance.ALLIANCE.BLUE_ALLIANCE;
 
     private RobotCentricDrive robotCentricDrive = new RobotCentricDrive();
 
@@ -34,8 +33,8 @@ public class CameraTesting extends TeleOpBaseOpMode {
         telemetry.setMsTransmissionInterval(30);
 
         robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, controller1);
-        
-        camera.pipelineSwitch(CameraConstants.PIPELINES.getPipelineFromAlliance(ALLIANCE).getPipelineIndex());
+
+        camera.pipelineSwitch(CameraConstants.PIPELINES.GENERAL_GOAL_PIPELINE.getPipelineIndex());
     }
 
     @Override
@@ -52,10 +51,9 @@ public class CameraTesting extends TeleOpBaseOpMode {
         telemetry.addData("Loop time", TickrateChecker.getTimePerTick());
 
         controller1.getInformation();
-        controller2.getInformation();
 
         follower.update();
-        camera.update(new BooleanTrigger(controller2.main_buttonHasJustBeenPressed));
+        camera.update(controller1.main_buttonHasJustBeenPressed);
 
         robotCentricDrive.update();
 
