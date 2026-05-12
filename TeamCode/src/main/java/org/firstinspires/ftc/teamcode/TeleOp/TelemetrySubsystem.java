@@ -9,23 +9,36 @@ import org.firstinspires.ftc.teamcode.util.TickrateChecker;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.PedroDrive;
 import org.firstinspires.ftc.teamcode.util.EffectivelySubsystem;
 import org.firstinspires.ftc.teamcode.util.TelemetryUtils.TelemetryMode;
-import org.firstinspires.ftc.teamcode.util.TelemetryUtils.TelemetryO;
+import org.firstinspires.ftc.teamcode.util.TelemetryUtils.TelemetryIO;
 
 public class TelemetrySubsystem implements EffectivelySubsystem {
 
-    private TelemetryO telem;
+    private TelemetryIO telem;
 
     private BetterGamepad controller2;
+
+    public void provideComponents(Telemetry telemetry) {
+
+        telemetry.setMsTransmissionInterval(GeneralConstants.TELEMETRY_MS_TRANSMISSION_INTERVAL);
+
+        telem = new TelemetryIO(telemetry, false);
+
+        telem.setTelemetryModes(TelemetryMode.AURA);
+    }
 
     public void provideComponents(Telemetry telemetry, boolean addFTCDashboard, BetterGamepad controller2) {
 
         telemetry.setMsTransmissionInterval(GeneralConstants.TELEMETRY_MS_TRANSMISSION_INTERVAL);
 
-        telem = new TelemetryO(telemetry, addFTCDashboard);
+        telem = new TelemetryIO(telemetry, addFTCDashboard);
 
         telem.setTelemetryModes(TelemetryMode.INFO);
 
         this.controller2 = controller2;
+    }
+
+    public void runInstance() {
+
     }
 
     public void runInstance(Shooter shooter, PedroDrive pedroDrive) {
@@ -46,10 +59,12 @@ public class TelemetrySubsystem implements EffectivelySubsystem {
 
         telem.addData("LL Localization Outcome", shooter.camera.getMt1LocalizationOutcome());
 
-        telem.addData("ZONE", shooter.getZone().toString());
+        telem.addData("TARGET ZONE", shooter.getZoneSetting().toString());
+        telem.addData("CURRENT ZONE", shooter.getCurrentZoneBasedOnLocation().toString());
+
         telem.addData(TelemetryMode.RAW_DATA, "on alliance side?", shooter.accessGoalCoordinates().onAllianceSide(shooter.futureRobotPose.getY()));
 
-        telem.addData(TelemetryMode.RAW_DATA, "hood position", shooter.hoodAngler.getTargetPosition());
+        telem.addData(TelemetryMode.RAW_DATA, "hood position", shooter.hood.accessHoodAngler().getPosition());
 
         telem.addData(TelemetryMode.INFO, "flywheel current velocity", "%.0f", shooter.flywheel.getCurrentVelocity());
         telem.addData(TelemetryMode.INFO, "flywheel target velocity", shooter.flywheel.getTargetVelocity());

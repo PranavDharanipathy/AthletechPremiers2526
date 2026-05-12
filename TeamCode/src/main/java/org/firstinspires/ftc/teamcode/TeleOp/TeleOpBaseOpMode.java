@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,15 +10,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Constants.CameraConstants;
 import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
-import org.firstinspires.ftc.teamcode.Constants.DriveConstants;
-import org.firstinspires.ftc.teamcode.Constants.FieldConstants;
-import org.firstinspires.ftc.teamcode.Constants.HoodConstants;
+import org.firstinspires.ftc.teamcode.Constants.LocalizationConstants;
 import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
 import org.firstinspires.ftc.teamcode.Systems.Blocker;
 import org.firstinspires.ftc.teamcode.Systems.Camera;
 import org.firstinspires.ftc.teamcode.Systems.Flywheel;
 import org.firstinspires.ftc.teamcode.Systems.HoodAngler;
 import org.firstinspires.ftc.teamcode.Systems.Lift;
+import org.firstinspires.ftc.teamcode.Systems.PoseTransfer;
 import org.firstinspires.ftc.teamcode.Systems.TurretBase;
 import org.firstinspires.ftc.teamcode.util.BetterGamepad;
 import org.firstinspires.ftc.teamcode.util.GeneralVeloMotor;
@@ -76,7 +76,7 @@ public abstract class TeleOpBaseOpMode extends OpMode {
         left_back = hardwareMap.get(DcMotor.class, MapSetterConstants.leftBackMotorDeviceName);
         right_back = hardwareMap.get(DcMotor.class, MapSetterConstants.rightBackMotorDeviceName);
 
-        follower = DriveConstants.createFollower(hardwareMap);
+        follower = LocalizationConstants.createFollower(hardwareMap);
 
         intake = hardwareMap.get(DcMotor.class, MapSetterConstants.intakeMotorDeviceName);
 
@@ -109,14 +109,8 @@ public abstract class TeleOpBaseOpMode extends OpMode {
         left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        follower.setPose(FieldConstants.RELOCALIZATION_POSE);
-
+        follower.setPose(new Pose(PoseTransfer.X, PoseTransfer.Y, PoseTransfer.HEADING));
         follower.update();
-
-        hoodAngler.setEncoderCalibration(
-                HoodConstants.HOOD_ANALOG_ENCODER_VOLTAGE_RANGE[0],
-                HoodConstants.HOOD_ANALOG_ENCODER_VOLTAGE_RANGE[1]
-        );
 
         intake.setDirection(ConfigurationConstants.INTAKE_MOTOR_DIRECTION);
         transfer.setDirection(ConfigurationConstants.TRANSFER_MOTOR_DIRECTION);

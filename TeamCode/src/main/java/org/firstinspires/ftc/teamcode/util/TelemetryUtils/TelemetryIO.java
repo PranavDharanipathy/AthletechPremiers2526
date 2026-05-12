@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class TelemetryO {
+public class TelemetryIO {
 
     private Telemetry telemetry;
 
@@ -16,7 +16,7 @@ public class TelemetryO {
         return telemetry;
     }
 
-    public TelemetryO(Telemetry telemetry, boolean addDash) {
+    public TelemetryIO(Telemetry telemetry, boolean addDash) {
 
         if (addDash) {
             this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());

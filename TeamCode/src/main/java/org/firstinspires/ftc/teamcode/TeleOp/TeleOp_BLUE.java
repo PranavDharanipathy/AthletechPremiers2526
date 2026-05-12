@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Systems.Lift;
 import org.firstinspires.ftc.teamcode.Systems.Shooter;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.PedroDrive;
 
-@TeleOp(name = "TeleOp BLUE", group = "Match")
+@TeleOp(name = "TeleOp BLUE", group = "A_Match")
 public class TeleOp_BLUE extends TeleOpBaseOpMode {
 
     private final CurrentAlliance alliance = new CurrentAlliance(CurrentAlliance.ALLIANCE.BLUE_ALLIANCE);
@@ -31,8 +31,8 @@ public class TeleOp_BLUE extends TeleOpBaseOpMode {
         intake.provideComponents(super.intake, blocker /*subsystem*/, transfer, controller1);
         blocker.provideComponents(super.blocker, controller1);
         tiltLift.provideComponents(lift, controller2);
-        shooter.provideComponents(flywheel, turret, hoodAngler, follower, camera, controller1, controller2);
-        telemetry.provideComponents(super.telemetry, true, controller2);
+        shooter.provideComponents(flywheel, turret, hoodAngler, follower, camera, controller1);
+        telemetry.provideComponents(super.telemetry);
         setUpLynxModule();
     }
 
@@ -50,7 +50,7 @@ public class TeleOp_BLUE extends TeleOpBaseOpMode {
         clearCacheOfLynxModule();
 
         controller1.getInformation();
-        controller2.getInformation();
+        //controller2.getInformation();
 
         intake.update();
         follower.update();
@@ -59,6 +59,6 @@ public class TeleOp_BLUE extends TeleOpBaseOpMode {
         tiltLift.update();
         pedroDrive.update();
 
-        telemetry.runInstance(shooter, pedroDrive);
+        telemetry.runInstance();
     }
 }

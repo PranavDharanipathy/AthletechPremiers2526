@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Tuners.SOTOM;
+package org.firstinspires.ftc.teamcode.Tuners.SOTM;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -49,7 +49,7 @@ public class ShootOnTheMoveTuner extends TeleOpBaseOpMode {
         intake.provideComponents(super.intake, blocker /*subsystem*/, transfer, controller1);
         blocker.provideComponents(super.blocker, controller1);
         pedroDrive.provideComponents(follower, controller1);
-        shooter.provideComponents(flywheel, turret, hoodAngler, follower, camera, controller1, controller2);
+        shooter.provideComponents(flywheel, turret, hoodAngler, follower, camera, controller1);
         setUpLynxModule();
 
         shooter.setTHCTuning(true);

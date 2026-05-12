@@ -2,15 +2,15 @@ package org.firstinspires.ftc.teamcode.util;
 
 import androidx.annotation.NonNull;
 
-public class DoubleM {
+public class MutableDouble {
 
     private double value;
 
-    public DoubleM(double value) {
+    public MutableDouble(double value) {
         this.value = value;
     }
 
-    public DoubleM(@NonNull DoubleM valueObj) {
+    public MutableDouble(@NonNull MutableDouble valueObj) {
         this.value = valueObj.get();
     }
 
@@ -18,7 +18,7 @@ public class DoubleM {
         this.value = value;
     }
 
-    public void set(@NonNull DoubleM valueObj) {
+    public void set(@NonNull MutableDouble valueObj) {
         this.value = valueObj.get();
     }
 
@@ -26,17 +26,13 @@ public class DoubleM {
         return value;
     }
 
-    public DoubleM getDoubleM() {
-        return this;
-    }
-
-    //---simple operations---
+    // simple operations
 
     public void add(double value) {
         this.value += value;
     }
 
-    public void add(@NonNull DoubleM valueObj) {
+    public void add(@NonNull MutableDouble valueObj) {
         this.value += valueObj.get();
     }
 
@@ -44,7 +40,7 @@ public class DoubleM {
         this.value -= value;
     }
 
-    public void subtract(@NonNull DoubleM valueObj) {
+    public void subtract(@NonNull MutableDouble valueObj) {
         this.value -= valueObj.get();
     }
 
@@ -52,7 +48,7 @@ public class DoubleM {
         this.value *= value;
     }
 
-    public void multiply(@NonNull DoubleM valueObj) {
+    public void multiply(@NonNull MutableDouble valueObj) {
         this.value *= valueObj.get();
     }
 
@@ -63,7 +59,7 @@ public class DoubleM {
         this.value = value;
     }
 
-    public void divide(@NonNull DoubleM valueObj) {
+    public void divide(@NonNull MutableDouble valueObj) {
 
         if (valueObj.get() == 0) throw new ArithmeticException("Error divide by zero!");
 

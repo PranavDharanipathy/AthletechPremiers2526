@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.util.pedroPathing;
+package org.firstinspires.ftc.teamcode.util.PedroPathing;
 
 public class PoseVelocity {
 

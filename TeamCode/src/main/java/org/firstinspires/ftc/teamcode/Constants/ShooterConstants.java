@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.Constants;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Config
 public class ShooterConstants {
 
@@ -15,6 +18,8 @@ public class ShooterConstants {
 
     public static double HOOD_ANGLER_MIN_POSITION = 1;
     public static double HOOD_ANGLER_MAX_POSITION = 0;
+
+    //arbitrary positions
     public static double HOOD_CLOSE_POSITION = 0.25;
     public static double HOOD_FAR_POSITION = 0.15;
 
@@ -32,7 +37,7 @@ public class ShooterConstants {
     /// Index 0 is translational, index 1 in angular (in radians).
     /// <p>
     /// Translational is in inches per second and angular is in radians per second.
-    public static double[] THC_ENGAGE_VELOCITY = {20, Math.toRadians(7)};
+    public static double[] THC_ENGAGE_VELOCITY = {4, Math.toRadians(5)};
 
     /// Scalar value representing how influential acceleration is.
     /// <p>
@@ -43,5 +48,23 @@ public class ShooterConstants {
     /// <p>
     /// Index 0 is translational, index 1 is heading.
     public static double[] THC_ACCELERATION_THRESHOLD = {0, 0};
+
+    public static List<Double> CLOSE_HOOD_DISTANCES = new ArrayList<>();
+    public static List<Double> CLOSE_HOOD_POSITIONS = new ArrayList<>();
+
+    public static List<Double> FAR_HOOD_DISTANCES = new ArrayList<>();
+    public static List<Double> FAR_HOOD_POSITIONS = new ArrayList<>();
+
+    /// Minimum flywheel velocity-based hood correction for the correction to be used.
+    public static double MINIMUM_FLYWHEEL_VELOCITY_HOOD_CORRECTION = 0.004;
+
+    /// Minimum change in flywheel velocity-based hood correction for new hood correction to be used.
+    public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_DEADBAND = 0.001;
+
+    public static double HOOD_POSITION_FOR_MAX_SHOT_DISTANCE = 0.3;
+
+    public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_INFLUENCE = 0;
+    public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_MINIMUM = -1;
+    public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_MAXIMUM = 1;
 
 }
