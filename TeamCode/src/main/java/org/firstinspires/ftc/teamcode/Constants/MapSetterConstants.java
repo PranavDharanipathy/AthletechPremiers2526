@@ -14,12 +14,12 @@ public class MapSetterConstants {
 
     public static String limelight3AUSBDeviceName = "limelight";
 
-    public static String leftFrontMotorDeviceName = "left_front";
-    public static String leftBackMotorDeviceName = "left_back";
-    public static String rightFrontMotorDeviceName = "right_front";
-    public static String rightBackMotorDeviceName = "right_back";
+    public static String leftFrontMotorDeviceName = "lfw";
+    public static String leftBackMotorDeviceName = "lbw";
+    public static String rightFrontMotorDeviceName = "rfw";
+    public static String rightBackMotorDeviceName = "rbw";
 
-    public static String turretExternalEncoderMotorPairName = "right_back";
+    public static String turretExternalEncoderMotorPairName = "rbw";
 
     public static String hoodAnglerServoDeviceName = "hood_angler";
 
@@ -31,11 +31,9 @@ public class MapSetterConstants {
 
     public static String blockerServoDeviceName = "blocker";
 
-    public static String liftServoDeviceName = "lift";
+    public static String liftServoDeviceName = "tilt";
 
     public static String intakeMotorDeviceName = "intake";
     public static String transferMotorDeviceName = "transfer";
-
-    public static String hoodAnalogEncoderDeviceName = "hood_analog";
 
 }
