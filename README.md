@@ -1,4 +1,4 @@
-<p align="center" width="400">
+<p align="center" width="100">
 <img src="./assets/animatedLogo.gif">
 </p> <!-- size adjusted - height automatically scales to keep aspect ratio -->
 
