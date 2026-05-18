@@ -2,7 +2,7 @@
 <img src="./assets/animatedLogo.gif">
 </p>
 
-<img src="./assets/sectionSplit/thickSectionSplit.svg" width="100%" height="60">
+<img src="./assets/sectionSplit/thickSectionSplit.svg" width="100%">
 
 <p align="center">
 <a href="https://ftcscout.org/teams/31666">
