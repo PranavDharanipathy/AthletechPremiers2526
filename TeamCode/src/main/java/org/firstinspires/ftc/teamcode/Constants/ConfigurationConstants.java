@@ -14,7 +14,7 @@ public class ConfigurationConstants {
     public static DcMotorSimple.Direction INTAKE_MOTOR_DIRECTION = DcMotorSimple.Direction.REVERSE;
     public static DcMotorSimple.Direction TRANSFER_MOTOR_DIRECTION = DcMotorSimple.Direction.REVERSE;
 
-    public static Servo.Direction BLOCKER_SERVO_DIRECTION = Servo.Direction.REVERSE;
+    public static Servo.Direction BLOCKER_SERVO_DIRECTION = Servo.Direction.FORWARD;
 
     public static Servo.Direction LIFT_SERVO_DIRECTION = Servo.Direction.REVERSE;
 

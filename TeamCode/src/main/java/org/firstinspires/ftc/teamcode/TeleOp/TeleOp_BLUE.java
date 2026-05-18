@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Systems.Blocker;
 import org.firstinspires.ftc.teamcode.Systems.CurrentAlliance;
+import org.firstinspires.ftc.teamcode.Systems.Flywheel;
 import org.firstinspires.ftc.teamcode.Systems.Intake;
 import org.firstinspires.ftc.teamcode.Systems.Lift;
 import org.firstinspires.ftc.teamcode.Systems.Shooter;
@@ -16,8 +17,6 @@ public class TeleOp_BLUE extends TeleOpBaseOpMode {
 
     private final Intake intake = new Intake();
     private final Blocker blocker = new Blocker().asSubsystem();
-    private final Lift tiltLift = new Lift().asSubsystem();
-    private final Shooter shooter = new Shooter();
     private final PedroDrive pedroDrive = new PedroDrive();
     private final TelemetrySubsystem telemetry = new TelemetrySubsystem();
 
@@ -30,8 +29,6 @@ public class TeleOp_BLUE extends TeleOpBaseOpMode {
         pedroDrive.provideComponents(follower, controller1);
         intake.provideComponents(super.intake, blocker /*subsystem*/, transfer, controller1);
         blocker.provideComponents(super.blocker, controller1);
-        tiltLift.provideComponents(lift, controller2);
-        shooter.provideComponents(flywheel, turret, hoodAngler, follower, camera, controller1);
         telemetry.provideComponents(super.telemetry);
         setUpLynxModule();
     }
@@ -41,7 +38,6 @@ public class TeleOp_BLUE extends TeleOpBaseOpMode {
 
         new PostAutonomousRobotReset(this);
 
-        shooter.start(alliance.getAlliance());
     }
 
     @Override
@@ -54,11 +50,18 @@ public class TeleOp_BLUE extends TeleOpBaseOpMode {
 
         intake.update();
         follower.update();
-        shooter.update();
+        shooter();
         blocker.update();
-        tiltLift.update();
         pedroDrive.update();
 
         telemetry.runInstance();
+    }
+
+    private void shooter() {
+
+        flywheel.runMotor(Flywheel.RunningMotor.DISABLE);
+        flywheel.setPower(-1);
+
+        flywheel.update();
     }
 }

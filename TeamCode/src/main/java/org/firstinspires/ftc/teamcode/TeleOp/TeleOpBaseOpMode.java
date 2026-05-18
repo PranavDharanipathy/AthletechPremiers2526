@@ -33,16 +33,12 @@ public abstract class TeleOpBaseOpMode extends OpMode {
 
     public DcMotor left_front, right_front, left_back, right_back;
 
-    public GeneralVeloMotor transfer;
+    public DcMotor transfer;
     public DcMotor intake;
     public Blocker blocker;
-    public Lift lift;
-
     public Camera camera;
 
     public Follower follower;
-
-    public TurretBase turret;
 
     public HoodAngler hoodAngler;
 
@@ -80,11 +76,9 @@ public abstract class TeleOpBaseOpMode extends OpMode {
 
         intake = hardwareMap.get(DcMotor.class, MapSetterConstants.intakeMotorDeviceName);
 
-        transfer = new GeneralVeloMotor(hardwareMap, MapSetterConstants.transferMotorDeviceName);
+        transfer = hardwareMap.get(DcMotor.class, MapSetterConstants.transferMotorDeviceName);
 
         blocker = new Blocker(hardwareMap.get(Servo.class, MapSetterConstants.blockerServoDeviceName));
-
-        lift = new Lift(hardwareMap.get(Servo.class, MapSetterConstants.liftServoDeviceName));
 
         camera = new Camera(follower, Camera.from(hardwareMap, MapSetterConstants.limelight3AUSBDeviceName));
 
@@ -93,7 +87,6 @@ public abstract class TeleOpBaseOpMode extends OpMode {
                 hardwareMap.get(DcMotorEx.class, MapSetterConstants.rightFlywheelMotorDeviceName)
         );
 
-        turret = new TurretBase(hardwareMap);
 
         hoodAngler = new HoodAngler(hardwareMap, MapSetterConstants.hoodAnglerServoDeviceName);
 
@@ -115,12 +108,6 @@ public abstract class TeleOpBaseOpMode extends OpMode {
         intake.setDirection(ConfigurationConstants.INTAKE_MOTOR_DIRECTION);
         transfer.setDirection(ConfigurationConstants.TRANSFER_MOTOR_DIRECTION);
 
-        transfer.setVelocityPDFCoefficients(
-                ConfigurationConstants.TRANSFER_PDF_COEFFICIENTS[0],
-                ConfigurationConstants.TRANSFER_PDF_COEFFICIENTS[1],
-                ConfigurationConstants.TRANSFER_PDF_COEFFICIENTS[2]
-        );
-
         camera.setPollRateHz(CameraConstants.CAMERA_POLL_RATE);
 
         flywheel.initVoltageSensor(hardwareMap);
@@ -132,7 +119,6 @@ public abstract class TeleOpBaseOpMode extends OpMode {
         );
         flywheel.setVelocityPIDVSCoefficients(ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS);
 
-        turret.setPIDFSCoefficients(ConfigurationConstants.TURRET_PIDFS_COEFFICIENTS);
         //turret.reverse();
 
     }

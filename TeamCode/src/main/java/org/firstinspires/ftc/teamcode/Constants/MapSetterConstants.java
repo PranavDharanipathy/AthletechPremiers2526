@@ -21,7 +21,7 @@ public class MapSetterConstants {
 
     public static String turretExternalEncoderMotorPairName = "rbw";
 
-    public static String hoodAnglerServoDeviceName = "hood_angler";
+    public static String hoodAnglerServoDeviceName = "hood";
 
     public static String leftFlywheelMotorDeviceName = "left_flywheel";
     public static String rightFlywheelMotorDeviceName = "right_flywheel";
