@@ -9,5 +9,5 @@
         }
         }
     </style>
-    <line x1="0" y1="1" x2="100%" y2="1" stroke-width="60"/>
+    <line x1="0" y1="3" x2="100%" y2="3" stroke-width="6"/>
 </svg>
