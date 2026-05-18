@@ -11,6 +11,11 @@
 </p>
 
 <p align="center">
-<img src="./assets/createdBy.svg">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/createdBy/createdBy_DarkMode.svg">
+  <source media="(prefers-color-scheme: light)" srcset="assets/createdBy/createdBy_LightMode.svg">
+  <img src="assets/createdBy/createdBy_NeitherMode.svg">
+</picture>
 </p>
+
 
