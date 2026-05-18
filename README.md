@@ -1,6 +1,6 @@
-<p align="center">
+<p align="center" width="400">
 <img src="./assets/animatedLogo.gif">
-</p>
+</p> <!-- size adjusted - height automatically scales to keep aspect ratio -->
 
 <p align="center">
 <a href="https://ftcscout.org/teams/31666">

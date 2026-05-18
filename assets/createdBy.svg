@@ -15,8 +15,7 @@
         </style>
     </defs>
 
-    <text x="50%" y="50" font-size="48px" font-weight="bold">BY ATHLETECH ROBOTICS</text>
-
-    <text x="50%" y="100" font-size="42px">#31666</text>
+    <text x="50%" y="50" font-size="48px" font-weight="bold">BY ATHLETECH</text>
+    <text x="50%" y="100" font-size="48px" font-weight="bold">ROBOTICS</text>
 
 </svg>
