@@ -25,4 +25,4 @@
 # COMPETITION OVERVIEW
 
 This robot was developed for the FTC DECODE (2025-2026) Niagara Premier Event (AKA Canada Cup).
-
+<p></p>
