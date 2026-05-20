@@ -141,8 +141,6 @@ public class Shooter implements EffectivelySubsystem {
     public Pose futureRobotPose;
     public Pose currentRobotPose;
     public Pose turretPose;
-    private double turretTimeLookahead = 0;
-    private boolean shouldUseTHC = false; //initially the bot is stationary
 
     private double distanceToGoal;
 
