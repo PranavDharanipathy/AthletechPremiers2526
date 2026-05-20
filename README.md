@@ -22,7 +22,7 @@
 
 <img src="./assets/sectionSplit.svg" width="100%">
 
-# COMPETITION OVERVIEW
+<h1 align="center">COMPETITION OVERVIEW</h1>
 
 This robot was developed for the FTC DECODE (2025-2026) Niagara Premier Event (AKA Canada Cup).
 <p></p>
