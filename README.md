@@ -17,3 +17,12 @@
   <img src="assets/createdBy/createdBy_NeitherMode.svg">
 </picture>
 </p>
+
+<!-- PROMO -->
+
+<img src="./assets/sectionSplit.svg" width="100%">
+
+# COMPETITION OVERVIEW
+
+This robot was developed for the FTC DECODE (2025-2026) Niagara Premier Event (AKA Canada Cup).
+
