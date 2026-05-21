@@ -2,43 +2,21 @@ package org.firstinspires.ftc.teamcode.util;
 
 public class DynamicTrapezoidalSum {
 
-    private double sum;
+    private double sum = 0.0;
 
-    private int initialSummationStage;
-    private double initialSumAddition;
-
-    public DynamicTrapezoidalSum() {
-
-        sum = 0d;
-        initialSummationStage = 1;
-    }
-
-    private double lastY;
+    private Double lastY = null;
 
     public void updateSum(double dx, double y) {
 
-        if (initialSummationStage == 1) {
-
-            initialSumAddition = y * dx;
-            sum += initialSumAddition;
+        if (lastY == null) {
 
             lastY = y;
-
-            initialSummationStage = 2;
-
             return;
         }
 
-        if (dx != 0 && initialSummationStage == 2) {
-            sum -= initialSumAddition;
-            initialSummationStage = 0;
-        }
-
-        if (dx == 0) {
-            sum += y;
-        }
-        else {
-            sum += (dx * y) + (0.5 * dx * (lastY - y)); //adding area of trapezoid
+        if (dx != 0) {
+            //sum += (dx * y) + (0.5 * dx * (lastY - y)); (this is simplified into the line below)
+            sum += 0.5 * (lastY + y) * dx; //adding area of trapezoid
         }
 
         lastY = y;
@@ -49,7 +27,7 @@ public class DynamicTrapezoidalSum {
         if (sum == value) return;
 
         sum = value;
-        initialSummationStage = 1;
+        lastY = null;
     }
 
     public void setRawSum(double value) {
