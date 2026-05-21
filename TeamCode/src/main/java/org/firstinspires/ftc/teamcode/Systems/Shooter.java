@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.util.BetterGamepad;
 import org.firstinspires.ftc.teamcode.util.EffectivelySubsystem;
 
 import static org.firstinspires.ftc.teamcode.Constants.CameraConstants.MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY;
-import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.THC_ENGAGE_VELOCITY;
 
 import androidx.annotation.NonNull;
 

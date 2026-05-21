@@ -39,6 +39,7 @@ public class PoseVelocityTrackerTesting extends TeleOpBaseOpMode {
     public void loop() {
 
         follower.update();
+        pedroDrive.update();
 
         poseSpeedTracker.update();
 
@@ -47,35 +48,11 @@ public class PoseVelocityTrackerTesting extends TeleOpBaseOpMode {
         PoseVelocity botVel = poseSpeedTracker.getPoseVelocity();
         PoseAcceleration botAccel = poseSpeedTracker.getPoseAcceleration();
 
-        telemetry.addData("raw pose", botPose.toString());
-
-        telemetry.addData("future pose",
-                Calculations.getFutureRobotPose(
-                        1.3,
-                        botPose,
-                        botVel,
-                        ShooterConstants.THC_ACCELERATION_INFLUENCE,
-                        botAccel
-                ).toString()
-        );
-
+        telemetry.addData("bot pose", "x: %.2f, y: %.2f, heading: %.2f", botPose.getX(), botPose.getY(), botPose.getHeading());
         telemetry.addData("bot vel", "x: %.2f, y: %.2f, heading: %.2f", botVel.getXVelocity(), botVel.getYVelocity(), botVel.getAngularVelocity());
-
-        double[][] histories = poseSpeedTracker.getHistories();
-        double[] xVelHistory = histories[0];
-        double[] yHistory = histories[1];
-        double[] angHistory = histories[2];
-
-        telemetry.addData("xVelHistory", "OLD:%.2f, NEW:%.2f", xVelHistory[0], xVelHistory[1]);
-        telemetry.addData("yVelHistory", "OLD:%.2f, NEW:%.2f", yHistory[0], yHistory[1]);
-        telemetry.addData("angVelHistory", "OLD:%.2f, NEW:%.2f", angHistory[0], angHistory[1]);
-
-        telemetry.addData("xAccelHistory", "OLD:%.2f, NEW:%.2f", xVelHistory[2], xVelHistory[3]);
-        telemetry.addData("yAccelHistory", "OLD:%.2f, NEW:%.2f", yHistory[2], yHistory[3]);
-        telemetry.addData("angAccelHistory", "OLD:%.2f, NEW:%.2f", angHistory[2], angHistory[3]);
+        telemetry.addData("bot accel", "x: %.2f, y: %.2f, heading: %.2f", botAccel.getXAcceleration(), botAccel.getYAcceleration(), botAccel.getAngularAcceleration());
 
         telemetry.update();
 
-        pedroDrive.update();
     }
 }

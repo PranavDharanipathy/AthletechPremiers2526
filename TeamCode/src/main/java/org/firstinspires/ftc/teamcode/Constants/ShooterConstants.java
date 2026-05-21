@@ -32,23 +32,6 @@ public class ShooterConstants {
 
     public static double TURRET_POSITIONAL_OFFSET = -0.7893685;
 
-    /// The robot velocities must be greater than this for turret hysteresis control to be used.
-    /// <p>
-    /// Index 0 is translational, index 1 in angular (in radians).
-    /// <p>
-    /// Translational is in inches per second and angular is in radians per second.
-    public static double[] THC_ENGAGE_VELOCITY = {4, Math.toRadians(5)};
-
-    /// Scalar value representing how influential acceleration is.
-    /// <p>
-    /// Should ONLY be tuned after the rest of THC.
-    public static double THC_ACCELERATION_INFLUENCE = 0;
-
-    /// Minimum acceleration required for acceleration to be used in pose prediction for THC.
-    /// <p>
-    /// Index 0 is translational, index 1 is heading.
-    public static double[] THC_ACCELERATION_THRESHOLD = {0, 0};
-
     public static List<Double> CLOSE_HOOD_DISTANCES = new ArrayList<>();
     public static List<Double> CLOSE_HOOD_POSITIONS = new ArrayList<>();
 
