@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Constants;
 
-import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.THC_ACCELERATION_THRESHOLD;
-
 import com.pedropathing.geometry.Pose;
 
 import org.apache.commons.math3.util.FastMath;
@@ -19,6 +17,21 @@ public class Calculations {
         double yaw = Math.toRadians(pose3d.getOrientation().getYaw() - 90);
 
         return new Pose(x, y, yaw);
+    }
+
+    /// LOS is line-of-sight
+    /// @param tx is target x
+    /// @param ty is target y
+    /// @param x is your x
+    /// @param y is your y
+    /// @param vx is your x velocity
+    /// @param vy is target y velocity
+    public static double calculateLOSAngularVelocity(double tx, double ty, double x, double y, double vx, double vy) {
+
+        double dx = tx - x;
+        double dy = ty - y;
+
+        return (dx * vy - dy * vx) / (dx * dx + dy * dy);
     }
 
     /// The angle in degrees that is required for any system to look in to be pointing at the goal.
@@ -83,7 +96,12 @@ public class Calculations {
         return Math.hypot(poseVelocity.getXVelocity(), poseVelocity.getYVelocity());
     }
 
-    public static double routeTurret(double rawtt) {
+    public enum TurretRouting {REROUTE, LIMIT}
+    public static double routeTurret(double rawtt, TurretRouting routing) {
+
+        if (routing == TurretRouting.LIMIT) {
+            return MathUtil.clamp(rawtt, ShooterConstants.MIN_TURRET_POSITION_IN_DEGREES, ShooterConstants.MAX_TURRET_POSITION_IN_DEGREES);
+        }
 
         if (rawtt >= ShooterConstants.MIN_TURRET_POSITION_IN_DEGREES && rawtt <= ShooterConstants.MAX_TURRET_POSITION_IN_DEGREES) return rawtt; //no need to reroute
 

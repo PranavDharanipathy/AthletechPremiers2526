@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -7,12 +8,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Constants.Calculations;
 import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
 import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
 import org.firstinspires.ftc.teamcode.util.DynamicTrapezoidalSum;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
+import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseVelocity;
 
 import static org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants.TURRET_PD_POSITIONS;
 import static org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants.TURRET_KPS;
@@ -20,6 +23,9 @@ import static org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants.TU
 
 import static org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants.TURRET_FEEDFORWARD_POSITIONS;
 import static org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants.TURRET_KFS;
+import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.HOOD_ANGLER_MAX_POSITION;
+import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.HOOD_ANGLER_MIN_POSITION;
+import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.TURRET_TICKS_PER_DEGREE;
 
 import java.util.Collections;
 
@@ -38,7 +44,7 @@ public class TurretBase {
 
     private double iSwitch;
 
-    private DynamicTrapezoidalSum errorSum = new DynamicTrapezoidalSum();
+    private final DynamicTrapezoidalSum errorSum = new DynamicTrapezoidalSum();
 
     public double p, i, d, f, s;
 
@@ -192,7 +198,6 @@ public class TurretBase {
             kd = coefficients.kd;
         }
 
-
         kiFar = coefficients.kiFar(side);
         kiClose = coefficients.kiClose(side);
         kf = coefficients.kf(targetPosition, lastTargetPosition, startPosition, currentPosition, reversed);
@@ -213,7 +218,11 @@ public class TurretBase {
     private double currentPosition;
     private double lastCurrentPosition;
 
+    private double travelVelocity = 0;
+
     public void setPosition(double position) {
+
+        travelVelocity = 0;
 
         if (targetPosition != position) {
 
@@ -224,11 +233,42 @@ public class TurretBase {
         }
     }
 
-    public double getLastTargetPosition() {
+    public void setAim(double position, double velocityDeg) {
+
+        if (travelVelocity != velocityDeg) travelVelocity = velocityDeg;
+
+        if (targetPosition != position) {
+
+            lastTargetPosition = targetPosition;
+            targetPosition = position;
+
+            initialError = null; //null means that it's to be determined
+        }
+    }
+
+    public void setAim(double position, Pose goalCoordinate, Pose robotPose, PoseVelocity robotVelocity) {
+
+        double translationalVelocityContribution = Calculations.calculateLOSAngularVelocity(
+                goalCoordinate.getX(),
+                goalCoordinate.getY(),
+                robotPose.getX(),
+                robotPose.getY(),
+                robotVelocity.getXVelocity(),
+                robotVelocity.getYVelocity()
+        );
+
+        setAim(position, Math.toDegrees(-translationalVelocityContribution - robotVelocity.getAngularVelocity()));
+    }
+
+    public double getTravelVelocity() {
+        return travelVelocity;
+    }
+
+    public double getLastTargetSetPosition() {
         return lastTargetPosition;
     }
 
-    public double getTargetPosition() {
+    public double getTargetSetPosition() {
         return targetPosition;
     }
 
@@ -244,7 +284,7 @@ public class TurretBase {
     private Double initialError = null;
     private double prevTime, currTime;
 
-    private ElapsedTime timer = new ElapsedTime();
+    private final ElapsedTime timer = new ElapsedTime();
 
     public void update() {
 
@@ -281,8 +321,8 @@ public class TurretBase {
         d = dt > 0 && Math.abs(error) >= dActivation ? kd * filteredDerivative : 0;
 
         //feedforward
-        double reZeroedTargetPosition = targetPosition - startPosition;
-        f = kf * fDirection * (reZeroedTargetPosition - lanyardEquilibrium);
+        double reZeroedTarget = targetPosition - startPosition;
+        f = kf * fDirection * (reZeroedTarget - lanyardEquilibrium);
 
         //static friction feedforward
         s = ks * Math.signum(error != 0 ? error : initialError);
@@ -290,23 +330,11 @@ public class TurretBase {
         double rawPower = p + i + d + f + s;
         filteredPower = LowPassFilter.getFilteredValue(filteredPower, rawPower, kPowerFilter);
 
-        if (powerOverride != null) {
-            leftTurretBase.setPower(powerOverride);
-            rightTurretBase.setPower(powerOverride);
-        }
-        else {
-            leftTurretBase.setPower(filteredPower);
-            rightTurretBase.setPower(filteredPower);
-        }
+        leftTurretBase.setPower(filteredPower);
+        rightTurretBase.setPower(filteredPower);
 
         prevTime = currTime;
         prevError = error;
-    }
-
-    private Double powerOverride = null;
-
-    public void overridePower(Double power) {
-        powerOverride = power;
     }
 
     /// @return the absolute value of the error
@@ -321,10 +349,6 @@ public class TurretBase {
     /// @return What the error was when the PID started working towards the new target position
     public double getInitialError() {
         return initialError;
-    }
-
-    public double getPower() {
-        return powerOverride != null ? powerOverride : filteredPower;
     }
 
     public double[] getServoPowers() {

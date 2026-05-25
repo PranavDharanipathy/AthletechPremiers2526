@@ -158,7 +158,7 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
             telemetry.addData("flywheel target velocity", flywheel.getTargetVelocity());
 
             telemetry.addData("turret current position", turret.getCurrentPosition());
-            telemetry.addData("turret target position", turret.getTargetPosition());
+            telemetry.addData("turret target position", turret.getTargetSetPosition());
             telemetry.addData("turret position error", turret.getPositionError());
 
             telemetry.addData("p", flywheel.p);

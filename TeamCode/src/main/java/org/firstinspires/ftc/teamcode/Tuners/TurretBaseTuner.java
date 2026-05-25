@@ -115,7 +115,7 @@ public class TurretBaseTuner extends OpMode {
         telemetry.addData("s", "%.5f", turret.s);
         telemetry.addData("position error", turret.getError());
         telemetry.addData("current position", turret.getCurrentPosition());
-        telemetry.addData("target position", turret.getTargetPosition());
+        telemetry.addData("target position", turret.getTargetSetPosition());
         telemetry.addData("total power", turret.getServoPowers()[0]);
         telemetry.addData("start position", turret.startPosition);
         telemetry.update();

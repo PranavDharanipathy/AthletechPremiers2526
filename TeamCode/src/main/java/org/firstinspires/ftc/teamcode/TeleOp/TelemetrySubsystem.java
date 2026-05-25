@@ -70,7 +70,7 @@ public class TelemetrySubsystem implements EffectivelySubsystem {
         telem.addData(TelemetryMode.INFO, "flywheel target velocity", shooter.flywheel.getTargetVelocity());
 
         telem.addData(TelemetryMode.INFO, "turret target angle", shooter.tt);
-        telem.addData(TelemetryMode.INFO, "turret current angle", ((shooter.turret.getTargetPosition() - shooter.turret.startPosition) / ShooterConstants.TURRET_TICKS_PER_DEGREE) - Math.toDegrees(shooter.currentRobotPose.getHeading()));
+        telem.addData(TelemetryMode.INFO, "turret current angle", ((shooter.turret.getTargetSetPosition() - shooter.turret.startPosition) / ShooterConstants.TURRET_TICKS_PER_DEGREE) - Math.toDegrees(shooter.currentRobotPose.getHeading()));
         telem.addData(TelemetryMode.INFO, "turret position error", shooter.turret.getError());
 
         telem.addData(TelemetryMode.RAW_DATA, "current robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.currentRobotPose.getX(), shooter.currentRobotPose.getY(), Math.toDegrees(shooter.currentRobotPose.getHeading()));
@@ -85,7 +85,7 @@ public class TelemetrySubsystem implements EffectivelySubsystem {
         telem.addData(TelemetryMode.RAW_DATA, "flywheel power", shooter.flywheel.getPower());
 
         telem.addData(TelemetryMode.RAW_DATA, "turret current position", shooter.turret.getCurrentPosition());
-        telem.addData(TelemetryMode.RAW_DATA, "turret target position", shooter.turret.getTargetPosition());
+        telem.addData(TelemetryMode.RAW_DATA, "turret target position", shooter.turret.getTargetSetPosition());
 
         telem.addData(TelemetryMode.RAW_DATA, "t p", "%.5f", shooter.turret.p);
         telem.addData(TelemetryMode.RAW_DATA, "t i", "%.5f", shooter.turret.i);
