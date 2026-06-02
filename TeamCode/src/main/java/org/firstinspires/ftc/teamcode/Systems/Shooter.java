@@ -3,12 +3,15 @@ package org.firstinspires.ftc.teamcode.Systems;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants.Calculations;
 import org.firstinspires.ftc.teamcode.Constants.CameraConstants;
 import org.firstinspires.ftc.teamcode.Constants.FieldConstants;
+import org.firstinspires.ftc.teamcode.Constants.GeneralConstants;
 import org.firstinspires.ftc.teamcode.Constants.LocalizationConstants;
 import org.firstinspires.ftc.teamcode.Constants.Models;
 import org.firstinspires.ftc.teamcode.Constants.ShooterConstants;
+import org.firstinspires.ftc.teamcode.util.MathUtil;
 import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseAcceleration;
 import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseVelocity;
 import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseSpeedTracker;
@@ -154,8 +157,6 @@ public class Shooter implements EffectivelySubsystem {
         PoseAcceleration robotAcceleration = poseSpeedTracker.getPoseAcceleration();
         double translationalVelocity = Calculations.getRobotTranslationalVelocity(robotVelocity);
 
-        TurretHelper.update(turret);
-
         if (
                 performingAutomaticLocalization == 0
                 && translationalVelocity <= MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY[0]
@@ -172,6 +173,8 @@ public class Shooter implements EffectivelySubsystem {
             camera.update(controller1.main_buttonHasJustBeenPressed);
             performingAutomaticLocalization = 2;
         }
+
+        if (camera.hasJustRunMT1Localization()) controller1.rumble(GeneralConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
 
         //if (controller2.main_buttonHasJustBeenPressed) relocalization(FieldConstants.RELOCALIZATION_POSE);
 
@@ -222,7 +225,7 @@ public class Shooter implements EffectivelySubsystem {
 
         double angleToGoal = Calculations.getAngleToGoal(turretPose.getX(), turretPose.getY(), goalCoordinate);
 
-        double rawtt = angleToGoal - Math.toDegrees(robotHeadingRad);
+        double rawtt = MathUtil.normalizeAngleDeg(Math.toDegrees(robotHeadingRad) - angleToGoal);
         tt = Calculations.routeTurret(rawtt);
 
         turretAimPosition = tt * ShooterConstants.TURRET_TICKS_PER_DEGREE + turretStartPosition;

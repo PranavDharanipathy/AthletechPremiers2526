@@ -50,6 +50,7 @@ public class FlywheelTuner extends LinearOpMode {
 
     public static double VOLTAGE_COMPENSATION_WEIGHT = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.voltageCompensationWeight;
     public static double VOLTAGE_FILTER_ALPHA = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.voltageFilterAlpha;
+    public static double TUNING_VOLTAGE = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.tuningVoltage;
 
     public static double TOTAL_MASS_IN_GRAMS = ConfigurationConstants.FLYWHEEL_ASSEMBLY_TOTAL_WEIGHT;
     public static double SHAFT_DIAMETER = ConfigurationConstants.FLYWHEEL_SHAFT_DIAMETER;
@@ -108,6 +109,7 @@ public class FlywheelTuner extends LinearOpMode {
                     KI_SMASH,
                     VOLTAGE_COMPENSATION_WEIGHT,
                     VOLTAGE_FILTER_ALPHA,
+                    TUNING_VOLTAGE,
                     P_MIN, P_MAX,
                     I_MIN, I_MAX,
                     D_MIN, D_MAX

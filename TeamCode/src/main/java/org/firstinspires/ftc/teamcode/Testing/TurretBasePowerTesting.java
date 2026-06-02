@@ -16,13 +16,17 @@ public class TurretBasePowerTesting extends OpMode {
     private CRServoImplEx leftTurretBase;
     private CRServoImplEx rightTurretBase;
 
-    public static double POWER = 0;
+    public static double LEFT_POWER = 0;
+    public static double RIGHT_POWER = 0;
 
     @Override
     public void init() {
 
         leftTurretBase = hardwareMap.get(CRServoImplEx.class, MapSetterConstants.turretBaseLeftServoDeviceName);
         rightTurretBase = hardwareMap.get(CRServoImplEx.class, MapSetterConstants.turretBaseRightServoDeviceName);
+
+        leftTurretBase.setPwmEnable();
+        rightTurretBase.setPwmEnable();
 
         leftTurretBase.setPwmRange(new PwmControl.PwmRange(500, 2500));
         rightTurretBase.setPwmRange(new PwmControl.PwmRange(500, 2500));
@@ -34,7 +38,7 @@ public class TurretBasePowerTesting extends OpMode {
     @Override
     public void loop() {
 
-        leftTurretBase.setPower(POWER);
-        rightTurretBase.setPower(POWER);
+        leftTurretBase.setPower(LEFT_POWER);
+        rightTurretBase.setPower(RIGHT_POWER);
     }
 }

@@ -14,7 +14,6 @@ import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
 import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
 import org.firstinspires.ftc.teamcode.Systems.Flywheel;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
-import org.firstinspires.ftc.teamcode.util.TickrateChecker;
 
 @Config
 @TeleOp (group = "tuning")
@@ -25,13 +24,13 @@ public class FlywheelVelocityKalmanFilterTuner extends OpMode {
     public static double OUTLIER_SIGMA = ConfigurationConstants.FLYWHEEL_KALMAN_FILTER_PARAMETERS[2];
     public static double KR_INFLATION = ConfigurationConstants.FLYWHEEL_KALMAN_FILTER_PARAMETERS[3];
 
-    public static long LOOP_TIME = 70;
+    public static long LOOP_TIME = 60;
 
     public static int STAGE = 0;
 
     public static double VELOCITY = 0;
-    public static double VELOCITY_INCREMENT = 0.005;
-    public static double MAX_VELOCITY = 520_000;
+    public static double VELOCITY_INCREMENT = 50;
+    public static double MAX_VELOCITY = 2000;
     private int velDirection = 1;
 
     private double vel;
@@ -65,8 +64,6 @@ public class FlywheelVelocityKalmanFilterTuner extends OpMode {
     @Override
     public void loop() {
 
-        double dt = TickrateChecker.getTimePerTick();
-
         // updates constants
         flywheel.getEncoder().setupVelocityKalmanFilter(new double[] {Q, R, OUTLIER_SIGMA, KR_INFLATION});
 
@@ -93,7 +90,7 @@ public class FlywheelVelocityKalmanFilterTuner extends OpMode {
         telemetry.addData("estimated velocity", flywheel.getVelocityEstimate());
         telemetry.addData("real velocity", flywheel.getEncoder().getFilteredVelocity());
 
-        telemetry.addData("dt", dt);
+        telemetry.addData("dt", flywheel.getLoopDt());
         telemetry.update();
 
         sleep(LOOP_TIME);

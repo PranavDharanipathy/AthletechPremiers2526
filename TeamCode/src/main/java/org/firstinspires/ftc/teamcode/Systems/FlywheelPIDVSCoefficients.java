@@ -21,6 +21,7 @@ public class FlywheelPIDVSCoefficients {
 
     public double voltageCompensationWeight;
     public double voltageFilterAlpha;
+    public double tuningVoltage;
 
     public double minP, maxP;
     public double minI, maxI;
@@ -46,6 +47,7 @@ public class FlywheelPIDVSCoefficients {
             double kISmash,
             double voltageCompensationWeight,
             double voltageFilterAlpha,
+            double tuningVoltage,
             double minP,
             double maxP,
             double minI,
@@ -74,6 +76,7 @@ public class FlywheelPIDVSCoefficients {
 
         this.voltageCompensationWeight = voltageCompensationWeight;
         this.voltageFilterAlpha = voltageFilterAlpha;
+        this.tuningVoltage = tuningVoltage;
 
         this.minP = minP;
         this.maxP = maxP;
@@ -99,6 +102,7 @@ public class FlywheelPIDVSCoefficients {
             double kISmash,
             double voltageCompensationWeight,
             double voltageFilterAlpha,
+            double tuningVoltage,
             double minP,
             double maxP,
             double minI,
@@ -127,6 +131,7 @@ public class FlywheelPIDVSCoefficients {
 
         this.voltageCompensationWeight = voltageCompensationWeight;
         this.voltageFilterAlpha = voltageFilterAlpha;
+        this.tuningVoltage = tuningVoltage;
 
         this.minP = minP;
         this.maxP = maxP;
@@ -161,10 +166,10 @@ public class FlywheelPIDVSCoefficients {
     private Double filteredVoltage = null;
 
     /// Run every loop
-    public double kv(double currentVoltage, double startingVoltage) {
+    public double kv(double currentVoltage) {
 
-        if (filteredVoltage == null) { //set to starting voltage if there is no voltage previously set
-            filteredVoltage = startingVoltage;
+        if (filteredVoltage == null) { //set to tuning voltage if there is no voltage previously set
+            filteredVoltage = tuningVoltage;
         }
         else {
             filteredVoltage = LowPassFilter.getFilteredValue(filteredVoltage, currentVoltage, voltageFilterAlpha);
@@ -172,7 +177,7 @@ public class FlywheelPIDVSCoefficients {
 
         if (tuning) return unscaledKv;
 
-        double scaledKv = (startingVoltage / filteredVoltage) * unscaledKv;
+        double scaledKv = (tuningVoltage / filteredVoltage) * unscaledKv;
 
         return LowPassFilter.getFilteredValue(unscaledKv, scaledKv, voltageCompensationWeight);
     }

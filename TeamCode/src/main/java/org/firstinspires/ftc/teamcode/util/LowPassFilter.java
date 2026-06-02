@@ -6,4 +6,8 @@ public class LowPassFilter {
     public static double getFilteredValue(double previousFiltered, double raw, double alpha) {
         return ((1.0 - alpha) * previousFiltered) + alpha * raw;
     }
+
+    public static double getFilteredValue(double previousFiltered, double raw, double alphaPrevious, double alphaRaw) {
+        return (alphaPrevious * previousFiltered) + (alphaRaw * raw);
+    }
 }

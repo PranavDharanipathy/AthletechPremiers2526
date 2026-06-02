@@ -1,16 +1,12 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
-import com.qualcomm.robotcore.hardware.CRServoImplEx;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PwmControl;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
-import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
+import org.firstinspires.ftc.teamcode.Constants.ShooterConstants;
 import org.firstinspires.ftc.teamcode.util.DynamicTrapezoidalSum;
-import org.firstinspires.ftc.teamcode.util.Encoder;
 import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
@@ -25,26 +21,32 @@ import java.util.Collections;
 
 public class TurretBase {
 
-    private final CRServoImplEx leftTurretBase, rightTurretBase;
-    private final Encoder encoder;
+    private final TurretActuator turretActuator;
 
-    public double kp, kiFar, kiClose, kd, ks, kISmash, kDFilter, kPowerFilter, lanyardEquilibrium;
-    public double ki, kf;
+    public TurretActuator getActuator() {
+        return turretActuator;
+    }
+
+    public double kp, kiFar, kiClose, kd, kISmash, kDFilter, kVelocityFilter;
+    public double ki, kHold;
+    public double holdDecay;
 
     private double maxI = 1;
     private double minI = -1;
 
-    public double dActivation = 0;
+    public double[] dActivation = {0, (double) Integer.MAX_VALUE};
 
     private double iSwitch;
 
     private DynamicTrapezoidalSum errorSum = new DynamicTrapezoidalSum();
 
-    public double p, i, d, f, s;
+    public double p, i, d, f;
 
     public double filteredDerivative = 0;
 
-    public double filteredPower = 0;
+    public double filteredTargetVelocity = 0;
+
+    private VoltageSensor batteryVoltageSensor;
 
     public TurretBase(HardwareMap hardwareMap) {
 
@@ -54,20 +56,13 @@ public class TurretBase {
     /// @param turretStartPosition for re-zeroing the turret compensating for the home position not always being at 0
     public TurretBase(HardwareMap hardwareMap, Double turretStartPosition) {
 
-        leftTurretBase = hardwareMap.get(CRServoImplEx.class, MapSetterConstants.turretBaseLeftServoDeviceName);
-        rightTurretBase = hardwareMap.get(CRServoImplEx.class, MapSetterConstants.turretBaseRightServoDeviceName);
+        turretActuator = new TurretActuator(hardwareMap);
+        turretActuator.setSMode(TurretActuator.SMode.POSITION_ERROR);
 
-        leftTurretBase.setDirection(ConfigurationConstants.TURRET_BASE_DIRECTIONS[0]);
-        rightTurretBase.setDirection(ConfigurationConstants.TURRET_BASE_DIRECTIONS[1]);
-
-        leftTurretBase.setPwmRange(new PwmControl.PwmRange(500d, 2500d));
-        rightTurretBase.setPwmRange(new PwmControl.PwmRange(500d, 2500d));
-
-        encoder = new Encoder(hardwareMap.get(DcMotorEx.class, MapSetterConstants.turretExternalEncoderMotorPairName));
-        encoder.setDirection(Encoder.Direction.REVERSE);
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         // first targetPosition is the start position
-        double tsp = turretStartPosition != null ? turretStartPosition : encoder.getCurrentPosition();
+        double tsp = turretStartPosition != null ? turretStartPosition : turretActuator.getStartPosition();
         lastCurrentPosition = currentPosition = lastTargetPosition = targetPosition = startPosition = tsp;
     }
 
@@ -78,10 +73,9 @@ public class TurretBase {
     /// Call after setting PIDFS coefficients
     public void reverse() {
 
-        DcMotorSimple.Direction direction = leftTurretBase.getDirection() == DcMotorSimple.Direction.FORWARD ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD;
+        DcMotorSimple.Direction direction = turretActuator.getDirection() == DcMotorSimple.Direction.FORWARD ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD;
 
-        leftTurretBase.setDirection(direction);
-        rightTurretBase.setDirection(direction);
+        turretActuator.setDirection(direction);
 
         TURRET_PD_POSITIONS.replaceAll(i -> -i);
         TURRET_FEEDFORWARD_POSITIONS.replaceAll(i -> -i);
@@ -98,20 +92,42 @@ public class TurretBase {
         fDirection = -1;
     }
 
-    private TurretBasePIDFSCoefficients coefficients;
+    public void setVelocityCoefficients(double[] velocityCoefficients) {
 
-    public void setPIDFSCoefficients(TurretBasePIDFSCoefficients coefficients) {
+        turretActuator.setPIDVSCoefficients(
+                velocityCoefficients[0],
+                velocityCoefficients[1],
+                velocityCoefficients[2],
+                velocityCoefficients[3],
+                velocityCoefficients[4],
+                velocityCoefficients[5],
+                velocityCoefficients[6],
+                velocityCoefficients[7],
+                velocityCoefficients[8],
+                velocityCoefficients[9],
+                velocityCoefficients[10],
+                velocityCoefficients[11],
+                velocityCoefficients[12],
+                velocityCoefficients[13],
+                velocityCoefficients[14],
+                velocityCoefficients[15],
+                velocityCoefficients[16]
+        );
+    }
+
+    public TurretBasePIDFCoefficients coefficients;
+
+    public void setPositionalCoefficients(TurretBasePIDFCoefficients coefficients) {
 
         this.coefficients = coefficients;
 
         //setting variables that do not change
 
+        holdDecay = coefficients.holdDecay;
 
-        ks = coefficients.ks;
+        kVelocityFilter = coefficients.kVelocityFilter;
 
-        kPowerFilter = coefficients.kPowerFilter;
-
-        lanyardEquilibrium = coefficients.lanyardEquilibrium;
+        dActivation = coefficients.dActivation;
 
         minI = coefficients.minI;
         maxI = coefficients.maxI;
@@ -120,11 +136,7 @@ public class TurretBase {
     /// @param tuning true means that turret's in tuning mode while false means that turret is in normal mode.
     /// If the object isn't initialized, nothing will happen and the method will deal with the error.
     public void setTuning(boolean tuning) {
-
-        try {
-            coefficients.setTuning(tuning);
-        }
-        catch (Exception ignore) {}
+        coefficients.setTuning(tuning);
     }
 
     public enum PD_INTERPOLATION_MODE {
@@ -168,42 +180,29 @@ public class TurretBase {
     }
 
     /// Setting variables that do in fact change
-    private void chooseCoefficientsInternal(TurretBasePIDFSCoefficients.TurretSide side) {
+    private void chooseCoefficientsInternal(TurretBasePIDFCoefficients.TurretSide side) {
 
         if (pdInterpolationMode.equals(PD_INTERPOLATION_MODE.BOTH)) {
 
-            double[] kpAndKd = coefficients.kpAndKd(targetPosition, startPosition);
+            double[] kpAndKd = coefficients.kpAndKd(targetPosition, currentPosition, startPosition);
             kp = kpAndKd[0];
             kd = kpAndKd[1];
         }
-        else if (pdInterpolationMode.equals(PD_INTERPOLATION_MODE.P)) {
+        else { //if pdInterpolationMode equals PD_INTERPOLATION_MODE.P, PD_INTERPOLATION_MODE.D, or PD_INTERPOLATION_MODE.NONE
 
-            kp = coefficients.kp(targetPosition, startPosition);
-            kd = coefficients.kd;
+            kp = coefficients.kp(targetPosition, currentPosition, startPosition);
+            kd = coefficients.kd(targetPosition, currentPosition, startPosition);
         }
-        else if(pdInterpolationMode.equals(PD_INTERPOLATION_MODE.D)) {
-
-            kp = coefficients.kp;
-            kd = coefficients.kd(targetPosition, startPosition);
-        }
-        else { //if pdInterpolationMode equals PD_INTERPOLATION_MODE.NONE
-
-            kp = coefficients.kp;
-            kd = coefficients.kd;
-        }
-
 
         kiFar = coefficients.kiFar(side);
         kiClose = coefficients.kiClose(side);
-        kf = coefficients.kf(targetPosition, lastTargetPosition, startPosition, currentPosition, reversed);
+        kHold = coefficients.kHold(targetPosition, startPosition, batteryVoltageSensor.getVoltage());
 
         kDFilter = coefficients.kDFilter(side);
 
         iSwitch = coefficients.iSwitch(side);
 
         kISmash = coefficients.kISmash(side);
-
-        dActivation = coefficients.dActivation(side);
     }
 
     public double startPosition;
@@ -237,14 +236,14 @@ public class TurretBase {
     }
 
     public double getCurrentPosition() {
-        return encoder.getCurrentPosition();
+        return turretActuator.getCurrentPosition();
     }
 
     private double prevError, error;
     private Double initialError = null;
     private double prevTime, currTime;
 
-    private ElapsedTime timer = new ElapsedTime();
+    private final ElapsedTime timer = new ElapsedTime();
 
     public void update() {
 
@@ -258,7 +257,7 @@ public class TurretBase {
 
         if (initialError == null) initialError = error;
 
-        chooseCoefficientsInternal(TurretBasePIDFSCoefficients.TurretSide.getSide(targetPosition, startPosition, reversed));
+        chooseCoefficientsInternal(TurretBasePIDFCoefficients.TurretSide.getSide(targetPosition, startPosition, reversed));
 
         //proportional
         p = kp * error;
@@ -268,7 +267,7 @@ public class TurretBase {
         else ki = kiFar;
 
         if (dt != 0) errorSum.updateSum(dt, error);
-        if (Math.signum(error) != Math.signum(prevError) && error != 0) {
+        if (Math.signum(error) != Math.signum(prevError)) {
             errorSum.setSum(errorSum.getSum() * kISmash);
         }
         errorSum.setRawSum(MathUtil.clamp(errorSum.getSum(), (minI / ki) /*integrated error min*/, (maxI / ki) /*integrated error max*/));
@@ -278,39 +277,24 @@ public class TurretBase {
         //derivative
         double rawDerivative = (error - prevError) / dt;
         filteredDerivative = LowPassFilter.getFilteredValue(filteredDerivative, rawDerivative, kDFilter);
-        d = dt > 0 && Math.abs(error) >= dActivation ? kd * filteredDerivative : 0;
+        d = dt > 0 && MathUtil.valueWithinRange(Math.abs(error), dActivation[0], dActivation[1]) ? kd * filteredDerivative : 0;
 
         //feedforward
-        double reZeroedTargetPosition = targetPosition - startPosition;
-        f = kf * fDirection * (reZeroedTargetPosition - lanyardEquilibrium);
+        f = kHold * Math.signum(error) * (1.0 - Math.exp(-Math.abs(error) / (holdDecay * ShooterConstants.TURRET_TICKS_PER_DEGREE)));
 
-        //static friction feedforward
-        s = ks * Math.signum(error != 0 ? error : initialError);
+        double rawTargetVelocity = p + i + d;
+        filteredTargetVelocity = LowPassFilter.getFilteredValue(filteredTargetVelocity, rawTargetVelocity, kVelocityFilter);
 
-        double rawPower = p + i + d + f + s;
-        filteredPower = LowPassFilter.getFilteredValue(filteredPower, rawPower, kPowerFilter);
-
-        if (powerOverride != null) {
-            leftTurretBase.setPower(powerOverride);
-            rightTurretBase.setPower(powerOverride);
-        }
-        else {
-            leftTurretBase.setPower(filteredPower);
-            rightTurretBase.setPower(filteredPower);
-        }
+        turretActuator.providePositionError(error);
+        turretActuator.setVelocity(filteredTargetVelocity);
+        turretActuator.setAdditionalPower(f);
+        turretActuator.update();
 
         prevTime = currTime;
         prevError = error;
     }
 
-    private Double powerOverride = null;
-
-    public void overridePower(Double power) {
-        powerOverride = power;
-    }
-
-    /// @return the absolute value of the error
-    public double getPositionError() {
+    public double getErrorMagnitude() {
         return Math.abs(error);
     }
 
@@ -318,23 +302,24 @@ public class TurretBase {
         return error;
     }
 
-    /// @return What the error was when the PID started working towards the new target position
+    /// @return What the error was initially when the PID started working towards the new target position
     public double getInitialError() {
         return initialError;
     }
 
+    public double getTargetVelocity() {
+        return filteredTargetVelocity;
+    }
+    public double getVelocity() {
+        return turretActuator.getCurrentVelocity();
+    }
+
     public double getPower() {
-        return powerOverride != null ? powerOverride : filteredPower;
+        return turretActuator.getPower();
     }
 
     public double[] getServoPowers() {
-        return new double[] {leftTurretBase.getPower(), rightTurretBase.getPower()};
-    }
-
-    /// Sets the power to zero for this instance, if the update function sets power later, that power will be set.
-    public void stopTurret() {
-        leftTurretBase.setPower(0);
-        rightTurretBase.setPower(0);
+        return new double[] {turretActuator.getLeftTurretBase().getPower(), turretActuator.getRightTurretBase().getPower()};
     }
 
 }

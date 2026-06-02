@@ -5,42 +5,41 @@ import static org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants.TU
 import static org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants.TURRET_KFS;
 import static org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants.TURRET_PD_POSITIONS;
 import static org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants.TURRET_FEEDFORWARD_POSITIONS;
-import static org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants.TURRET_KF_RESISTANCE_ENGAGE_ERROR;
-
-import androidx.annotation.Nullable;
 
 import org.firstinspires.ftc.teamcode.util.InterpolationData;
+import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 /// Easier usage of the coefficients for the left and right sides of the robot.
-public class TurretBasePIDFSCoefficients {
+public class TurretBasePIDFCoefficients {
 
-    public double kp;
+    public double kpFar, kpClose;
     public double lkiFar, rkiFar;
     public double lkiClose, rkiClose;
-    public double kd;
-    public Double kf;
-    public double ks;
+    public double kdFar, kdClose;
+    public double unscaledKHold;
 
+    public double pSwitch;
     public double lISwitch, rISwitch;
+    public double dSwitch;
 
     public double lkISmash, rkISmash;
 
-    public double lDActivation, rDActivation;
+    public double[] dActivation;
     public double lkDFilter, rkDFilter;
 
-    public double kPowerFilter;
+    public double kVelocityFilter;
 
-    public double lanyardEquilibrium;
-
-    public double[] kFResistance;
+    public double holdDecay;
+    public double tuningVoltage;
+    public double voltageFilterAlpha;
 
     public double minI, maxI;
 
     private boolean tuning = false;
 
     /// @param tuning true means that turret's in tuning mode while false means that turret is in normal mode.
-    public TurretBasePIDFSCoefficients withTuning(boolean tuning) {
+    public TurretBasePIDFCoefficients withTuning(boolean tuning) {
         this.tuning = tuning;
         return this;
     }
@@ -53,25 +52,30 @@ public class TurretBasePIDFSCoefficients {
     /// Index 0: left
     /// <p>
     /// Index 1: right
-    public TurretBasePIDFSCoefficients(
-            double kp,
+    public TurretBasePIDFCoefficients(
+            double kpFar,
+            double kpClose,
             double[] kiFar,
             double[] kiClose,
-            double kd,
-            @Nullable Double kf,
-            double ks,
+            double kdFar,
+            double kdClose,
+            double kHold,
+            double pSwitch,
             double[] iSwitch,
+            double dSwitch,
             double[] kISmash,
             double[] dActivation,
             double[] kDFilter,
-            double kPowerFilter,
-            double[] kFResistance,
-            double lanyardEquilibrium,
+            double kVelocityFilter,
+            double holdDecay,
+            double tuningVoltage,
+            double voltageFilterAlpha,
             double minI,
             double maxI
     ) {
 
-        this.kp = kp;
+        this.kpFar = kpFar;
+        this.kpClose = kpClose;
 
         lkiFar = kiFar[0];
         rkiFar = kiFar[1];
@@ -79,28 +83,31 @@ public class TurretBasePIDFSCoefficients {
         lkiClose = kiClose[0];
         rkiClose = kiClose[1];
 
-        this.kd = kd;
+        this.kdFar = kdFar;
+        this.kdClose = kdClose;
 
-        this.kf = kf;
-        this.ks = ks;
+        this.unscaledKHold = kHold;
+
+        this.pSwitch = pSwitch;
 
         lISwitch = iSwitch[0];
         rISwitch = iSwitch[1];
 
+        this.dSwitch = dSwitch;
+
         lkISmash = kISmash[0];
         rkISmash = kISmash[1];
 
-        lDActivation = dActivation[0];
-        rDActivation = dActivation[1];
+        this.dActivation = dActivation;
 
         lkDFilter = kDFilter[0];
         rkDFilter = kDFilter[1];
 
-        this.kPowerFilter = kPowerFilter;
+        this.kVelocityFilter = kVelocityFilter;
 
-        this.kFResistance = kFResistance;
-
-        this.lanyardEquilibrium = lanyardEquilibrium;
+        this.holdDecay = holdDecay;
+        this.tuningVoltage = tuningVoltage;
+        this.voltageFilterAlpha = voltageFilterAlpha;
 
         this.minI = minI;
         this.maxI = maxI;
@@ -118,9 +125,10 @@ public class TurretBasePIDFSCoefficients {
         }
     }
 
-    public double kp(double targetPosition, double startPosition) {
+    public double kp(double targetPosition, double currentPosition, double startPosition) {
 
-        if (tuning) return kp;
+        double error = targetPosition - currentPosition;
+        if (tuning) return Math.abs(error) < pSwitch ? kpClose : kpFar;
 
         double reZeroedTargetPosition = targetPosition - startPosition;
 
@@ -144,9 +152,10 @@ public class TurretBasePIDFSCoefficients {
         return side == TurretSide.LEFT ? lkiClose : rkiClose;
     }
 
-    public double kd(double targetPosition, double startPosition) {
+    public double kd(double targetPosition, double currentPosition, double startPosition) {
 
-        if (tuning) return kd;
+        double error = targetPosition - currentPosition;
+        if (tuning) return (Math.abs(error) < dSwitch ? kdClose : kdFar);
 
         double reZeroedTargetPosition = targetPosition - startPosition;
 
@@ -162,35 +171,32 @@ public class TurretBasePIDFSCoefficients {
         return TURRET_KDS.get(TURRET_KDS.size() - 1);
     }
 
-    public double kFResistanceTargetPosition = 0;
+    /// Must be run ever loop.
+    public double kHold(double targetPosition, double startPosition, double batteryVoltage) {
 
-    public double kf(double targetPosition, double lastTargetPosition, double startPosition, double currentPosition, boolean reversed) {
-
-        boolean reversalNeeded = kfReversalNeeded(targetPosition, lastTargetPosition, startPosition, reversed);
-
-        double reversingValue = reversalNeeded && Math.abs(targetPosition - currentPosition) >= TURRET_KF_RESISTANCE_ENGAGE_ERROR ? kFResistance[0] : 1;
-
-        if (reversingValue == kFResistance[0]) {
-            kFResistanceTargetPosition = targetPosition;
-        }
-        else if (targetPosition == kFResistanceTargetPosition && reversingValue == 1) {
-            reversingValue = kFResistance[0];
-        }
+        if (tuning) return scaleKHold(unscaledKHold, batteryVoltage);
 
         double reZeroedTargetPosition = targetPosition - startPosition;
 
-        if (kf != null) return kf;
-
         if (MathUtil.valueWithinRangeIncludingPoles(reZeroedTargetPosition, TURRET_FEEDFORWARD_POSITIONS.get(0), TURRET_FEEDFORWARD_POSITIONS.get(TURRET_FEEDFORWARD_POSITIONS.size() - 1))) {
-            return reversingValue * getKfFromInterpolation(reZeroedTargetPosition);
+            return scaleKHold(getKfFromInterpolation(reZeroedTargetPosition), batteryVoltage);
         }
 
         if (reZeroedTargetPosition < TURRET_FEEDFORWARD_POSITIONS.get(0)) {
-            return reversingValue * TURRET_KFS.get(0);
+            return scaleKHold(TURRET_KFS.get(0), batteryVoltage);
         }
 
         //re-zeroed target position greater than the largest re-zeroed target position in the list
-        return reversingValue * TURRET_KFS.get(TURRET_KFS.size() - 1);
+        return scaleKHold(TURRET_KFS.get(TURRET_KFS.size() - 1), batteryVoltage);
+    }
+
+    public double filteredVoltage = 0;
+
+    private double scaleKHold(double unscaledKf, double batteryVoltage) {
+
+        filteredVoltage = LowPassFilter.getFilteredValue(filteredVoltage, batteryVoltage, voltageFilterAlpha);
+
+        return (tuningVoltage / batteryVoltage) * unscaledKf;
     }
 
     public double iSwitch(TurretSide side) {
@@ -199,10 +205,6 @@ public class TurretBasePIDFSCoefficients {
 
     public double kISmash(TurretSide side) {
         return side == TurretSide.LEFT ? lkISmash : rkISmash;
-    }
-
-    public double dActivation(TurretSide side) {
-        return side == TurretSide.LEFT ? lDActivation : rDActivation;
     }
 
     public double kDFilter(TurretSide side) {
@@ -355,9 +357,15 @@ public class TurretBasePIDFSCoefficients {
     }
 
     /// @return A double array with index 0 being kp and index 1 being kd
-    public double[] kpAndKd(double targetPosition, double startPosition) {
+    public double[] kpAndKd(double targetPosition, double currentPosition, double startPosition) {
 
-        if (tuning) return new double[] {kp, kd};
+        if (tuning) {
+            double errorMag = Math.abs(targetPosition - currentPosition);
+            return new double[] {
+                    (errorMag < pSwitch ? kpClose : kpFar),
+                    (errorMag < dSwitch ? kdClose : kdFar)
+            };
+        }
 
         double reZeroedTargetPosition = targetPosition - startPosition;
 

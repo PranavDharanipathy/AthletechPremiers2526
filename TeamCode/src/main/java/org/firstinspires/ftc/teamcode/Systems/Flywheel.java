@@ -22,7 +22,6 @@ public final class Flywheel {
     private final DcMotorEx rightFlywheel; //follows leftFlywheel
 
     private VoltageSensor batteryVoltageSensor;
-    private double startingVoltage;
 
     public Flywheel(DcMotorEx leftFlywheel, DcMotorEx rightFlywheel) {
 
@@ -32,20 +31,18 @@ public final class Flywheel {
         this.leftFlywheel.setDirection(ConfigurationConstants.FLYWHEEL_MOTOR_DIRECTIONS[0]);
         this.rightFlywheel.setDirection(ConfigurationConstants.FLYWHEEL_MOTOR_DIRECTIONS[1]);
 
-        encoder = new Encoder(this.rightFlywheel);
+        encoder = new Encoder(this.leftFlywheel);
         encoder.setDirection(Encoder.Direction.FORWARD);
 
         encoder.setupVelocityKalmanFilter(ConfigurationConstants.FLYWHEEL_KALMAN_FILTER_PARAMETERS);
 
-        this.leftFlywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.leftFlywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.rightFlywheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     }
 
     public void initVoltageSensor(HardwareMap hardwareMap) {
-
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
-        startingVoltage = batteryVoltageSensor.getVoltage();
     }
 
     public double kp;
@@ -131,12 +128,12 @@ public final class Flywheel {
 
         ki = coefficients.ki(targetVelocity, currentVelocity, errorSum);
 
-        kv = coefficients.kv(batteryVoltageSensor.getVoltage(), startingVoltage);
+        kv = coefficients.kv(batteryVoltageSensor.getVoltage());
     }
 
     private double currentTime = 0;
 
-    private double prevTime = 0, prevError = 0;
+    private double prevTime = 0, prevError = 0, error;
 
     /// @param velocity in ticks per second
     public void setVelocity(double velocity, boolean allowIntegralReset) {
@@ -180,11 +177,10 @@ public final class Flywheel {
 
         lastCurrentVelocity = currentVelocity;
         velocityEstimate = (position - lastPosition) / dt;
-        //currentVelocity = velocityEstimate;
         encoder.runVelocityCalculation(velocityEstimate);
         currentVelocity = encoder.getFilteredVelocity();
 
-        double error = targetVelocity - currentVelocity;
+        error = targetVelocity - currentVelocity;
 
         //proportional
         p = kp * error;
@@ -274,6 +270,10 @@ public final class Flywheel {
 
     public double getLastCurrentVelocity() {
         return lastCurrentVelocity;
+    }
+
+    public double getError() {
+        return error;
     }
 
     public double getTargetVelocity() {

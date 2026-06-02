@@ -33,7 +33,7 @@ public class Camera {
                 }
             }
 
-            if (localizationStep == 4) {
+            if (localizationStep == CameraConstants.MT1_LOCALIZATION_STEPS+1) {
                 return SUCCESSFUL;
             }
 
@@ -164,7 +164,7 @@ public class Camera {
 
             Pose mt1Pose = Calculations.convertPose3DtoPedroPose(llResult.getBotpose());
 
-            if (mt1LocalizationStep == null /*failed*/ || mt1LocalizationStep > CameraConstants.MT1_LOCALIZATION_STEPS /*completed*/) {
+            if (mt1LocalizationStep == null /*failed*/ || mt1LocalizationStep == CameraConstants.MT1_LOCALIZATION_STEPS+1 /*completed*/) {
                 filteredMT1BotPose = mt1Pose;
                 mt1LocalizationStep = 1;
             }
@@ -192,8 +192,13 @@ public class Camera {
     private boolean localizeMT1 = false;
     public boolean hasRunOrRunningMT1Localization() { return localizeMT1; }
 
+    private boolean justRunMT1Localization = false;
+    public boolean hasJustRunMT1Localization() { return justRunMT1Localization; }
+
     private MT1LocalizationOutcome mt1LocalizationOutcome = MT1LocalizationOutcome.PENDING;
     private void relocalizeMT1(boolean trigger, Consumer<Pose>[] poseFunctionsOnMT1Relocalization) {
+
+        justRunMT1Localization = false;
 
         if (trigger) localizeMT1 = true;
 
@@ -201,9 +206,13 @@ public class Camera {
 
             Integer localizationStep = localizeFollower(poseFunctionsOnMT1Relocalization);
 
-            if (localizationStep == null || localizationStep > CameraConstants.MT1_LOCALIZATION_STEPS) {
+            if (localizationStep == null || localizationStep > CameraConstants.MT1_LOCALIZATION_STEPS+1) {
                 mt1LocalizationOutcome = mt1LocalizationOutcome.transition(localizationStep);
                 localizeMT1 = false;
+            }
+
+            if (localizationStep != null && localizationStep > CameraConstants.MT1_LOCALIZATION_STEPS) {
+                justRunMT1Localization = true;
             }
         }
     }

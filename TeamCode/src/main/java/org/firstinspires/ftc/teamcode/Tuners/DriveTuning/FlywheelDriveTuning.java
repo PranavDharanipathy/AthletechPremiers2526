@@ -4,9 +4,12 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
+import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
+import org.firstinspires.ftc.teamcode.Systems.Blocker;
 import org.firstinspires.ftc.teamcode.Systems.FlywheelPIDVSCoefficients;
 import org.firstinspires.ftc.teamcode.TeleOp.PostAutonomousRobotReset;
 import org.firstinspires.ftc.teamcode.TeleOp.TeleOpBaseOpMode;
@@ -28,24 +31,31 @@ public class FlywheelDriveTuning extends TeleOpBaseOpMode {
     public static double KI_SMASH = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.kISmash;
     public static double VOLTAGE_COMPENSATION_WEIGHT = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.voltageCompensationWeight;
     public static double VOLTAGE_FILTER_ALPHA = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.voltageFilterAlpha;
+    public static double TUNING_VOLTAGE = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.tuningVoltage;
+
     public static double D_MIN = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.minD, D_MAX = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.maxD;
     public static double I_MIN = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.minI, I_MAX = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.maxI;
     public static double P_MIN = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.minP, P_MAX = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.maxP;
 
-    public static double TRANSFER_VELOCITY = 1850;
-    public static double INTAKE_POWER = 1;
+    public static double INTAKE_VELOCITY = 2100;
     public static double FLYWHEEL_VELOCITY = 0;
     public static double HOOD_POSITION = 0.2;
+
+    public static boolean SHOOT = false;
 
     private Telemetry telemetry;
 
     private FlywheelPIDVSCoefficients coefficients = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS;
+
+    private Blocker blocker;
 
     @Override
     public void init() {
 
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
+        blocker = new Blocker(hardwareMap.get(Servo.class, MapSetterConstants.blockerServoDeviceName));
+        
         initializeDevices();
 
         applyComponentTraits();
@@ -77,6 +87,7 @@ public class FlywheelDriveTuning extends TeleOpBaseOpMode {
                 KI_SMASH,
                 VOLTAGE_COMPENSATION_WEIGHT,
                 VOLTAGE_FILTER_ALPHA,
+                TUNING_VOLTAGE,
                 P_MIN, P_MAX,
                 I_MIN, I_MAX,
                 D_MIN, D_MAX
@@ -85,20 +96,24 @@ public class FlywheelDriveTuning extends TeleOpBaseOpMode {
         flywheel.setVelocityPIDVSCoefficients(coefficients);
 
         hoodAngler.setPosition(HOOD_POSITION);
-        intake.setPower(INTAKE_POWER);
-        transfer.setVelocity(TRANSFER_VELOCITY);
+        blocker.setState(SHOOT ? Blocker.BlockerState.CLEAR : Blocker.BlockerState.BLOCK);
+        intake.setTransferVelocity(INTAKE_VELOCITY);
+        intake.update();
         flywheel.setVelocity(FLYWHEEL_VELOCITY, true);
-        transfer.update();
         flywheel.update();
 
-        telemetry.addData("Target Velocity", flywheel.getTargetVelocity());
-        telemetry.addData("Real Velocity", flywheel.getCurrentVelocity());
+        telemetry.addData("target velocity", flywheel.getTargetVelocity());
+        telemetry.addData("current velocity", flywheel.getCurrentVelocity());
         telemetry.addData("p", "%.5f", flywheel.p);
         telemetry.addData("i", "%.5f", flywheel.i);
         telemetry.addData("d", "%.5f", flywheel.d);
         telemetry.addData("v", "%.5f", flywheel.v);
 
         telemetry.addData("flywheel power", "%.5f", flywheel.getPower());
+
+        telemetry.addData("is kp far being used", flywheel.getError() > P_SWITCH);
+        telemetry.addData("is kp far being used (graphics)", flywheel.getError() > P_SWITCH ? 1 : 0);
+
         telemetry.update();
     }
 

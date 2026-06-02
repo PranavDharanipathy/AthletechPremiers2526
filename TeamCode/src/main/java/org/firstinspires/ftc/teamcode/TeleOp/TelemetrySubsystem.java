@@ -43,17 +43,17 @@ public class TelemetrySubsystem implements EffectivelySubsystem {
 
     public void runInstance(Shooter shooter, PedroDrive pedroDrive) {
 
-        if (controller2.right_bumperHasJustBeenPressed) {
-
-            telem.clearAll();
-
-            if (telem.getTelemetryModes().contains(TelemetryMode.INFO)) {
-                telem.setTelemetryModes(TelemetryMode.RAW_DATA);
-            }
-            else {
-                telem.setTelemetryModes(TelemetryMode.INFO);
-            }
-        }
+//        if (controller2.right_bumperHasJustBeenPressed) {
+//
+//            telem.clearAll();
+//
+//            if (telem.getTelemetryModes().contains(TelemetryMode.INFO)) {
+//                telem.setTelemetryModes(TelemetryMode.RAW_DATA);
+//            }
+//            else {
+//                telem.setTelemetryModes(TelemetryMode.INFO);
+//            }
+//        }
 
         telem.addData("Tick rate", TickrateChecker.getTimePerTick());
 
@@ -70,7 +70,6 @@ public class TelemetrySubsystem implements EffectivelySubsystem {
         telem.addData(TelemetryMode.INFO, "flywheel target velocity", shooter.flywheel.getTargetVelocity());
 
         telem.addData(TelemetryMode.INFO, "turret target angle", shooter.tt);
-        telem.addData(TelemetryMode.INFO, "turret current angle", ((shooter.turret.getTargetPosition() - shooter.turret.startPosition) / ShooterConstants.TURRET_TICKS_PER_DEGREE) - Math.toDegrees(shooter.currentRobotPose.getHeading()));
         telem.addData(TelemetryMode.INFO, "turret position error", shooter.turret.getError());
 
         telem.addData(TelemetryMode.RAW_DATA, "current robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.currentRobotPose.getX(), shooter.currentRobotPose.getY(), Math.toDegrees(shooter.currentRobotPose.getHeading()));

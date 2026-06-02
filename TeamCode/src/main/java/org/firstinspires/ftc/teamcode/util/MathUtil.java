@@ -212,4 +212,19 @@ public strictfp class MathUtil {
 
         return closestIndex;
     }
+
+    public static double getMean(List<Double> values) {
+
+        if (values == null || values.isEmpty()) {
+            throw new IllegalArgumentException("List cannot be null or empty");
+        }
+
+        double sum = 0.0;
+
+        for (double value : values) {
+            sum += value;
+        }
+
+        return sum / values.size();
+    }
 }

@@ -16,11 +16,11 @@ import org.firstinspires.ftc.teamcode.Systems.Blocker;
 import org.firstinspires.ftc.teamcode.Systems.Camera;
 import org.firstinspires.ftc.teamcode.Systems.Flywheel;
 import org.firstinspires.ftc.teamcode.Systems.HoodAngler;
+import org.firstinspires.ftc.teamcode.Systems.IntakeActuator;
 import org.firstinspires.ftc.teamcode.Systems.Lift;
 import org.firstinspires.ftc.teamcode.Systems.PoseTransfer;
 import org.firstinspires.ftc.teamcode.Systems.TurretBase;
 import org.firstinspires.ftc.teamcode.util.BetterGamepad;
-import org.firstinspires.ftc.teamcode.util.GeneralVeloMotor;
 
 import java.util.List;
 
@@ -33,8 +33,8 @@ public abstract class TeleOpBaseOpMode extends OpMode {
 
     public DcMotor left_front, right_front, left_back, right_back;
 
-    public GeneralVeloMotor transfer;
-    public DcMotor intake;
+    public IntakeActuator intake;
+
     public Blocker blocker;
     public Lift lift;
 
@@ -78,9 +78,7 @@ public abstract class TeleOpBaseOpMode extends OpMode {
 
         follower = LocalizationConstants.createFollower(hardwareMap);
 
-        intake = hardwareMap.get(DcMotor.class, MapSetterConstants.intakeMotorDeviceName);
-
-        transfer = new GeneralVeloMotor(hardwareMap, MapSetterConstants.transferMotorDeviceName);
+        intake = new IntakeActuator(hardwareMap);
 
         blocker = new Blocker(hardwareMap.get(Servo.class, MapSetterConstants.blockerServoDeviceName));
 
@@ -112,10 +110,7 @@ public abstract class TeleOpBaseOpMode extends OpMode {
         follower.setPose(new Pose(PoseTransfer.X, PoseTransfer.Y, PoseTransfer.HEADING));
         follower.update();
 
-        intake.setDirection(ConfigurationConstants.INTAKE_MOTOR_DIRECTION);
-        transfer.setDirection(ConfigurationConstants.TRANSFER_MOTOR_DIRECTION);
-
-        transfer.setVelocityPDFCoefficients(
+        intake.setVelocityPDFCoefficients(
                 ConfigurationConstants.TRANSFER_PDF_COEFFICIENTS[0],
                 ConfigurationConstants.TRANSFER_PDF_COEFFICIENTS[1],
                 ConfigurationConstants.TRANSFER_PDF_COEFFICIENTS[2]
@@ -132,7 +127,8 @@ public abstract class TeleOpBaseOpMode extends OpMode {
         );
         flywheel.setVelocityPIDVSCoefficients(ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS);
 
-        turret.setPIDFSCoefficients(ConfigurationConstants.TURRET_PIDFS_COEFFICIENTS);
+        turret.setVelocityCoefficients(ConfigurationConstants.TURRET_VELOCITY_COEFFICIENTS);
+        turret.setPositionalCoefficients(ConfigurationConstants.TURRET_POSITIONAL_COEFFICIENTS);
         //turret.reverse();
 
     }

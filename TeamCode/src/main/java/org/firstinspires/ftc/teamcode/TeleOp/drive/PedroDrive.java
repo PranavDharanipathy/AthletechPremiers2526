@@ -37,7 +37,7 @@ public class PedroDrive extends Subsystem {
             follower.startTeleOpDrive(true);
         }
 
-        double forward = deadbandJoystick(-controller1.left_stick_y());
+        double forward = deadbandJoystick(controller1.left_stick_y());
         double strafe = deadbandJoystick(controller1.left_stick_x());
         double rotation = deadbandJoystick(controller1.right_stick_x());
 

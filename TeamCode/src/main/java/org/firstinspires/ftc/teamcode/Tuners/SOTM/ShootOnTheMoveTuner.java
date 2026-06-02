@@ -46,7 +46,7 @@ public class ShootOnTheMoveTuner extends TeleOpBaseOpMode {
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.setMsTransmissionInterval(30);
 
-        intake.provideComponents(super.intake, blocker /*subsystem*/, transfer, controller1);
+        intake.provideComponents(super.intake, blocker /*subsystem*/, controller1);
         blocker.provideComponents(super.blocker, controller1);
         pedroDrive.provideComponents(follower, controller1);
         shooter.provideComponents(flywheel, turret, hoodAngler, follower, camera, controller1);
@@ -71,11 +71,11 @@ public class ShootOnTheMoveTuner extends TeleOpBaseOpMode {
         controller1.getInformation();
         controller2.getInformation();
 
+        blocker.update();
         intake.update();
         follower.update();
         shooter.provideCustomTHCTime(this::calculation); //shooter applies turret acceleration automatically
         shooter.update();
-        blocker.update();
         pedroDrive.update();
 
         telemetry.addData("turret lookahead time", shooter.getTHCLookahead());

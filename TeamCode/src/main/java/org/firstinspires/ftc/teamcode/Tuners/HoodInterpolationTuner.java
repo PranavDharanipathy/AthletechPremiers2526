@@ -5,10 +5,13 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants.Calculations;
 import org.firstinspires.ftc.teamcode.Constants.FieldConstants;
+import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
+import org.firstinspires.ftc.teamcode.Systems.Blocker;
 import org.firstinspires.ftc.teamcode.Systems.Hood;
 import org.firstinspires.ftc.teamcode.TeleOp.PostAutonomousRobotReset;
 import org.firstinspires.ftc.teamcode.TeleOp.TeleOpBaseOpMode;
@@ -22,8 +25,9 @@ import java.util.List;
 @TeleOp (group = "tuning")
 public class HoodInterpolationTuner extends TeleOpBaseOpMode {
 
+    public static boolean SHOOT = false;
+
     public static double TRANSFER_VELOCITY = 1800;
-    public static double INTAKE_POWER = 1;
     public static double FLYWHEEL_VELOCITY = 0;
 
     public static double HOOD_POSITION = 0.3;
@@ -54,6 +58,9 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
     public static GOAL goal = GOAL.BLUE;
 
     private Hood hood;
+
+    private Blocker blocker;
+
     private final RobotCentricDrive robotCentricDrive = new RobotCentricDrive();
 
     private Telemetry telemetry;
@@ -63,6 +70,8 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
 
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.setMsTransmissionInterval(10);
+
+        blocker = new Blocker(hardwareMap.get(Servo.class, MapSetterConstants.blockerServoDeviceName));
 
         initializeDevices();
 
@@ -97,11 +106,11 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
 
         hood.setFlywheelVelocityAdjustmentParameters(FV_INFLUENCE, FV_CORRECTION_MIN, FV_CORRECTION_MAX);
 
-        intake.setPower(INTAKE_POWER);
-        transfer.setVelocity(TRANSFER_VELOCITY);
+        blocker.setState(SHOOT ? Blocker.BlockerState.CLEAR : Blocker.BlockerState.BLOCK);
+        intake.setTransferVelocity(TRANSFER_VELOCITY);
         flywheel.setVelocity(FLYWHEEL_VELOCITY, true);
 
-        transfer.update();
+        intake.update();
         flywheel.update();
 
         follower.update();
@@ -159,7 +168,7 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
 
             telemetry.addData("turret current position", turret.getCurrentPosition());
             telemetry.addData("turret target position", turret.getTargetPosition());
-            telemetry.addData("turret position error", turret.getPositionError());
+            telemetry.addData("turret position error", turret.getErrorMagnitude());
 
             telemetry.addData("p", flywheel.p);
             telemetry.addData("i", flywheel.i);

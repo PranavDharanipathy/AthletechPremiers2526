@@ -61,7 +61,7 @@ public class CameraTesting extends TeleOpBaseOpMode {
         telemetry.addData("LL Pose", tfp(camera.getBotPoseMT2()));
         telemetry.addData("Follower Pose", tfp(follower.getPose()));
 
-        Pose finalPose = camera.isEligibleForMT2() ? camera.getBotPoseMT2() : follower.getPose();
+        Pose finalPose = camera.canUseMT2Pose() ? camera.getBotPoseMT2() : follower.getPose();
 
         telemetry.addData("Final Pose", finalPose);
 
