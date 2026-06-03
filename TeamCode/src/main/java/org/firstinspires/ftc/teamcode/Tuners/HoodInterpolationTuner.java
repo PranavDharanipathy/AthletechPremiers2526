@@ -27,7 +27,7 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
 
     public static boolean SHOOT = false;
 
-    public static double TRANSFER_VELOCITY = 1800;
+    public static double TRANSFER_VELOCITY = 2150;
     public static double FLYWHEEL_VELOCITY = 0;
 
     public static double HOOD_POSITION = 0.3;
@@ -76,7 +76,7 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
         initializeDevices();
 
         applyComponentTraits();
-        //camera.setAutomaticOdometryRelocalization(false);
+        hood.provideFlywheel(this.flywheel);
 
         hood = new Hood(hoodAngler);
         robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, controller1);
@@ -87,6 +87,9 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
 
     @Override
     public void start() {
+
+        camera.start();
+
         new PostAutonomousRobotReset(this);
     }
 
@@ -133,9 +136,9 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
             positions.remove(positions.get(lastIndex));
         }
 
-        hood.tuningUpdate(distanceToGoal, distances, positions);
-
         camera.update(controller1.main_buttonHasJustBeenPressed);
+
+        hood.tuningUpdate(distanceToGoal, distances, positions);
 
         robotCentricDrive.update();
 
@@ -144,7 +147,8 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
         telemetry.addLine("<Y> to see hood interpolation dataset.");
 
         if (seeHoodInterpolationDataset) {
-            displayHoodInterpolationDataset();
+            telemetry.addData("positions", positions);
+            telemetry.addData("distances", distances);
         }
         else {
             telemetry.addLine();
@@ -179,9 +183,4 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
         telemetry.update();
 
     }
-
-    private void displayHoodInterpolationDataset() {
-
-    }
-
 }

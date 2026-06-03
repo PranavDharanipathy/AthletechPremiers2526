@@ -219,7 +219,7 @@ public class TurretActuator {
         //friction feedforward
         double sControl = sMode == SMode.TARGET_VELOCITY ? targetVelocity : positionError;
         double gaussianDecayCalculationExponent = (targetVelocity != 0 || kStribeckVelocity != 0) ? -((targetVelocity / kStribeckVelocity) * (targetVelocity / kStribeckVelocity)) : 0;
-        s = kCoulomb * Math.signum(targetVelocity) + ((tuningVoltage / filteredVoltage) * kB) * targetVelocity + (kStatic - kCoulomb) * Math.signum(targetVelocity) * (FastMath.pow(Math.E, gaussianDecayCalculationExponent));
+        s = kCoulomb * Math.signum(sControl) + ((tuningVoltage / filteredVoltage) * kB) * targetVelocity + (kStatic - kCoulomb) * Math.signum(sControl) * (FastMath.pow(Math.E, gaussianDecayCalculationExponent));
 
         if (PIDEnabled) setPower(p + i + d + v + s + additionalPower);
 
@@ -236,7 +236,7 @@ public class TurretActuator {
         this.sMode = sMode;
     }
 
-    private double positionError;
+    private double positionError = 0;
 
     public void providePositionError(double positionError) {
         this.positionError = positionError;

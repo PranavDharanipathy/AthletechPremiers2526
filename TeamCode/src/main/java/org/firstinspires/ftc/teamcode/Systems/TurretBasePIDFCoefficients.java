@@ -26,7 +26,7 @@ public class TurretBasePIDFCoefficients {
     public double lkISmash, rkISmash;
 
     public double[] dActivation;
-    public double lkDFilter, rkDFilter;
+    public double kDFilter;
 
     public double kVelocityFilter;
 
@@ -65,7 +65,7 @@ public class TurretBasePIDFCoefficients {
             double dSwitch,
             double[] kISmash,
             double[] dActivation,
-            double[] kDFilter,
+            double kDFilter,
             double kVelocityFilter,
             double holdDecay,
             double tuningVoltage,
@@ -100,8 +100,7 @@ public class TurretBasePIDFCoefficients {
 
         this.dActivation = dActivation;
 
-        lkDFilter = kDFilter[0];
-        rkDFilter = kDFilter[1];
+        this.kDFilter = kDFilter;
 
         this.kVelocityFilter = kVelocityFilter;
 
@@ -205,42 +204,6 @@ public class TurretBasePIDFCoefficients {
 
     public double kISmash(TurretSide side) {
         return side == TurretSide.LEFT ? lkISmash : rkISmash;
-    }
-
-    public double kDFilter(TurretSide side) {
-        return side == TurretSide.LEFT ? lkDFilter : rkDFilter;
-    }
-
-    private boolean kfReversalNeeded(double targetPosition, double lastTargetPosition, double startPosition, boolean reversed) {
-
-        final boolean lastSideCondition = reversed ? lastTargetPosition > startPosition : lastTargetPosition < startPosition;
-        final TurretSide lastSide = lastSideCondition ? TurretSide.RIGHT : TurretSide.LEFT;
-
-        final boolean sideCondition = reversed ? targetPosition > startPosition : targetPosition < startPosition;
-        final TurretSide side = sideCondition ? TurretSide.RIGHT : TurretSide.LEFT;
-
-        if (lastSide != side) return false;
-
-        if (reversed) {
-
-            if (side == TurretSide.LEFT && targetPosition > lastTargetPosition) { //left side moving right to middle
-                return true;
-            }
-            else if (side == TurretSide.RIGHT && targetPosition < lastTargetPosition) { //right side moving left to middle
-                return true;
-            }
-        }
-        else {
-
-            if (side == TurretSide.LEFT && targetPosition < lastTargetPosition) { //left side moving right to middle
-                return true;
-            }
-            else if (side == TurretSide.RIGHT && targetPosition > lastTargetPosition) { //right side moving left to middle
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private double getKfFromInterpolation(double reZeroedTargetPosition) {

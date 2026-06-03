@@ -12,12 +12,12 @@ public class ShooterConstants {
     public static double FAR_ZONE_CLOSE_ZONE_BARRIER = -35;
 
     public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 1800;
-    public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 400;
+    public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 500;
 
     public static double MIN_TURRET_POSITION_IN_DEGREES = -90, MAX_TURRET_POSITION_IN_DEGREES = 90;
 
-    public static double HOOD_ANGLER_MIN_POSITION = 0.7;
-    public static double HOOD_ANGLER_MAX_POSITION = 1;
+    public static double HOOD_ANGLER_MIN_POSITION = 0.85;
+    public static double HOOD_ANGLER_MAX_POSITION = 0;
 
     //arbitrary positions
     public static double HOOD_CLOSE_POSITION = 0.25;

@@ -40,13 +40,12 @@ public class TurretBase {
 
     private DynamicTrapezoidalSum errorSum = new DynamicTrapezoidalSum();
 
-    public double p, i, d, f;
-
-    public double filteredDerivative = 0;
+    public double p, i, d = 0, f;
+    private double filteredDerivative = 0;
 
     public double filteredTargetVelocity = 0;
 
-    private VoltageSensor batteryVoltageSensor;
+    private final VoltageSensor batteryVoltageSensor;
 
     public TurretBase(HardwareMap hardwareMap) {
 
@@ -65,8 +64,6 @@ public class TurretBase {
         double tsp = turretStartPosition != null ? turretStartPosition : turretActuator.getStartPosition();
         lastCurrentPosition = currentPosition = lastTargetPosition = targetPosition = startPosition = tsp;
     }
-
-    private double fDirection = 1;
 
     private boolean reversed = false;
 
@@ -88,8 +85,6 @@ public class TurretBase {
         Collections.reverse(TURRET_KFS);
 
         reversed = true;
-
-        fDirection = -1;
     }
 
     public void setVelocityCoefficients(double[] velocityCoefficients) {
@@ -126,6 +121,8 @@ public class TurretBase {
         holdDecay = coefficients.holdDecay;
 
         kVelocityFilter = coefficients.kVelocityFilter;
+
+        kDFilter = coefficients.kDFilter;
 
         dActivation = coefficients.dActivation;
 
@@ -198,8 +195,6 @@ public class TurretBase {
         kiClose = coefficients.kiClose(side);
         kHold = coefficients.kHold(targetPosition, startPosition, batteryVoltageSensor.getVoltage());
 
-        kDFilter = coefficients.kDFilter(side);
-
         iSwitch = coefficients.iSwitch(side);
 
         kISmash = coefficients.kISmash(side);
@@ -241,7 +236,7 @@ public class TurretBase {
 
     private double prevError, error;
     private Double initialError = null;
-    private double prevTime, currTime;
+    private double prevTime, currTime, dt;
 
     private final ElapsedTime timer = new ElapsedTime();
 
@@ -251,7 +246,7 @@ public class TurretBase {
         currentPosition = getCurrentPosition();
 
         currTime = timer.milliseconds();
-        double dt = currTime - prevTime;
+        dt = currTime - prevTime;
 
         error = targetPosition - currentPosition;
 
@@ -316,6 +311,10 @@ public class TurretBase {
 
     public double getPower() {
         return turretActuator.getPower();
+    }
+
+    public double getLoopDt() {
+        return MathUtil.millisecondsToSeconds(dt);
     }
 
     public double[] getServoPowers() {

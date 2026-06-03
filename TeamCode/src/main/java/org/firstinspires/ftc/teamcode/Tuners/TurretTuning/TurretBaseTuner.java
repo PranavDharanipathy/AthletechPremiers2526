@@ -38,7 +38,7 @@ public class TurretBaseTuner extends OpMode {
 
     public static double[] KI_SMASH = {TURRET_POSITIONAL_COEFFICIENTS.lkISmash, TURRET_POSITIONAL_COEFFICIENTS.rkISmash};
 
-    public static double[] KD_FILTER = {TURRET_POSITIONAL_COEFFICIENTS.lkDFilter, TURRET_POSITIONAL_COEFFICIENTS.rkDFilter};
+    public static double KD_FILTER = TURRET_POSITIONAL_COEFFICIENTS.kDFilter;
     public static double KVELOCITY_FILTER = TURRET_POSITIONAL_COEFFICIENTS.kVelocityFilter;
 
     public static double[] D_ACTIVATION = TURRET_POSITIONAL_COEFFICIENTS.dActivation;

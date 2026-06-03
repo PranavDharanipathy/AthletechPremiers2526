@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.TeleOp.drive.PedroDrive;
 @TeleOp(name = "TeleOp TEST", group = "testing")
 public class TeleOp_TEST extends TeleOpBaseOpMode {
 
-    public static CurrentAlliance.ALLIANCE ALLIANCE = CurrentAlliance.ALLIANCE.BLUE_ALLIANCE;
+    public static CurrentAlliance.ALLIANCE ALLIANCE = CurrentAlliance.ALLIANCE.RED_ALLIANCE;
 
     private final Intake intake = new Intake();
     private final Blocker blocker = new Blocker().asSubsystem();

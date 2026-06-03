@@ -32,6 +32,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants.LocalizationConstants;
+import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -146,7 +147,7 @@ class LocalizationTest extends OpMode {
 
     @Override
     public void init() {
-        follower.setStartingPose(new Pose(72,72));
+        follower.setStartingPose(new Pose(0,0, 0));
     }
 
     /** This initializes the PoseUpdater, the drive motors, and the Panels telemetry. */
@@ -1693,14 +1694,14 @@ class Drawing {
     /**
      * This draws a robot at a specified Pose with a specified
      * look. The heading is represented as a line.
-     *
-     * @param pose  the Pose to draw the robot at
-     * @param style the parameters used to draw the robot with
      */
-    public static void drawRobot(Pose pose, Style style) {
-        if (pose == null || Double.isNaN(pose.getX()) || Double.isNaN(pose.getY()) || Double.isNaN(pose.getHeading())) {
+    public static void drawRobot(Pose poseU, Style style) {
+
+        if (poseU == null || Double.isNaN(poseU.getX()) || Double.isNaN(poseU.getY()) || Double.isNaN(poseU.getHeading())) {
             return;
         }
+
+        Pose pose = new Pose(-poseU.getX(), -poseU.getY(), MathUtil.normalizeAngleRad(poseU.getHeading() - Math.PI));
 
         panelsField.setStyle(style);
         panelsField.moveCursor(pose.getX(), pose.getY());
@@ -1772,8 +1773,8 @@ class Drawing {
         int size = poseTracker.getXPositionsArray().length;
         for (int i = 0; i < size - 1; i++) {
 
-            panelsField.moveCursor(poseTracker.getXPositionsArray()[i], poseTracker.getYPositionsArray()[i]);
-            panelsField.line(poseTracker.getXPositionsArray()[i + 1], poseTracker.getYPositionsArray()[i + 1]);
+            panelsField.moveCursor(-poseTracker.getXPositionsArray()[i], -poseTracker.getYPositionsArray()[i]);
+            panelsField.line(-poseTracker.getXPositionsArray()[i + 1], -poseTracker.getYPositionsArray()[i + 1]);
         }
     }
 

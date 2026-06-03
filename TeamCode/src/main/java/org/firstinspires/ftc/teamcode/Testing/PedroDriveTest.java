@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Testing;
 
+import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -12,6 +13,8 @@ public class PedroDriveTest extends OpMode {
 
     private final PedroDrive drive = new PedroDrive();
 
+    private Follower follower;
+
     private BetterGamepad controller1;
 
     @Override
@@ -19,7 +22,9 @@ public class PedroDriveTest extends OpMode {
 
         controller1 = new BetterGamepad(gamepad1);
 
-        drive.provideComponents(LocalizationConstants.createFollower(hardwareMap), controller1);
+        follower = LocalizationConstants.createFollower(hardwareMap);
+
+        drive.provideComponents(follower, controller1);
     }
 
     @Override
@@ -27,6 +32,7 @@ public class PedroDriveTest extends OpMode {
 
         controller1.getInformation();
 
+        follower.update();
         drive.update();
     }
 }

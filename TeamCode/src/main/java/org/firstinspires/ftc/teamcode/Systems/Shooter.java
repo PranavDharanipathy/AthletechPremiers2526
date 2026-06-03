@@ -128,9 +128,6 @@ public class Shooter implements EffectivelySubsystem {
         flywheel.reset();
     }
 
-    //stage of 0 means that the action is pending, 1 means that it's underway, 2 means that it's complete.
-    private int performingAutomaticLocalization = 0;
-
     private boolean shooterToggle = false;
 
     private double turretAimPosition;
@@ -147,7 +144,7 @@ public class Shooter implements EffectivelySubsystem {
     private double turretTimeLookahead = 0;
     private boolean shouldUseTHC = false; //initially the bot is stationary
 
-    private double distanceToGoal;
+    public double distanceToGoal;
 
     public void update() {
 
@@ -158,20 +155,14 @@ public class Shooter implements EffectivelySubsystem {
         double translationalVelocity = Calculations.getRobotTranslationalVelocity(robotVelocity);
 
         if (
-                performingAutomaticLocalization == 0
+                !camera.isEligibleForMT2()
                 && translationalVelocity <= MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY[0]
                 && robotVelocity.getAngularVelocity() <= MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY[1]
         ) {
             camera.update(true, poseEstimator::reset);
-            performingAutomaticLocalization = 1;
-        }
-        else if (performingAutomaticLocalization == 1 && camera.getMt1LocalizationOutcome() == Camera.MT1LocalizationOutcome.FAILED) {
-            camera.update(false);
-            performingAutomaticLocalization = 0;
         }
         else {
             camera.update(controller1.main_buttonHasJustBeenPressed);
-            performingAutomaticLocalization = 2;
         }
 
         if (camera.hasJustRunMT1Localization()) controller1.rumble(GeneralConstants.NORMAL_CONTROLLER_RUMBLE_TIME);
@@ -261,10 +252,9 @@ public class Shooter implements EffectivelySubsystem {
         distanceToGoal = Calculations.getDistanceFromGoal(turretPose.getX(), turretPose.getY(), goalCoordinatesForDistance.getCoordinate());
 
         //updating
-        hood.update(distanceToGoal);
         turret.update();
         flywheel.update();
-
+        hood.update(distanceToGoal);
     }
 
     private double getFlywheelTargetVelocity() {
@@ -341,10 +331,6 @@ public class Shooter implements EffectivelySubsystem {
 
     public ZONE getCurrentZoneBasedOnLocation() {
         return currentRobotPose.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER ? ZONE.CLOSE : ZONE.FAR;
-    }
-
-    public boolean isTurretLookingAhead() {
-        return shouldUseTHC;
     }
 
     public double getTHCLookahead() {

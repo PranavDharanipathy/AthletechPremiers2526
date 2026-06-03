@@ -16,8 +16,8 @@ public class FieldConstants {
     public enum GoalCoordinates {
 
         //        CLOSE ALLIANCE       CLOSE OPPONENT            FAR
-        RED(new Pose(68,68), new Pose(68.5,70), new Pose(65,72)),
-        BLUE(new Pose(-68,68), new Pose(-68.5,70), new Pose(-65,72));
+        RED(new Pose(63,63), new Pose(68.5,68), new Pose(61,72)),
+        BLUE(new Pose(-63,63), new Pose(-68.5,68), new Pose(-61,72));
 
         private Pose closeAlliance;
         private Pose closeOpponent;
@@ -128,8 +128,8 @@ public class FieldConstants {
 
     public enum GoalCoordinatesForDistance {
 
-        RED(new Pose(60, 60)),
-        BLUE(new Pose(-60, 60));
+        RED(new Pose(62.5, 62.5)),
+        BLUE(new Pose(-62.5, 62.5));
 
         private Pose coord;
 

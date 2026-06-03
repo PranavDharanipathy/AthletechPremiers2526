@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.Constants;
 
 public class GeneralConstants {
 
-    public static float JOYSTICK_MINIMUM = 0.02f;
-    public static float TRIGGER_THRESHOLD = 0.2f;
+    public static float JOYSTICK_MINIMUM = 0.03f;
+    public static float TRIGGER_THRESHOLD = 0.5f;
 
     public static int TELEMETRY_MS_TRANSMISSION_INTERVAL = 25;
 
