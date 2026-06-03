@@ -33,7 +33,7 @@ public class Camera {
                 }
             }
 
-            if (localizationStep == CameraConstants.MT1_LOCALIZATION_STEPS) {
+            if (localizationStep >= CameraConstants.MT1_LOCALIZATION_STEPS) {
                 return SUCCESSFUL;
             }
 
