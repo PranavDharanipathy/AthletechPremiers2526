@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants.Calculations;
+import org.firstinspires.ftc.teamcode.Constants.CameraConstants;
 import org.firstinspires.ftc.teamcode.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
 import org.firstinspires.ftc.teamcode.Systems.Blocker;
@@ -27,6 +28,7 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
 
     public static boolean SHOOT = false;
 
+    public static double INTAKE_POWER = 1;
     public static double TRANSFER_VELOCITY = 2150;
     public static double FLYWHEEL_VELOCITY = 0;
 
@@ -76,9 +78,12 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
         initializeDevices();
 
         applyComponentTraits();
-        hood.provideFlywheel(this.flywheel);
 
         hood = new Hood(hoodAngler);
+        hood.provideFlywheel(this.flywheel);
+        
+        camera.pipelineSwitch(CameraConstants.PIPELINES.GENERAL_GOAL_PIPELINE.getPipelineIndex());
+
         robotCentricDrive.provideComponents(left_front, right_front, left_back, right_back, controller1);
 
         //setup lynx module
@@ -110,6 +115,7 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
         hood.setFlywheelVelocityAdjustmentParameters(FV_INFLUENCE, FV_CORRECTION_MIN, FV_CORRECTION_MAX);
 
         blocker.setState(SHOOT ? Blocker.BlockerState.CLEAR : Blocker.BlockerState.BLOCK);
+        intake.setIntakePower(INTAKE_POWER);
         intake.setTransferVelocity(TRANSFER_VELOCITY);
         flywheel.setVelocity(FLYWHEEL_VELOCITY, true);
 

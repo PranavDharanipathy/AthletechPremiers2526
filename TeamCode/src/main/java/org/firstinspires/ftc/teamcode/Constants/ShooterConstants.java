@@ -61,7 +61,7 @@ public class ShooterConstants {
     /// Minimum change in flywheel velocity-based hood correction for new hood correction to be used.
     public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_DEADBAND = 0.001;
 
-    public static double HOOD_POSITION_FOR_MAX_SHOT_DISTANCE = 0.3;
+    public static double HOOD_POSITION_FOR_MAX_SHOT_DISTANCE = 0;
 
     public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_INFLUENCE = 0;
     public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_MINIMUM = -1;
