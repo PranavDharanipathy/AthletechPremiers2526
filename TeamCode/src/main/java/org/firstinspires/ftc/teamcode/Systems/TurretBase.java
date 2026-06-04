@@ -218,10 +218,10 @@ public class TurretBase {
         }
     }
 
-    private double targetVelocity;
+    private double travelVelocity;
 
     public void setVelocity(double velocity) {
-        if (targetVelocity != velocity) targetVelocity = velocity;
+        if (travelVelocity != velocity) travelVelocity = velocity;
     }
 
     public double getLastTargetPosition() {
@@ -290,7 +290,7 @@ public class TurretBase {
         filteredPositionalTargetVelocity = LowPassFilter.getFilteredValue(filteredPositionalTargetVelocity, rawPositionalTargetVelocity, kVelocityFilter);
 
         turretActuator.providePositionError(error);
-        turretActuator.setVelocity(filteredPositionalTargetVelocity + targetVelocity);
+        turretActuator.setVelocity(filteredPositionalTargetVelocity + travelVelocity);
         turretActuator.setAdditionalPower(f);
         turretActuator.update();
 
@@ -315,8 +315,8 @@ public class TurretBase {
         return filteredPositionalTargetVelocity;
     }
 
-    public double getTargetVelocity() {
-        return targetVelocity;
+    public double getTravelVelocity() {
+        return travelVelocity;
     }
 
     public double getVelocity() {
