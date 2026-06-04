@@ -59,8 +59,7 @@ public class TelemetrySubsystem implements EffectivelySubsystem {
 
         telem.addData("LL Localization Outcome", shooter.camera.getMt1LocalizationOutcome());
 
-        telem.addData("TARGET ZONE", shooter.getZoneSetting().toString());
-        telem.addData("CURRENT ZONE", shooter.getCurrentZoneBasedOnLocation().toString());
+        telem.addData("CURRENT ZONE", shooter.getCurrentZoneBasedOnLocation());
 
         telem.addData(TelemetryMode.RAW_DATA, "on alliance side?", shooter.accessGoalCoordinates().onAllianceSide(shooter.futureRobotPose.getY()));
 

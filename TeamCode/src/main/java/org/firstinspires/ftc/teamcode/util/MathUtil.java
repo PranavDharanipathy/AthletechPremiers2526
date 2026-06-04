@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.util;
 import org.apache.commons.math3.util.FastMath;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 public strictfp class MathUtil {
@@ -158,6 +159,13 @@ public strictfp class MathUtil {
         }
 
         throw new IllegalArgumentException("No bounding values for input: value cannot be found from input array!");
+    }
+
+    public static double[] sortAscending(double[] values) {
+
+        double[] sorted = Arrays.copyOf(values, values.length);
+        Arrays.sort(sorted);
+        return sorted;
     }
 
     public static double interpolateLinear(double x, InterpolationData data) {

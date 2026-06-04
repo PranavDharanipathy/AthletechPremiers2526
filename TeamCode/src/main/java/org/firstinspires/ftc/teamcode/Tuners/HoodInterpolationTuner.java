@@ -40,6 +40,7 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
     public static double FV_CORRECTION_MAX = 1;
 
     private final List<Double> distances = new ArrayList<>();
+    private final List<Double> velocities = new ArrayList<>();
     private final List<Double> positions = new ArrayList<>();
 
     public enum GOAL {
@@ -57,7 +58,7 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
         }
     }
 
-    public static GOAL goal = GOAL.BLUE;
+    public static GOAL goal = GOAL.RED;
 
     private Hood hood;
 
@@ -133,6 +134,7 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
         if (controller1.dpad_upHasJustBeenPressed) {
             distances.add(distanceToGoal);
             positions.add(HOOD_POSITION);
+            velocities.add(HOOD_POSITION);
         }
         else if (controller1.dpad_downHasJustBeenPressed && !distances.isEmpty()) {
 
@@ -140,11 +142,17 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
 
             distances.remove(distances.get(lastIndex));
             positions.remove(positions.get(lastIndex));
+            velocities.remove(velocities.get(lastIndex));
         }
 
         camera.update(controller1.main_buttonHasJustBeenPressed);
 
-        hood.tuningUpdate(distanceToGoal, distances, positions);
+        if (distances.isEmpty()) {
+            hood.accessHoodAngler().setSafePosition(HOOD_POSITION);
+        }
+        else {
+            hood.tuningUpdate(distanceToGoal, HOOD_POSITION);
+        }
 
         robotCentricDrive.update();
 
@@ -155,6 +163,7 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
         if (seeHoodInterpolationDataset) {
             telemetry.addData("positions", positions);
             telemetry.addData("distances", distances);
+            telemetry.addData("velocities", velocities);
         }
         else {
             telemetry.addLine();

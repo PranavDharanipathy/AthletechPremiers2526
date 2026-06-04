@@ -36,14 +36,14 @@ public class TurretBase {
 
     public double[] dActivation = {0, (double) Integer.MAX_VALUE};
 
-    private double iSwitch;
+    private double[] iSwitch;
 
     private DynamicTrapezoidalSum errorSum = new DynamicTrapezoidalSum();
 
     public double p, i, d = 0, f;
     private double filteredDerivative = 0;
 
-    public double filteredTargetVelocity = 0;
+    public double filteredPositionalTargetVelocity = 0;
 
     private final VoltageSensor batteryVoltageSensor;
 
@@ -117,6 +117,8 @@ public class TurretBase {
         this.coefficients = coefficients;
 
         //setting variables that do not change
+
+        iSwitch = coefficients.iSwitch;
 
         holdDecay = coefficients.holdDecay;
 
@@ -195,8 +197,6 @@ public class TurretBase {
         kiClose = coefficients.kiClose(side);
         kHold = coefficients.kHold(targetPosition, startPosition, batteryVoltageSensor.getVoltage());
 
-        iSwitch = coefficients.iSwitch(side);
-
         kISmash = coefficients.kISmash(side);
     }
 
@@ -216,6 +216,12 @@ public class TurretBase {
 
             initialError = null; //null means that it's to be determined
         }
+    }
+
+    private double targetVelocity;
+
+    public void setVelocity(double velocity) {
+        if (targetVelocity != velocity) targetVelocity = velocity;
     }
 
     public double getLastTargetPosition() {
@@ -254,11 +260,14 @@ public class TurretBase {
 
         chooseCoefficientsInternal(TurretBasePIDFCoefficients.TurretSide.getSide(targetPosition, startPosition, reversed));
 
+        boolean fineTune = Math.abs(error) < iSwitch[0];
+
         //proportional
         p = kp * error;
 
         //integral
-        if (Math.abs(error) <= iSwitch) ki = kiClose;
+        if (Math.abs(error) > iSwitch[1]) ki = 0;
+        else if (fineTune) ki = kiClose;
         else ki = kiFar;
 
         if (dt != 0) errorSum.updateSum(dt, error);
@@ -277,11 +286,11 @@ public class TurretBase {
         //feedforward
         f = kHold * Math.signum(error) * (1.0 - Math.exp(-Math.abs(error) / (holdDecay * ShooterConstants.TURRET_TICKS_PER_DEGREE)));
 
-        double rawTargetVelocity = p + i + d;
-        filteredTargetVelocity = LowPassFilter.getFilteredValue(filteredTargetVelocity, rawTargetVelocity, kVelocityFilter);
+        double rawPositionalTargetVelocity = p + i + d;
+        filteredPositionalTargetVelocity = LowPassFilter.getFilteredValue(filteredPositionalTargetVelocity, rawPositionalTargetVelocity, kVelocityFilter);
 
         turretActuator.providePositionError(error);
-        turretActuator.setVelocity(filteredTargetVelocity);
+        turretActuator.setVelocity(filteredPositionalTargetVelocity + targetVelocity);
         turretActuator.setAdditionalPower(f);
         turretActuator.update();
 
@@ -302,9 +311,14 @@ public class TurretBase {
         return initialError;
     }
 
-    public double getTargetVelocity() {
-        return filteredTargetVelocity;
+    public double getActuatorTargetVelocity() {
+        return filteredPositionalTargetVelocity;
     }
+
+    public double getTargetVelocity() {
+        return targetVelocity;
+    }
+
     public double getVelocity() {
         return turretActuator.getCurrentVelocity();
     }

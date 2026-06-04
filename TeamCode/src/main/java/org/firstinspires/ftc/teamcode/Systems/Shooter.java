@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Constants.GeneralConstants;
 import org.firstinspires.ftc.teamcode.Constants.LocalizationConstants;
 import org.firstinspires.ftc.teamcode.Constants.Models;
 import org.firstinspires.ftc.teamcode.Constants.ShooterConstants;
+import org.firstinspires.ftc.teamcode.util.InterpolationData;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseAcceleration;
 import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseVelocity;
@@ -19,10 +20,13 @@ import org.firstinspires.ftc.teamcode.util.BetterGamepad;
 import org.firstinspires.ftc.teamcode.util.EffectivelySubsystem;
 
 import static org.firstinspires.ftc.teamcode.Constants.CameraConstants.MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY;
+import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.CLOSE_FLYWHEEL_VELOCITIES;
+import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.CLOSE_HOOD_DISTANCES;
 import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.THC_ENGAGE_VELOCITY;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
 import java.util.function.DoubleBinaryOperator;
 
 public class Shooter implements EffectivelySubsystem {
@@ -69,23 +73,6 @@ public class Shooter implements EffectivelySubsystem {
         this.controller1 = controller1;
 
     }
-
-    public enum ZONE {
-        CLOSE("CLOSE"), FAR("FAR");
-
-        private String string;
-
-        ZONE(String string) {
-            this.string = string;
-        }
-
-        @NonNull
-        public String toString() {
-            return string;
-        }
-    }
-
-    private ZONE flywheelTargetVelocityZone = ZONE.FAR;
 
     private double turretStartPosition;
 
@@ -223,20 +210,6 @@ public class Shooter implements EffectivelySubsystem {
 
         turret.setPosition(turretAimPosition);
 
-        //flywheel
-        if (controller1.left_bumperHasJustBeenPressed) shooterToggle = !shooterToggle;
-
-        // setting flywheel velocity
-        if (controller1.yHasJustBeenPressed) { //close
-            flywheelTargetVelocityZone = ZONE.CLOSE;
-        }
-        else if (controller1.bHasJustBeenPressed) { //far
-            flywheelTargetVelocityZone = ZONE.FAR;
-        }
-
-        if (shooterToggle) flywheel.setVelocity(getFlywheelTargetVelocity(), true);
-        else flywheel.setVelocity(0, true);
-
         //hood
         hood.setAimZone(
                 currentRobotPose.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER
@@ -251,23 +224,47 @@ public class Shooter implements EffectivelySubsystem {
 
         distanceToGoal = Calculations.getDistanceFromGoal(turretPose.getX(), turretPose.getY(), goalCoordinatesForDistance.getCoordinate());
 
+        //flywheel
+        if (controller1.left_bumperHasJustBeenPressed) shooterToggle = !shooterToggle;
+
+        if (shooterToggle) flywheel.setVelocity(getFlywheelTargetVelocityFromInterpolation(distanceToGoal), false);
+        else flywheel.setVelocity(0, true);
+
         //updating
         turret.update();
         flywheel.update();
         hood.update(distanceToGoal);
     }
 
-    private double getFlywheelTargetVelocity() {
+    private double getFlywheelTargetVelocityFromInterpolation(double distanceToGoal) {
 
-        double flywheelTargetVelocity;
+        if (distanceToGoal < CLOSE_HOOD_DISTANCES.get(0)) {
+            return CLOSE_FLYWHEEL_VELOCITIES.get(0);
+        }
+        else if (distanceToGoal > CLOSE_HOOD_DISTANCES.get(CLOSE_HOOD_DISTANCES.size() - 1)) {
+            return CLOSE_FLYWHEEL_VELOCITIES.get(CLOSE_FLYWHEEL_VELOCITIES.size() - 1);
+        }
 
-        if (flywheelTargetVelocityZone == ZONE.FAR) {
-            flywheelTargetVelocity = ShooterConstants.FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY;
-        }
-        else {
-            flywheelTargetVelocity = ShooterConstants.CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY;
-        }
-        return flywheelTargetVelocity;
+        double[] distances = CLOSE_HOOD_DISTANCES.stream().mapToDouble(Double::doubleValue).toArray();
+
+        double[] bounds = MathUtil.findBoundingValues(distances, distanceToGoal);
+
+        double distance0 = bounds[0];
+        double distance1 = bounds[1];
+
+        double flywheelVelocity0 = CLOSE_FLYWHEEL_VELOCITIES.get(CLOSE_HOOD_DISTANCES.indexOf(distance0));
+        double flywheelVelocity1 = CLOSE_FLYWHEEL_VELOCITIES.get(CLOSE_HOOD_DISTANCES.indexOf(distance1));
+
+        return MathUtil.interpolateLinear(
+
+                distanceToGoal,
+
+                new InterpolationData(
+                        new double[] {distance0, flywheelVelocity0},
+                        new double[] {distance1, flywheelVelocity1}
+                )
+        );
+
     }
 
     private void goalAimUpdate() {
@@ -325,12 +322,8 @@ public class Shooter implements EffectivelySubsystem {
         poseEstimator.reset(reZeroPose);
     }
 
-    public ZONE getZoneSetting() {
-        return flywheelTargetVelocityZone;
-    }
-
-    public ZONE getCurrentZoneBasedOnLocation() {
-        return currentRobotPose.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER ? ZONE.CLOSE : ZONE.FAR;
+    public String getCurrentZoneBasedOnLocation() {
+        return currentRobotPose.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER ? "CLOSE" : "FAR";
     }
 
     public double getTHCLookahead() {

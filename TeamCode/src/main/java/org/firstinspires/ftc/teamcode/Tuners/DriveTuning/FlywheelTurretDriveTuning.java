@@ -32,60 +32,59 @@ public class FlywheelTurretDriveTuning extends TeleOpBaseOpMode {
 
     public static class FlywheelTuning {
 
-        public static double KP_FAR = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.kpFar;
-        public static double KP_CLOSE = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.kpClose;
-        public static double KI_FAR = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.kiFar;
-        public static double KI_CLOSE = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.kiClose;
-        public static double KD = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.kd;
-        public static double KV = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.unscaledKv;
-        public static double KS = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.ks;
-        public static double KPIDF_UNITS_PER_VOLT = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.kPIDFUnitsPerVolt;
-        public static double I_SWITCH = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.iSwitch;
-        public static double P_SWITCH = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.pSwitch;
-        public static double KI_SMASH = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.kISmash;
-        public static double VOLTAGE_COMPENSATION_WEIGHT = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.voltageCompensationWeight;
-        public static double VOLTAGE_FILTER_ALPHA = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.voltageFilterAlpha;
-        public static double TUNING_VOLTAGE = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.tuningVoltage;
+        public double KP_FAR = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.kpFar;
+        public double KP_CLOSE = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.kpClose;
+        public double KI_FAR = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.kiFar;
+        public double KI_CLOSE = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.kiClose;
+        public double KD = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.kd;
+        public double KV = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.unscaledKv;
+        public double KS = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.ks;
+        public double KPIDF_UNITS_PER_VOLT = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.kPIDFUnitsPerVolt;
+        public double I_SWITCH = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.iSwitch;
+        public double P_SWITCH = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.pSwitch;
+        public double KI_SMASH = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.kISmash;
+        public double VOLTAGE_COMPENSATION_WEIGHT = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.voltageCompensationWeight;
+        public double VOLTAGE_FILTER_ALPHA = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.voltageFilterAlpha;
+        public double TUNING_VOLTAGE = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.tuningVoltage;
 
-        public static double D_MIN = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.minD, D_MAX = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.maxD;
-        public static double I_MIN = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.minI, I_MAX = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.maxI;
-        public static double P_MIN = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.minP, P_MAX = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.maxP;
+        public double D_MIN = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.minD, D_MAX = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.maxD;
+        public double I_MIN = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.minI, I_MAX = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.maxI;
+        public double P_MIN = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.minP, P_MAX = ConfigurationConstants.FLYWHEEL_PIDVS_COEFFICIENTS.maxP;
     }
 
     public static class TurretTuning {
 
-        public static double KP_FAR = TURRET_POSITIONAL_COEFFICIENTS.kpFar;
-        public static double KP_CLOSE = TURRET_POSITIONAL_COEFFICIENTS.kpClose;
-        public static double[] KI_FAR = {TURRET_POSITIONAL_COEFFICIENTS.lkiFar, TURRET_POSITIONAL_COEFFICIENTS.rkiFar};
-        public static double[] KI_CLOSE = {TURRET_POSITIONAL_COEFFICIENTS.lkiClose, TURRET_POSITIONAL_COEFFICIENTS.rkiClose};
-        public static double KD_FAR = TURRET_POSITIONAL_COEFFICIENTS.kdFar;
-        public static double KD_CLOSE = TURRET_POSITIONAL_COEFFICIENTS.kdClose;
-        public static double KHOLD = TURRET_POSITIONAL_COEFFICIENTS.unscaledKHold;
+        public double KP_FAR = TURRET_POSITIONAL_COEFFICIENTS.kpFar;
+        public double KP_CLOSE = TURRET_POSITIONAL_COEFFICIENTS.kpClose;
+        public double[] KI_FAR = {TURRET_POSITIONAL_COEFFICIENTS.lkiFar, TURRET_POSITIONAL_COEFFICIENTS.rkiFar};
+        public double[] KI_CLOSE = {TURRET_POSITIONAL_COEFFICIENTS.lkiClose, TURRET_POSITIONAL_COEFFICIENTS.rkiClose};
+        public double KD_FAR = TURRET_POSITIONAL_COEFFICIENTS.kdFar;
+        public double KD_CLOSE = TURRET_POSITIONAL_COEFFICIENTS.kdClose;
+        public double KHOLD = TURRET_POSITIONAL_COEFFICIENTS.unscaledKHold;
 
-        public static double P_SWITCH = TURRET_POSITIONAL_COEFFICIENTS.pSwitch;
+        public double P_SWITCH = TURRET_POSITIONAL_COEFFICIENTS.pSwitch;
 
-        public static double[] I_SWITCH = {TURRET_POSITIONAL_COEFFICIENTS.lISwitch, TURRET_POSITIONAL_COEFFICIENTS.rISwitch};
+        public double[] I_SWITCH = TURRET_POSITIONAL_COEFFICIENTS.iSwitch;
 
-        public static double D_SWITCH = TURRET_POSITIONAL_COEFFICIENTS.dSwitch;
+        public double D_SWITCH = TURRET_POSITIONAL_COEFFICIENTS.dSwitch;
 
-        public static double[] KI_SMASH = {TURRET_POSITIONAL_COEFFICIENTS.lkISmash, TURRET_POSITIONAL_COEFFICIENTS.rkISmash};
+        public double[] KI_SMASH = {TURRET_POSITIONAL_COEFFICIENTS.lkISmash, TURRET_POSITIONAL_COEFFICIENTS.rkISmash};
 
-        public static double KD_FILTER = TURRET_POSITIONAL_COEFFICIENTS.kDFilter;
-        public static double KVELOCITY_FILTER = TURRET_POSITIONAL_COEFFICIENTS.kVelocityFilter;
+        public double KD_FILTER = TURRET_POSITIONAL_COEFFICIENTS.kDFilter;
+        public double KVELOCITY_FILTER = TURRET_POSITIONAL_COEFFICIENTS.kVelocityFilter;
 
-        public static double[] D_ACTIVATION = TURRET_POSITIONAL_COEFFICIENTS.dActivation;
+        double[] D_ACTIVATION = TURRET_POSITIONAL_COEFFICIENTS.dActivation;
 
-        public static double HOLD_DECAY = TURRET_POSITIONAL_COEFFICIENTS.holdDecay;
-        public static double TUNING_VOLTAGE = TURRET_POSITIONAL_COEFFICIENTS.tuningVoltage;
-        public static double VOLTAGE_FILTER_ALPHA = TURRET_POSITIONAL_COEFFICIENTS.voltageFilterAlpha;
+        public double HOLD_DECAY = TURRET_POSITIONAL_COEFFICIENTS.holdDecay;
+        public double TUNING_VOLTAGE = TURRET_POSITIONAL_COEFFICIENTS.tuningVoltage;
+        public double[] VOLTAGE_FILTER_ALPHA = TURRET_POSITIONAL_COEFFICIENTS.voltageFilterAlpha;
 
-        public static double MIN_I = TURRET_POSITIONAL_COEFFICIENTS.minI, MAX_I = TURRET_POSITIONAL_COEFFICIENTS.maxI;
+        public double MIN_I = TURRET_POSITIONAL_COEFFICIENTS.minI, MAX_I = TURRET_POSITIONAL_COEFFICIENTS.maxI;
     }
 
     public static FlywheelTuning FLYWHEEL = new FlywheelTuning();
     public static TurretTuning TURRET = new TurretTuning();
 
-    public static double TURRET_TARGET_POSITION;
     public static double FLYWHEEL_VELOCITY = 0;
     public static double HOOD_POSITION = 1;
 
@@ -163,6 +162,7 @@ public class FlywheelTurretDriveTuning extends TeleOpBaseOpMode {
         flywheel.setVelocityPIDVSCoefficients(flywheelCoefficients);
 
         hoodAngler.setSafePosition(HOOD_POSITION);
+        intake.update();
         blocker.update();
         follower.update();
         turret();
@@ -170,17 +170,35 @@ public class FlywheelTurretDriveTuning extends TeleOpBaseOpMode {
         flywheel.update();
         pedroDrive.update();
 
-        telemetry.addData("target velocity", flywheel.getTargetVelocity());
-        telemetry.addData("current velocity", flywheel.getCurrentVelocity());
-        telemetry.addData("p", "%.5f", flywheel.p);
-        telemetry.addData("i", "%.5f", flywheel.i);
-        telemetry.addData("d", "%.5f", flywheel.d);
-        telemetry.addData("v", "%.5f", flywheel.v);
+        telemetry.addData("flywheel target velocity", flywheel.getTargetVelocity());
+        telemetry.addData("flywheel current velocity", flywheel.getCurrentVelocity());
+        telemetry.addData("flywheel p", "%.5f", flywheel.p);
+        telemetry.addData("flywheel i", "%.5f", flywheel.i);
+        telemetry.addData("flywheel d", "%.5f", flywheel.d);
+        telemetry.addData("flywheel v", "%.5f", flywheel.v);
 
         telemetry.addData("flywheel power", "%.5f", flywheel.getPower());
 
-        telemetry.addData("is kp far being used", flywheel.getError() > FLYWHEEL.P_SWITCH);
-        telemetry.addData("is kp far being used (graphics)", flywheel.getError() > FLYWHEEL.P_SWITCH ? 1 : 0);
+        telemetry.addData("flywheel is kp far being used", flywheel.getError() > FLYWHEEL.P_SWITCH);
+        telemetry.addData("flywheel is kp far being used (graphics)", flywheel.getError() > FLYWHEEL.P_SWITCH ? 1 : 0);
+
+        telemetry.addData("turret target position", turret.getTargetPosition());
+        telemetry.addData("turret current position", turret.getCurrentPosition());
+        telemetry.addData("turret position error", turret.getError());
+        telemetry.addData("turret target velocity", turret.getActuatorTargetVelocity());
+        telemetry.addData("turret current velocity", turret.getActuator().getCurrentVelocity());
+
+        telemetry.addData("turret p", "%.5f", turret.p);
+        telemetry.addData("turret i", "%.5f", turret.i);
+        telemetry.addData("turret d", "%.5f", turret.d);
+        telemetry.addData("turret f", "%.5f", turret.f);
+
+        telemetry.addData("turret actuator p", "%.5f", turret.getActuator().p);
+        telemetry.addData("turret actuator i", "%.5f", turret.getActuator().i);
+        telemetry.addData("turret actuator d", "%.5f", turret.getActuator().d);
+        telemetry.addData("turret actuator v", "%.5f", turret.getActuator().v);
+
+        telemetry.addData("turret power", "%.5f", turret.getPower());
 
         telemetry.update();
     }

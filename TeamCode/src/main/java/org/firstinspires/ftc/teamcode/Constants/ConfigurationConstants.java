@@ -50,12 +50,12 @@ public class ConfigurationConstants {
     public static double FLYWHEEL_MOTOR_RPM = 6000;
 
     public static FlywheelPIDVSCoefficients FLYWHEEL_PIDVS_COEFFICIENTS = new FlywheelPIDVSCoefficients(
-            0.0008 /*0.00072*/,
-            0.000043,
+            0.001175 /*0.00095*/,
+            0.000045,
             0,
             0.0000275,
             0.0000075,
-            0.0003422,
+            0.0003424,
             0.000001,
             1.35,
             100,
@@ -84,10 +84,10 @@ public class ConfigurationConstants {
             0.25,
             0.0000000035,
             0.0785,
-            0.0000011,
+            0.0000013,
             0.0000017,
             12.35,
-            0.6,
+            0.5,
             0.05,
             0.0479477,
             0.00000883825,
@@ -99,23 +99,23 @@ public class ConfigurationConstants {
     public static TurretBasePIDFCoefficients TURRET_POSITIONAL_COEFFICIENTS = new TurretBasePIDFCoefficients(
             4,
             5,
-            new double[] {0.00025, 0.00025},
             new double[] {0.007, 0.007},
+            new double[] {0.0015, 0.0015},
             300,
             400,
-            0.21,
+            0.1,
             1200,
-            new double[] {750, 750},
+            new double[] {50, 1200},
             1000,
-            new double[] {-0.185, -0.185},
-            new double[] {0, 3200},
+            new double[] {0.9, 0.9}, //new double[] {0.185, 0.185},
+            new double[] {5, 3200},
             0.95,
             0.99,
-            275,
+            350,
             13.31,
-            0.75,
-            -4500,
-            4500
+            new double[] {0.7, 0.2},
+            -3000,
+            3000
     ).withTuning(true);
 
     public static double[] TURRET_KALMAN_FILTER_PARAMETERS = {1050, 200, 1800, 5};

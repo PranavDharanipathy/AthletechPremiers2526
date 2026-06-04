@@ -32,7 +32,7 @@ public class TurretBaseTuner extends OpMode {
 
     public static double P_SWITCH = TURRET_POSITIONAL_COEFFICIENTS.pSwitch;
 
-    public static double[] I_SWITCH = {TURRET_POSITIONAL_COEFFICIENTS.lISwitch, TURRET_POSITIONAL_COEFFICIENTS.rISwitch};
+    public static double[] I_SWITCH = TURRET_POSITIONAL_COEFFICIENTS.iSwitch;
 
     public static double D_SWITCH = TURRET_POSITIONAL_COEFFICIENTS.dSwitch;
 
@@ -45,7 +45,7 @@ public class TurretBaseTuner extends OpMode {
 
     public static double HOLD_DECAY = TURRET_POSITIONAL_COEFFICIENTS.holdDecay;
     public static double TUNING_VOLTAGE = TURRET_POSITIONAL_COEFFICIENTS.tuningVoltage;
-    public static double VOLTAGE_FILTER_ALPHA = TURRET_POSITIONAL_COEFFICIENTS.voltageFilterAlpha;
+    public static double[] VOLTAGE_FILTER_ALPHA = TURRET_POSITIONAL_COEFFICIENTS.voltageFilterAlpha;
 
     public static double MIN_I = TURRET_POSITIONAL_COEFFICIENTS.minI, MAX_I = TURRET_POSITIONAL_COEFFICIENTS.maxI;
     public static double TARGET_POSITION;

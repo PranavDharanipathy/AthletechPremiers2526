@@ -20,7 +20,7 @@ public class TurretBasePIDFCoefficients {
     public double unscaledKHold;
 
     public double pSwitch;
-    public double lISwitch, rISwitch;
+    public double[] iSwitch;
     public double dSwitch;
 
     public double lkISmash, rkISmash;
@@ -32,7 +32,7 @@ public class TurretBasePIDFCoefficients {
 
     public double holdDecay;
     public double tuningVoltage;
-    public double voltageFilterAlpha;
+    public double[] voltageFilterAlpha;
 
     public double minI, maxI;
 
@@ -69,7 +69,7 @@ public class TurretBasePIDFCoefficients {
             double kVelocityFilter,
             double holdDecay,
             double tuningVoltage,
-            double voltageFilterAlpha,
+            double[] voltageFilterAlpha,
             double minI,
             double maxI
     ) {
@@ -90,8 +90,7 @@ public class TurretBasePIDFCoefficients {
 
         this.pSwitch = pSwitch;
 
-        lISwitch = iSwitch[0];
-        rISwitch = iSwitch[1];
+        this.iSwitch = iSwitch;
 
         this.dSwitch = dSwitch;
 
@@ -193,13 +192,9 @@ public class TurretBasePIDFCoefficients {
 
     private double scaleKHold(double unscaledKf, double batteryVoltage) {
 
-        filteredVoltage = LowPassFilter.getFilteredValue(filteredVoltage, batteryVoltage, voltageFilterAlpha);
+        filteredVoltage = LowPassFilter.getFilteredValue(filteredVoltage, batteryVoltage, voltageFilterAlpha[0]);
 
-        return (tuningVoltage / batteryVoltage) * unscaledKf;
-    }
-
-    public double iSwitch(TurretSide side) {
-        return side == TurretSide.LEFT ? lISwitch : rISwitch;
+        return LowPassFilter.getFilteredValue(tuningVoltage, filteredVoltage, voltageFilterAlpha[1]) * unscaledKf;
     }
 
     public double kISmash(TurretSide side) {

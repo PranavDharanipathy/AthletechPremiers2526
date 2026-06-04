@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -18,7 +19,7 @@ public class IntakeActuator {
         intake.setDirection(ConfigurationConstants.INTAKE_MOTOR_DIRECTION);
         transfer.setDirection(ConfigurationConstants.TRANSFER_MOTOR_DIRECTION);
 
-        intake.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        intake.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         transfer.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
 

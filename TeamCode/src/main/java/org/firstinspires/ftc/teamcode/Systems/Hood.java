@@ -67,7 +67,8 @@ public class Hood {
 
         if (flywheelInitialized) {
 
-            double rawD = dInfluence * (flywheel.getTargetVelocity() - flywheel.getCurrentVelocity()) / flywheel.getLoopDt();
+            double flywheelDt = flywheel.getLoopDt();
+            double rawD = flywheelDt != 0 ? dInfluence * (flywheel.getTargetVelocity() - flywheel.getCurrentVelocity()) / flywheelDt : 0;
 
             d = Math.abs(rawD) >= ShooterConstants.MINIMUM_FLYWHEEL_VELOCITY_HOOD_CORRECTION ? MathUtil.deadband(rawD, d, ShooterConstants.FLYWHEEL_VELOCITY_HOOD_CORRECTION_DEADBAND) : 0;
             d = MathUtil.clamp(d, dMin, dMax);
@@ -80,17 +81,15 @@ public class Hood {
     }
 
     /// should be called after flywheel is updated
-    public void tuningUpdate(double distanceToGoal, List<Double> distances, List<Double> positions) {
-
-        if (distances.size() < 2 || positions.size() < 2) return;
-
-        double hoodPosition = getHoodPositionFromInterpolation(distanceToGoal, distances, positions);
+    public void tuningUpdate(double distanceToGoal, double hoodPosition) {
 
         if (flywheelInitialized) {
 
-            double rawD = dInfluence * (flywheel.getTargetVelocity() - flywheel.getCurrentVelocity()) / flywheel.getLoopDt();
+            double flywheelDt = flywheel.getLoopDt();
+            double rawD = flywheelDt != 0 ? dInfluence * (flywheel.getTargetVelocity() - flywheel.getCurrentVelocity()) / flywheelDt : 0;
 
             d = Math.abs(rawD) >= ShooterConstants.MINIMUM_FLYWHEEL_VELOCITY_HOOD_CORRECTION ? MathUtil.deadband(rawD, d, ShooterConstants.FLYWHEEL_VELOCITY_HOOD_CORRECTION_DEADBAND) : 0;
+            d = MathUtil.clamp(d, dMin, dMax);
 
             hoodPosition+=getCorrectiveD(d);
         }
@@ -120,10 +119,8 @@ public class Hood {
             return positionsList.get(positionsList.size() - 1);
         }
 
-        //converting list to array - same positions are used for p and d interpolations
         double[] distances = distancesList.stream().mapToDouble(Double::doubleValue).toArray();
 
-        //getting bounds of the current target position
         double[] bounds = MathUtil.findBoundingValues(distances, distanceToGoal);
 
         double distance0 = bounds[0];
@@ -132,7 +129,6 @@ public class Hood {
         double hoodPosition0 = positionsList.get(distancesList.indexOf(distance0));
         double hoodPosition1 = positionsList.get(distancesList.indexOf(distance1));
 
-        //returning kd
         return MathUtil.interpolateLinear(
 
                 distanceToGoal,

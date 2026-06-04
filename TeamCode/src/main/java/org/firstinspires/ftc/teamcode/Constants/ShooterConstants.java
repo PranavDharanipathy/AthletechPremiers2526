@@ -16,7 +16,7 @@ public class ShooterConstants {
 
     public static double MIN_TURRET_POSITION_IN_DEGREES = -90, MAX_TURRET_POSITION_IN_DEGREES = 90;
 
-    public static double HOOD_ANGLER_MIN_POSITION = 0.85;
+    public static double HOOD_ANGLER_MIN_POSITION = 0.78;
     public static double HOOD_ANGLER_MAX_POSITION = 0;
 
     //arbitrary positions
@@ -49,11 +49,12 @@ public class ShooterConstants {
     /// Index 0 is translational, index 1 is heading.
     public static double[] THC_ACCELERATION_THRESHOLD = {0, 0};
 
-    public static List<Double> CLOSE_HOOD_DISTANCES = new ArrayList<>(List.of(10.0, 40.0, 75.0));
-    public static List<Double> CLOSE_HOOD_POSITIONS = new ArrayList<>(List.of(0.7, 1.0, 1.0));
+    public static List<Double> CLOSE_HOOD_DISTANCES = new ArrayList<>(List.of(48.5, 58.6, 73.03, 85.6, 98.2));
+    public static List<Double> CLOSE_FLYWHEEL_VELOCITIES = new ArrayList<>(List.of(1300d, 1450d, 1550d, 1630d, 1750d));
+    public static List<Double> CLOSE_HOOD_POSITIONS = new ArrayList<>(List.of(0.0, 0.0, 0.0, 0.0, 0.0));
 
     public static List<Double> FAR_HOOD_DISTANCES = new ArrayList<>(List.of(110.0, 150.0));
-    public static List<Double> FAR_HOOD_POSITIONS = new ArrayList<>(List.of(1.0, 1.0));
+    public static List<Double> FAR_HOOD_POSITIONS = new ArrayList<>(List.of(0.0, 0.0));
 
     /// Minimum flywheel velocity-based hood correction for the correction to be used.
     public static double MINIMUM_FLYWHEEL_VELOCITY_HOOD_CORRECTION = 0.004;
@@ -64,7 +65,7 @@ public class ShooterConstants {
     public static double HOOD_POSITION_FOR_MAX_SHOT_DISTANCE = 0;
 
     public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_INFLUENCE = 0;
-    public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_MINIMUM = -1;
-    public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_MAXIMUM = 1;
+    public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_MINIMUM = -0.1;
+    public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_MAXIMUM = 0.1;
 
 }

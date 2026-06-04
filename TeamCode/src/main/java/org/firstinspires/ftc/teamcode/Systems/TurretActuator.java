@@ -189,6 +189,9 @@ public class TurretActuator {
 
         error = targetVelocity - currentVelocity;
 
+        filteredVoltage = LowPassFilter.getFilteredValue(filteredVoltage, batterVoltageSensor.getVoltage(), voltageFilterAlpha);
+        double voltageScalar = tuningVoltage / LowPassFilter.getFilteredValue(filteredVoltage, tuningVoltage, Math.E / 3);
+
         //proportional
         kp = kpClose + kpFar * FastMath.tanh(sharpness * Math.abs(error));
         kp = MathUtil.clamp(kp, -1, 1);
@@ -208,18 +211,17 @@ public class TurretActuator {
         d = LowPassFilter.getFilteredValue(d, rawDerivative, nominalDt / (nominalDt + dt), kd / (nominalDt + dt));
 
         //velocity feedforward
-        filteredVoltage = LowPassFilter.getFilteredValue(filteredVoltage, batterVoltageSensor.getVoltage(), voltageFilterAlpha);
-
         double reZeroedTargetPosition = currentPosition - startPosition;
 
         double unscaledKv = reZeroedTargetPosition >= 0 ? unscaledKvRight : unscaledKvLeft;
-        double scaledKv = (tuningVoltage / filteredVoltage) * unscaledKv;
+        double scaledKv = voltageScalar * unscaledKv;
         v = scaledKv * targetVelocity;
 
         //friction feedforward
         double sControl = sMode == SMode.TARGET_VELOCITY ? targetVelocity : positionError;
         double gaussianDecayCalculationExponent = (targetVelocity != 0 || kStribeckVelocity != 0) ? -((targetVelocity / kStribeckVelocity) * (targetVelocity / kStribeckVelocity)) : 0;
-        s = kCoulomb * Math.signum(sControl) + ((tuningVoltage / filteredVoltage) * kB) * targetVelocity + (kStatic - kCoulomb) * Math.signum(sControl) * (FastMath.pow(Math.E, gaussianDecayCalculationExponent));
+        double scaledKb = voltageScalar * kB;
+        s = kCoulomb * Math.signum(sControl) + scaledKb * targetVelocity + (kStatic - kCoulomb) * Math.signum(sControl) * (FastMath.pow(Math.E, gaussianDecayCalculationExponent));
 
         if (PIDEnabled) setPower(p + i + d + v + s + additionalPower);
 
