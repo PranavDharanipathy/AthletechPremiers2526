@@ -204,8 +204,6 @@ public class Shooter implements EffectivelySubsystem {
         turretAimPosition = tt * ShooterConstants.TURRET_TICKS_PER_DEGREE + turretStartPosition;
 
         turret.setAim(turretAimPosition, virtualGoal, currentRobotPose, robotVelocity);
-        //turret.setAim(turretAimPosition, goalCoordinate, currentRobotPose, robotVelocity);
-
 
         //updating
         flywheel.update();

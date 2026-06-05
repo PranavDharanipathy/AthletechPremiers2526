@@ -39,6 +39,7 @@ public class Calculations {
     /// x is forward-backward and y is left-right.
     /// @param x In inches
     /// @param y In inches
+    /// @return the angle in degrees that the turret needs to turn to in order to face the goal.
     public static double getAngleToGoal(double x, double y, Pose goalCoordinate) {
 
         double dx = goalCoordinate.getX() - x;
