@@ -22,16 +22,18 @@ public class LocalizationConstants {
 
             .mass(14.2)
 
-            .forwardZeroPowerAcceleration(-24.671359021186653)
-            .lateralZeroPowerAcceleration(-56.07608848166188)
+            .forwardZeroPowerAcceleration(-79.89422798598751)
+            .lateralZeroPowerAcceleration(-60.18572705204171)
 
             .useSecondaryTranslationalPIDF(true)
             .useSecondaryHeadingPIDF(true)
             .useSecondaryDrivePIDF(false)
 
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0.01, 0.005))
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.2, 0, 0.03, 0.1))
+            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.0767,0.00008,0.0045,0.04))
 
-            .headingPIDFCoefficients(new PIDFCoefficients(0.85,0,0.086,0.1))
+            .headingPIDFCoefficients(new PIDFCoefficients(2,0,0.003,0.1))
+            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(1,0.0007,0.0025,0.025))
 
             .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.071,0.0005,0.000615,0.15,0.065))
 
@@ -39,15 +41,11 @@ public class LocalizationConstants {
             .headingPIDFSwitch(0.19)
             .drivePIDFSwitch(13)
 
+            .centripetalScaling(0.0003)
 
-            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.0767,0.00009,0.0185,0.005))
-
-            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(0.668,0.0007,0.085,0.025))
-
-            .centripetalScaling(0.0004)
             ;
 
-    public static PathConstraints PATH_CONSTANTS = new PathConstraints(0.994, 50, 1.4, 1.4);
+    public static PathConstraints PATH_CONSTANTS = new PathConstraints(0.994, 50, 1, 1);
     public static MecanumConstants DRIVE_CONSTANTS = new MecanumConstants()
             .maxPower(1)
             .leftFrontMotorName(MapSetterConstants.leftFrontMotorDeviceName)
@@ -59,8 +57,8 @@ public class LocalizationConstants {
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
 
-            .xVelocity(82.51125978484868)
-            .yVelocity(61.454884446512054);
+            .xVelocity(70.08639598455954)
+            .yVelocity(48.87915231299213);
 
     public static PinpointConstants LOCALIZER_CONSTANTS = new PinpointConstants()
             .forwardPodY(5.262795276)

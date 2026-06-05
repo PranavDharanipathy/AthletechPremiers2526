@@ -11,9 +11,6 @@ public class ShooterConstants {
     /// Y-Point that differentiates the turret pointing at the goal far/close position.
     public static double FAR_ZONE_CLOSE_ZONE_BARRIER = -35;
 
-    public static double FAR_SIDE_FLYWHEEL_SHOOT_VELOCITY = 1800;
-    public static double CLOSE_SIDE_FLYWHEEL_SHOOT_VELOCITY = 500;
-
     public static double MIN_TURRET_POSITION_IN_DEGREES = -90, MAX_TURRET_POSITION_IN_DEGREES = 90;
 
     public static double HOOD_ANGLER_MIN_POSITION = 0.78;
@@ -32,28 +29,12 @@ public class ShooterConstants {
 
     public static double TURRET_POSITIONAL_OFFSET = -1.775591;
 
-    /// The robot velocities must be greater than this for turret hysteresis control to be used.
-    /// <p>
-    /// Index 0 is translational, index 1 in angular (in radians).
-    /// <p>
-    /// Translational is in inches per second and angular is in radians per second.
-    public static double[] THC_ENGAGE_VELOCITY = {4, Math.toRadians(5)};
-
-    /// Scalar value representing how influential acceleration is.
-    /// <p>
-    /// Should ONLY be tuned after the rest of THC.
-    public static double THC_ACCELERATION_INFLUENCE = 0;
-
-    /// Minimum acceleration required for acceleration to be used in pose prediction for THC.
-    /// <p>
-    /// Index 0 is translational, index 1 is heading.
-    public static double[] THC_ACCELERATION_THRESHOLD = {0, 0};
-
     public static List<Double> CLOSE_HOOD_DISTANCES = new ArrayList<>(List.of(48.5, 58.6, 73.03, 85.6, 98.2));
     public static List<Double> CLOSE_FLYWHEEL_VELOCITIES = new ArrayList<>(List.of(1300d, 1450d, 1550d, 1630d, 1750d));
     public static List<Double> CLOSE_HOOD_POSITIONS = new ArrayList<>(List.of(0.0, 0.0, 0.0, 0.0, 0.0));
 
     public static List<Double> FAR_HOOD_DISTANCES = new ArrayList<>(List.of(110.0, 150.0));
+    public static List<Double> FAR_FLYWHEEL_VELOCITIES = new ArrayList<>(List.of(1800d, 1850d));
     public static List<Double> FAR_HOOD_POSITIONS = new ArrayList<>(List.of(0.0, 0.0));
 
     /// Minimum flywheel velocity-based hood correction for the correction to be used.
@@ -67,5 +48,10 @@ public class ShooterConstants {
     public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_INFLUENCE = 0;
     public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_MINIMUM = -0.1;
     public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_MAXIMUM = 0.1;
+
+    /// in seconds
+    public static double FLYWHEEL_SPEED_ADJUSTMENT_T = 1;
+
+    public static double FLYWHEEL_SHOOT_SLIP_FACTOR = 0.85;
 
 }

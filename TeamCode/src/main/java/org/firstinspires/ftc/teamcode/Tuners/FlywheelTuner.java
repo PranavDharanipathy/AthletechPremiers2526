@@ -23,7 +23,7 @@ public class FlywheelTuner extends LinearOpMode {
 
     public enum TUNING_STAGES {
 
-        PIDVS /*1st*/, kPIDFUnitsPerVolt/*2nd*/, KV_SCALED /*3rd*/, STABILITY
+        PIDVS /*1st*/, kPIDFUnitsPerVolt/*2nd*/, VOLTAGE_COMPENSATED /*3rd*/, STABILITY
     }
 
     public static TUNING_STAGES TUNING_STAGE = TUNING_STAGES.PIDVS;
@@ -120,7 +120,7 @@ public class FlywheelTuner extends LinearOpMode {
 
             telemetry.addData("voltage", currentVoltage);
 
-            if (TUNING_STAGE == TUNING_STAGES.KV_SCALED) {
+            if (TUNING_STAGE == TUNING_STAGES.VOLTAGE_COMPENSATED) {
                 coefficients.setTuning(false);
             }
             else {

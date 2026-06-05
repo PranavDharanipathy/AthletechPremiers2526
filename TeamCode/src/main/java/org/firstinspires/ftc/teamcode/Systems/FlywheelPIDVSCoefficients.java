@@ -143,10 +143,26 @@ public class FlywheelPIDVSCoefficients {
         this.maxD = maxD;
     }
 
-    public double kp(double targetVelocity, double currentVelocity) {
+    private Double filteredVoltage = null;
 
-        if (Math.abs(targetVelocity - currentVelocity) < pSwitch) return kpClose;
-        else return kpFar;
+    public double kp(double targetVelocity, double currentVelocity, double currentVoltage) {
+
+        if (filteredVoltage == null) { //set to tuning voltage if there is no voltage previously set
+            filteredVoltage = tuningVoltage;
+        }
+        else {
+            filteredVoltage = LowPassFilter.getFilteredValue(filteredVoltage, currentVoltage, voltageFilterAlpha);
+        }
+
+        double unscaledKp;
+        if (Math.abs(targetVelocity - currentVelocity) < pSwitch) unscaledKp = kpClose;
+        else return unscaledKp = kpFar;
+
+        if (tuning) return unscaledKp;
+
+        double scaledKp = (tuningVoltage / filteredVoltage) * unscaledKp;
+
+        return LowPassFilter.getFilteredValue(unscaledKv, scaledKp, voltageCompensationWeight);
     }
 
     private double kISwitchTargetVelocity;
@@ -163,17 +179,8 @@ public class FlywheelPIDVSCoefficients {
         else return kiFar;
     }
 
-    private Double filteredVoltage = null;
-
     /// Run every loop
-    public double kv(double currentVoltage) {
-
-        if (filteredVoltage == null) { //set to tuning voltage if there is no voltage previously set
-            filteredVoltage = tuningVoltage;
-        }
-        else {
-            filteredVoltage = LowPassFilter.getFilteredValue(filteredVoltage, currentVoltage, voltageFilterAlpha);
-        }
+    public double kv() {
 
         if (tuning) return unscaledKv;
 

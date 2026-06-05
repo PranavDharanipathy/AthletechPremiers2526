@@ -50,11 +50,10 @@ public class PoseVelocityTrackerTesting extends TeleOpBaseOpMode {
         telemetry.addData("raw pose", botPose.toString());
 
         telemetry.addData("future pose",
-                Calculations.getFutureRobotPose(
+                Calculations.getFutureBotPose(
                         1.3,
                         botPose,
                         botVel,
-                        ShooterConstants.THC_ACCELERATION_INFLUENCE,
                         botAccel
                 ).toString()
         );

@@ -124,11 +124,11 @@ public final class Flywheel {
     /// Setting variables that do in fact change
     private void chooseCoefficientsInternal() {
 
-        kp = coefficients.kp(targetVelocity, currentVelocity);
+        kp = coefficients.kp(targetVelocity, currentVelocity, batteryVoltageSensor.getVoltage());
 
         ki = coefficients.ki(targetVelocity, currentVelocity, errorSum);
 
-        kv = coefficients.kv(batteryVoltageSensor.getVoltage());
+        kv = coefficients.kv();
     }
 
     private double currentTime = 0;

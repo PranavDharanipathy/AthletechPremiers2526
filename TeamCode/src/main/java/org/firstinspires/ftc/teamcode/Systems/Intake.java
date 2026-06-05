@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
+import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.teamcode.Constants.GeneralConstants;
 import org.firstinspires.ftc.teamcode.Constants.IntakeConstants;
 import org.firstinspires.ftc.teamcode.util.BetterGamepad;
@@ -9,13 +11,17 @@ public class Intake extends Subsystem {
 
     private IntakeActuator intakeSystem;
 
+    private Servo dropDown;
+
     private Blocker blockerSubsystem;
 
     private BetterGamepad controller1;
 
-    public void provideComponents(IntakeActuator intake, Blocker blockerSubsystem, BetterGamepad controller1) {
+    public void provideComponents(IntakeActuator intake, Servo dropDown, Blocker blockerSubsystem, BetterGamepad controller1) {
 
         intakeSystem = intake;
+
+        this.dropDown = dropDown;
 
         this.blockerSubsystem = blockerSubsystem;
 
@@ -32,14 +38,17 @@ public class Intake extends Subsystem {
         else if (controller1.right_trigger(GeneralConstants.TRIGGER_THRESHOLD)) {
             intakeSystem.setIntakePower(IntakeConstants.INTAKE_POWER);
             intakeSystem.setTransferVelocity(IntakeConstants.TRANSFER_IDLE_VELOCITY);
+            dropDown.setPosition(IntakeConstants.DROPDOWN_INTAKING_POSITION);
         }
         else if (controller1.left_trigger(GeneralConstants.TRIGGER_THRESHOLD)) {
             intakeSystem.setIntakePower(IntakeConstants.REVERSE_INTAKE_POWER);
             intakeSystem.setTransferPower(IntakeConstants.REVERSE_TRANSFER_POWER);
+            dropDown.setPosition(IntakeConstants.DROPDOWN_INTAKING_POSITION);
         }
         else {
             intakeSystem.setIntakePower(0);
             intakeSystem.setTransferVelocity(0);
+            dropDown.setPosition(IntakeConstants.DROPDOWN_IDLE_POSITION);
         }
 
         intakeSystem.update();

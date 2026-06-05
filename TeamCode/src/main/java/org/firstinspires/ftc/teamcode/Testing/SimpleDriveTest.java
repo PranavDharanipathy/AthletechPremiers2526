@@ -50,7 +50,7 @@ public class SimpleDriveTest extends TeleOpBaseOpMode {
                 motors[3],
                 controller1
         );
-        intake.provideComponents(super.intake, blocker /*subsystem*/, controller1);
+        intake.provideComponents(super.intake, dropDown, blocker /*subsystem*/, controller1);
         blocker.provideComponents(super.blocker, controller1);
         setUpLynxModule();
     }

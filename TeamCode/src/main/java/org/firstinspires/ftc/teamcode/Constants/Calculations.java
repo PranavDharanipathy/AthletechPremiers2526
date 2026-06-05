@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Constants;
 
-import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.THC_ACCELERATION_THRESHOLD;
-
 import com.pedropathing.geometry.Pose;
 
 import org.apache.commons.math3.util.FastMath;
@@ -16,9 +14,24 @@ public class Calculations {
 
         double x = MathUtil.metersToInches(pose3d.getPosition().y);
         double y = -MathUtil.metersToInches(pose3d.getPosition().x);
-        double yaw = Math.toRadians(pose3d.getOrientation().getYaw() - 90);
+        double yaw = Math.toRadians(pose3d.getOrientation().getYaw() - 90d);
 
         return new Pose(x, y, yaw);
+    }
+
+    /// LOS is line-of-sight
+    /// @param tx is target x
+    /// @param ty is target y
+    /// @param x is your x
+    /// @param y is your y
+    /// @param vx is your x velocity
+    /// @param vy is your y velocity
+    public static double calculateLOSAngularVelocity(double tx, double ty, double x, double y, double vx, double vy) {
+
+        double dx = tx - x;
+        double dy = ty - y;
+
+        return (dx * vy - dy * vx) / (dx * dx + dy * dy);
     }
 
     /// The angle in degrees that is required for any system to look in to be pointing at the goal.
@@ -47,8 +60,8 @@ public class Calculations {
 
         double turretHeading = botPose.getHeading() + turretRotation;
 
-        double turretX = botPose.getX() + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.sin(botPose.getHeading()));
-        double turretY = botPose.getY() + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.cos(botPose.getHeading()));
+        double turretX = botPose.getX() + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.cos(botPose.getHeading()));
+        double turretY = botPose.getY() + (ShooterConstants.TURRET_POSITIONAL_OFFSET * FastMath.sin(botPose.getHeading()));
 
         return new Pose(
                 turretX,
@@ -57,21 +70,28 @@ public class Calculations {
         );
     }
 
-    /// @param accelerationInfluence Scalar value representing how influential acceleration is.
-    public static Pose getFutureRobotPose(double t, Pose currentRobotPose, PoseVelocity poseVelocity, double accelerationInfluence, PoseAcceleration poseAcceleration) {
+    public static Pose getFutureBotPose(double t, Pose currentRobotPose, PoseVelocity poseVelocity, PoseAcceleration poseAcceleration) {
 
-        final double translationalAccel = Math.hypot(poseAcceleration.getXAcceleration(), poseAcceleration.getYAcceleration());
-
-        double translationalAccelInfluence = translationalAccel >= THC_ACCELERATION_THRESHOLD[0] ? accelerationInfluence : 0;
-        double headingAccelInfluence = poseAcceleration.getAngularAcceleration() >= THC_ACCELERATION_THRESHOLD[1] ? accelerationInfluence : 0;
+        final double t2 = 0.5 * t * t;
 
         return new Pose(
-                currentRobotPose.getX() + (t * poseVelocity.getXVelocity()) + (translationalAccelInfluence * poseAcceleration.getXAcceleration() * (t * t)),
-                currentRobotPose.getY() + (t * poseVelocity.getYVelocity()) + (translationalAccelInfluence * poseAcceleration.getYAcceleration() * (t * t)),
-                MathUtil.normalizeAngleRad(currentRobotPose.getHeading() + (t * poseVelocity.getAngularVelocity()) + (headingAccelInfluence * poseAcceleration.getAngularAcceleration() * (t * t)))
+                currentRobotPose.getX() + (t * poseVelocity.getXVelocity()) + (poseAcceleration.getXAcceleration() * t2),
+                currentRobotPose.getY() + (t * poseVelocity.getYVelocity()) + (poseAcceleration.getYAcceleration() * t2),
+                MathUtil.normalizeAngleRad(currentRobotPose.getHeading() + (t * poseVelocity.getAngularVelocity()) + (poseAcceleration.getAngularAcceleration() * t2))
         );
     }
 
+    public static Pose getVirtualGoalCoordinate(double tof, PoseVelocity poseVelocity, PoseAcceleration poseAcceleration, Pose goalCoordinate) {
+
+
+        final double tof2 = 0.5 * tof * tof;
+
+        return new Pose(
+                goalCoordinate.getX() - (tof * poseVelocity.getXVelocity()) - (poseAcceleration.getXAcceleration() * tof2),
+                goalCoordinate.getY() - (tof * poseVelocity.getYVelocity()) - (poseAcceleration.getYAcceleration() * tof2)
+        );
+
+    }
 
     /// @return robots translational velocity vector
     public static double getRobotTranslationalVelocity(double xVelocity, double yVelocity) {

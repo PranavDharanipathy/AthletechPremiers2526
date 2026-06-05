@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Tuners.SOTM;
+package org.firstinspires.ftc.teamcode.Tuners;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;

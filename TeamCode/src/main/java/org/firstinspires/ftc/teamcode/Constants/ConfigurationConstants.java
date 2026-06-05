@@ -44,17 +44,20 @@ public class ConfigurationConstants {
 
     public static double[] TRANSFER_PDF_COEFFICIENTS = {0.00012, 0.000005, 0.00042};
 
+    /// in grams
     public static double FLYWHEEL_ASSEMBLY_TOTAL_WEIGHT = 829;
+    /// in inches
+    public static double FLYWHEEL_DIAMETER = 2.83464567;
     public static double FLYWHEEL_SHAFT_DIAMETER = 8;
     public static double FLYWHEEL_MOTOR_CORE_VOLTAGE = 12;
     public static double FLYWHEEL_MOTOR_RPM = 6000;
 
     public static FlywheelPIDVSCoefficients FLYWHEEL_PIDVS_COEFFICIENTS = new FlywheelPIDVSCoefficients(
-            0.001175 /*0.00095*/,
+            0.001153 /*0.001175*/,
             0.000045,
             0,
             0.0000275,
-            0.0000075,
+            0.0000012,
             0.0003424,
             0.000001,
             1.35,

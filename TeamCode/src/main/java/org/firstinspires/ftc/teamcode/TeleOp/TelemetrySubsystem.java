@@ -61,7 +61,7 @@ public class TelemetrySubsystem implements EffectivelySubsystem {
 
         telem.addData("CURRENT ZONE", shooter.getCurrentZoneBasedOnLocation());
 
-        telem.addData(TelemetryMode.RAW_DATA, "on alliance side?", shooter.accessGoalCoordinates().onAllianceSide(shooter.futureRobotPose.getY()));
+        telem.addData(TelemetryMode.RAW_DATA, "on alliance side?", shooter.accessGoalCoordinates().onAllianceSide(shooter.currentRobotPose.getY()));
 
         telem.addData(TelemetryMode.RAW_DATA, "distance to goal", shooter.distanceToGoal);
 
@@ -74,8 +74,6 @@ public class TelemetrySubsystem implements EffectivelySubsystem {
         telem.addData(TelemetryMode.INFO, "turret position error", shooter.turret.getError());
 
         telem.addData(TelemetryMode.RAW_DATA, "current robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.currentRobotPose.getX(), shooter.currentRobotPose.getY(), Math.toDegrees(shooter.currentRobotPose.getHeading()));
-        telem.addData(TelemetryMode.INFO, "future robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.futureRobotPose.getX(), shooter.futureRobotPose.getY(), Math.toDegrees(shooter.futureRobotPose.getHeading()));
-        telem.addData(TelemetryMode.RAW_DATA, "turret lookahead time", shooter.getTHCLookahead());
 
         telem.addData(TelemetryMode.RAW_DATA, "f p", "%.5f", shooter.flywheel.p);
         telem.addData(TelemetryMode.RAW_DATA, "f i", "%.5f", shooter.flywheel.i);

@@ -34,6 +34,7 @@ public abstract class TeleOpBaseOpMode extends OpMode {
     public DcMotor left_front, right_front, left_back, right_back;
 
     public IntakeActuator intake;
+    public Servo dropDown;
 
     public Blocker blocker;
     public Lift lift;
@@ -79,6 +80,7 @@ public abstract class TeleOpBaseOpMode extends OpMode {
         follower = LocalizationConstants.createFollower(hardwareMap);
 
         intake = new IntakeActuator(hardwareMap);
+        dropDown = hardwareMap.get(Servo.class, MapSetterConstants.intakeDropDownServoDeviceName);
 
         blocker = new Blocker(hardwareMap.get(Servo.class, MapSetterConstants.blockerServoDeviceName));
 
@@ -115,6 +117,7 @@ public abstract class TeleOpBaseOpMode extends OpMode {
                 ConfigurationConstants.TRANSFER_PDF_COEFFICIENTS[1],
                 ConfigurationConstants.TRANSFER_PDF_COEFFICIENTS[2]
         );
+        dropDown.setDirection(ConfigurationConstants.INTAKE_DROPDOWN_SERVO_DIRECTION);
 
         camera.setPollRateHz(CameraConstants.CAMERA_POLL_RATE);
 

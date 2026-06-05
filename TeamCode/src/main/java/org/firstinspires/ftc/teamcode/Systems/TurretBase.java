@@ -1,14 +1,17 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Constants.Calculations;
 import org.firstinspires.ftc.teamcode.Constants.ShooterConstants;
 import org.firstinspires.ftc.teamcode.util.DynamicTrapezoidalSum;
 import org.firstinspires.ftc.teamcode.util.LowPassFilter;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
+import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseVelocity;
 
 import static org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants.TURRET_PD_POSITIONS;
 import static org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants.TURRET_KPS;
@@ -222,6 +225,23 @@ public class TurretBase {
 
     public void setVelocity(double velocity) {
         if (travelVelocity != velocity) travelVelocity = velocity;
+    }
+
+    public void setAim(double position, Pose goalCoordinate, Pose robotPose, PoseVelocity robotVelocity) {
+
+        double translationalVelocityContribution = Calculations.calculateLOSAngularVelocity(
+                goalCoordinate.getX(),
+                goalCoordinate.getY(),
+                robotPose.getX(),
+                robotPose.getY(),
+                robotVelocity.getXVelocity(),
+                robotVelocity.getYVelocity()
+        );
+
+        double velocityDeg = Math.toDegrees(-translationalVelocityContribution - robotVelocity.getAngularVelocity());
+
+        setPosition(position);
+        setVelocity(velocityDeg * ShooterConstants.TURRET_TICKS_PER_DEGREE);
     }
 
     public double getLastTargetPosition() {

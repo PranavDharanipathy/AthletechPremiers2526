@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Systems;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants.Calculations;
 import org.firstinspires.ftc.teamcode.Constants.CameraConstants;
 import org.firstinspires.ftc.teamcode.Constants.FieldConstants;
@@ -22,9 +21,6 @@ import org.firstinspires.ftc.teamcode.util.EffectivelySubsystem;
 import static org.firstinspires.ftc.teamcode.Constants.CameraConstants.MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY;
 import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.CLOSE_FLYWHEEL_VELOCITIES;
 import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.CLOSE_HOOD_DISTANCES;
-import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.THC_ENGAGE_VELOCITY;
-
-import androidx.annotation.NonNull;
 
 import java.util.List;
 import java.util.function.DoubleBinaryOperator;
@@ -124,14 +120,12 @@ public class Shooter implements EffectivelySubsystem {
 
     private Pose goalCoordinate;
 
-    /// For hysteresis control on the turret, this is the robot's position on the field at a point in time in the future.
-    public Pose futureRobotPose;
     public Pose currentRobotPose;
     public Pose turretPose;
-    private double turretTimeLookahead = 0;
-    private boolean shouldUseTHC = false; //initially the bot is stationary
 
     public double distanceToGoal;
+
+    private FieldConstants.GoalCoordinatesForDistance goalCoordinatesForDistance;
 
     public void update() {
 
@@ -165,50 +159,7 @@ public class Shooter implements EffectivelySubsystem {
 
         //goalAimUpdate();
 
-        //hysteresis control is only used if the robot is moving fast enough
-        shouldUseTHC = Math.abs(translationalVelocity) > THC_ENGAGE_VELOCITY[0] || Math.abs(robotVelocity.getAngularVelocity()) > THC_ENGAGE_VELOCITY[1];
-
-        if (false /*shouldUseTHC*/) { //set to 'false /*shouldUseTHC*/' until THC is tuned, after which set to 'shouldUseTHC'
-
-            if (THCTuning) {
-                turretTimeLookahead = customTHCTime;
-            }
-            else {
-                turretTimeLookahead = Models.getTHCPosePredictionTime(turretCurrentPosition, turret.getError());
-            }
-
-            futureRobotPose = Calculations.getFutureRobotPose(
-                    turretTimeLookahead,
-                    currentRobotPose,
-                    robotVelocity,
-                    ShooterConstants.THC_ACCELERATION_INFLUENCE,
-                    robotAcceleration
-            );
-        }
-        else {
-
-            turretTimeLookahead = 0;
-            futureRobotPose = currentRobotPose;
-        }
-
-        turretPose = Calculations.getTurretPoseFromBotPose(futureRobotPose, turretCurrentPosition, turretStartPosition);
-
-        //changing the coordinate that the turret aims at based on targeted zones determined by distance
-        if (currentRobotPose.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
-            goalCoordinate = goalCoordinates.getCloseCoordinate(futureRobotPose.getY(), goalCoordinates);
-        }
-        else {
-            goalCoordinate = goalCoordinates.getFarCoordinate();
-        }
-
-        double angleToGoal = Calculations.getAngleToGoal(turretPose.getX(), turretPose.getY(), goalCoordinate);
-
-        double rawtt = MathUtil.normalizeAngleDeg(Math.toDegrees(robotHeadingRad) - angleToGoal);
-        tt = Calculations.routeTurret(rawtt);
-
-        turretAimPosition = tt * ShooterConstants.TURRET_TICKS_PER_DEGREE + turretStartPosition;
-
-        turret.setPosition(turretAimPosition);
+        turretPose = Calculations.getTurretPoseFromBotPose(currentRobotPose, turretCurrentPosition, turretStartPosition);
 
         //hood
         hood.setAimZone(
@@ -217,7 +168,7 @@ public class Shooter implements EffectivelySubsystem {
                 : Hood.AimZone.FAR
         );
 
-        FieldConstants.GoalCoordinatesForDistance goalCoordinatesForDistance =
+        goalCoordinatesForDistance =
                 goalCoordinates == FieldConstants.GoalCoordinates.BLUE
                         ? FieldConstants.GoalCoordinatesForDistance.BLUE
                         : FieldConstants.GoalCoordinatesForDistance.RED;
@@ -227,33 +178,66 @@ public class Shooter implements EffectivelySubsystem {
         //flywheel
         if (controller1.left_bumperHasJustBeenPressed) shooterToggle = !shooterToggle;
 
-        if (shooterToggle) flywheel.setVelocity(getFlywheelTargetVelocityFromInterpolation(distanceToGoal), false);
+        if (shooterToggle) flywheel.setVelocity(getFlywheelTargetVelocityFromInterpolation(currentRobotPose, robotVelocity, robotAcceleration), false);
         else flywheel.setVelocity(0, true);
 
+        //turret
+
+        double flywheelTargetVelocity = flywheel.getTargetVelocity();
+        double timeOfFlight = flywheelTargetVelocity != 0 ? distanceToGoal / Models.getBallSpeedFromFlywheel(flywheelTargetVelocity) : 0;
+
+        //changing the coordinate that the turret aims at based on targeted zones determined by distance
+        if (currentRobotPose.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
+            goalCoordinate = goalCoordinates.getCloseCoordinate(currentRobotPose.getY(), goalCoordinates);
+        }
+        else {
+            goalCoordinate = goalCoordinates.getFarCoordinate();
+        }
+
+        Pose virtualGoal = Calculations.getVirtualGoalCoordinate(timeOfFlight, robotVelocity, robotAcceleration, goalCoordinate);
+
+        double angleToGoal = Calculations.getAngleToGoal(turretPose.getX(), turretPose.getY(), virtualGoal);
+
+        double rawtt = MathUtil.normalizeAngleDeg(Math.toDegrees(robotHeadingRad) - angleToGoal);
+        tt = Calculations.routeTurret(rawtt);
+
+        turretAimPosition = tt * ShooterConstants.TURRET_TICKS_PER_DEGREE + turretStartPosition;
+
+        turret.setAim(turretAimPosition, virtualGoal, currentRobotPose, robotVelocity);
+        //turret.setAim(turretAimPosition, goalCoordinate, currentRobotPose, robotVelocity);
+
+
         //updating
-        turret.update();
         flywheel.update();
         hood.update(distanceToGoal);
+        turret.update();
     }
 
-    private double getFlywheelTargetVelocityFromInterpolation(double distanceToGoal) {
+    private double getFlywheelTargetVelocityFromInterpolation(Pose botPose, PoseVelocity robotVelocity, PoseAcceleration robotAcceleration) {
 
-        if (distanceToGoal < CLOSE_HOOD_DISTANCES.get(0)) {
-            return CLOSE_FLYWHEEL_VELOCITIES.get(0);
+        Pose futurePose = Calculations.getFutureBotPose(ShooterConstants.FLYWHEEL_SPEED_ADJUSTMENT_T, botPose, robotVelocity, robotAcceleration);
+
+        double distanceToGoal = Calculations.getDistanceFromGoal(futurePose.getX(), futurePose.getY(), goalCoordinatesForDistance.getCoordinate());
+
+        List<Double> distances = CLOSE_HOOD_DISTANCES;
+        List<Double> velocities = CLOSE_FLYWHEEL_VELOCITIES;
+
+        if (distanceToGoal < distances.get(0)) {
+            return velocities.get(0);
         }
-        else if (distanceToGoal > CLOSE_HOOD_DISTANCES.get(CLOSE_HOOD_DISTANCES.size() - 1)) {
-            return CLOSE_FLYWHEEL_VELOCITIES.get(CLOSE_FLYWHEEL_VELOCITIES.size() - 1);
+        else if (distanceToGoal > distances.get(distances.size() - 1)) {
+            return velocities.get(velocities.size() - 1);
         }
 
-        double[] distances = CLOSE_HOOD_DISTANCES.stream().mapToDouble(Double::doubleValue).toArray();
+        double[] distancesArray = distances.stream().mapToDouble(Double::doubleValue).toArray();
 
-        double[] bounds = MathUtil.findBoundingValues(distances, distanceToGoal);
+        double[] bounds = MathUtil.findBoundingValues(distancesArray, distanceToGoal);
 
         double distance0 = bounds[0];
         double distance1 = bounds[1];
 
-        double flywheelVelocity0 = CLOSE_FLYWHEEL_VELOCITIES.get(CLOSE_HOOD_DISTANCES.indexOf(distance0));
-        double flywheelVelocity1 = CLOSE_FLYWHEEL_VELOCITIES.get(CLOSE_HOOD_DISTANCES.indexOf(distance1));
+        double flywheelVelocity0 = velocities.get(distances.indexOf(distance0));
+        double flywheelVelocity1 = velocities.get(distances.indexOf(distance1));
 
         return MathUtil.interpolateLinear(
 
@@ -324,22 +308,6 @@ public class Shooter implements EffectivelySubsystem {
 
     public String getCurrentZoneBasedOnLocation() {
         return currentRobotPose.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER ? "CLOSE" : "FAR";
-    }
-
-    public double getTHCLookahead() {
-        return turretTimeLookahead;
-    }
-
-    private boolean THCTuning = false;
-
-    public void setTHCTuning(boolean tuning) {
-        THCTuning = tuning;
-    }
-
-    private double customTHCTime;
-
-    public void provideCustomTHCTime(DoubleBinaryOperator model) {
-        customTHCTime = model.applyAsDouble(turret.getCurrentPosition(), turret.getError());
     }
 
 }
