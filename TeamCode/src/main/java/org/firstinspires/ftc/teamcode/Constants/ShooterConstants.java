@@ -52,6 +52,6 @@ public class ShooterConstants {
     /// in seconds
     public static double FLYWHEEL_SPEED_ADJUSTMENT_T = 1;
 
-    public static double FLYWHEEL_SHOOT_SLIP_FACTOR = 0.85;
+    public static double FLYWHEEL_SHOOT_SLIP_FACTOR = 0.955;
 
 }

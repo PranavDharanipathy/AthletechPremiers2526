@@ -238,7 +238,7 @@ public class TurretBase {
                 robotVelocity.getYVelocity()
         );
 
-        double velocityDeg = Math.toDegrees(-translationalVelocityContribution - robotVelocity.getAngularVelocity());
+        double velocityDeg = -Math.toDegrees(translationalVelocityContribution + robotVelocity.getAngularVelocity());
 
         setPosition(position);
         setVelocity(velocityDeg * ShooterConstants.TURRET_TICKS_PER_DEGREE);

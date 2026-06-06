@@ -6,7 +6,6 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Constants.Calculations;
-import org.firstinspires.ftc.teamcode.Constants.ShooterConstants;
 import org.firstinspires.ftc.teamcode.TeleOp.TeleOpBaseOpMode;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.PedroDrive;
 import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseAcceleration;
@@ -14,7 +13,7 @@ import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseVelocity;
 import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseSpeedTracker;
 
 @TeleOp(group = "testing")
-public class PoseVelocityTrackerTesting extends TeleOpBaseOpMode {
+public class PoseSpeedTrackerTesting extends TeleOpBaseOpMode {
 
     private PoseSpeedTracker poseSpeedTracker;
 
@@ -58,7 +57,13 @@ public class PoseVelocityTrackerTesting extends TeleOpBaseOpMode {
                 ).toString()
         );
 
-        telemetry.addData("bot vel", "x: %.2f, y: %.2f, heading: %.2f", botVel.getXVelocity(), botVel.getYVelocity(), botVel.getAngularVelocity());
+        telemetry.addData("vel x", botVel.getXVelocity());
+        telemetry.addData("vel y", botVel.getYVelocity());
+        telemetry.addData("vel heading", botVel.getAngularVelocity());
+
+        telemetry.addData("accel x", botAccel.getXAcceleration());
+        telemetry.addData("accel y", botAccel.getYAcceleration());
+        telemetry.addData("accel heading", botAccel.getAngularAcceleration());
 
         double[][] histories = poseSpeedTracker.getHistories();
         double[] xVelHistory = histories[0];

@@ -31,11 +31,12 @@ public class PoseSpeedTracker {
         velHistory.set(1, currentVel);
     }
 
-    private double calcVelUnitless(List<Double> velHistory) {
+    private double calcVelUnitless(List<Double> velHistory, boolean isAngVel) {
 
         double[] history = velHistory.stream().mapToDouble(Double::doubleValue).toArray();
 
-        return history[1] - history[0];
+        double vel = history[1] - history[0];
+        return isAngVel ? -vel : vel;
     }
 
     private void buildAccelHistory(List<Double> accelHistory, double currentAccel) {
@@ -73,9 +74,9 @@ public class PoseSpeedTracker {
         buildVelHistory(ySpeedHistory, pose.getY());
         buildVelHistory(angSpeedHistory, pose.getHeading());
 
-        xVelocity = calcVelUnitless(xSpeedHistory) / dt;
-        yVelocity = calcVelUnitless(ySpeedHistory) / dt;
-        angularVelocity = calcVelUnitless(angSpeedHistory) / dt;
+        xVelocity = calcVelUnitless(xSpeedHistory, false) / dt;
+        yVelocity = calcVelUnitless(ySpeedHistory, false) / dt;
+        angularVelocity = calcVelUnitless(angSpeedHistory, true) / dt;
 
         buildAccelHistory(xSpeedHistory, xVelocity);
         buildAccelHistory(ySpeedHistory, yVelocity);

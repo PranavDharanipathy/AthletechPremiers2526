@@ -73,7 +73,7 @@ public class TelemetrySubsystem implements EffectivelySubsystem {
         telem.addData(TelemetryMode.INFO, "turret target angle", shooter.tt);
         telem.addData(TelemetryMode.INFO, "turret position error", shooter.turret.getError());
 
-        telem.addData(TelemetryMode.RAW_DATA, "current robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.currentRobotPose.getX(), shooter.currentRobotPose.getY(), Math.toDegrees(shooter.currentRobotPose.getHeading()));
+        telem.addData(TelemetryMode.INFO, "current robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.currentRobotPose.getX(), shooter.currentRobotPose.getY(), Math.toDegrees(shooter.currentRobotPose.getHeading()));
 
         telem.addData(TelemetryMode.RAW_DATA, "f p", "%.5f", shooter.flywheel.p);
         telem.addData(TelemetryMode.RAW_DATA, "f i", "%.5f", shooter.flywheel.i);

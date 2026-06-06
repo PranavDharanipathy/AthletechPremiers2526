@@ -18,9 +18,9 @@ public class Models {
         return MathUtil.clamp(SCALE_WEIGHT * scaledAlpha + (1.0 - SCALE_WEIGHT) * NOMINAL_ALPHA, MIN_ALPHA, MAX_ALPHA);
     }
 
-    public static double getBallSpeedFromFlywheel(double flywheelCurrentVelocity) {
+    public static double getBallSpeedFromFlywheel(double flywheelVelocity) {
 
-        double flywheelRPS = (flywheelCurrentVelocity / 28d);
+        double flywheelRPS = (flywheelVelocity / 28d);
 
         return ShooterConstants.FLYWHEEL_SHOOT_SLIP_FACTOR * flywheelRPS * Math.PI * ConfigurationConstants.FLYWHEEL_DIAMETER;
     }

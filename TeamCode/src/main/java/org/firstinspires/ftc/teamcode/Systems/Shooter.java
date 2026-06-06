@@ -178,7 +178,7 @@ public class Shooter implements EffectivelySubsystem {
         //flywheel
         if (controller1.left_bumperHasJustBeenPressed) shooterToggle = !shooterToggle;
 
-        if (shooterToggle) flywheel.setVelocity(getFlywheelTargetVelocityFromInterpolation(currentRobotPose, robotVelocity, robotAcceleration), false);
+        if (shooterToggle) flywheel.setVelocity(getFlywheelTargetVelocityFromInterpolation(currentRobotPose, robotVelocity, robotAcceleration, goalCoordinatesForDistance), false);
         else flywheel.setVelocity(0, true);
 
         //turret
@@ -211,7 +211,7 @@ public class Shooter implements EffectivelySubsystem {
         turret.update();
     }
 
-    private double getFlywheelTargetVelocityFromInterpolation(Pose botPose, PoseVelocity robotVelocity, PoseAcceleration robotAcceleration) {
+    public static double getFlywheelTargetVelocityFromInterpolation(Pose botPose, PoseVelocity robotVelocity, PoseAcceleration robotAcceleration, FieldConstants.GoalCoordinatesForDistance goalCoordinatesForDistance) {
 
         Pose futurePose = Calculations.getFutureBotPose(ShooterConstants.FLYWHEEL_SPEED_ADJUSTMENT_T, botPose, robotVelocity, robotAcceleration);
 
