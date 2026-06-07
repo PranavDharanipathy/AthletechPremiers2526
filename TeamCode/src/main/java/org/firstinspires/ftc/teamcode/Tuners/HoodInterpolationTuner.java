@@ -12,11 +12,13 @@ import org.firstinspires.ftc.teamcode.Constants.Calculations;
 import org.firstinspires.ftc.teamcode.Constants.CameraConstants;
 import org.firstinspires.ftc.teamcode.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
+import org.firstinspires.ftc.teamcode.Constants.ShooterConstants;
 import org.firstinspires.ftc.teamcode.Systems.Blocker;
 import org.firstinspires.ftc.teamcode.Systems.Hood;
 import org.firstinspires.ftc.teamcode.TeleOp.PostAutonomousRobotReset;
 import org.firstinspires.ftc.teamcode.TeleOp.TeleOpBaseOpMode;
 import org.firstinspires.ftc.teamcode.TeleOp.drive.RobotCentricDrive;
+import org.firstinspires.ftc.teamcode.util.MathUtil;
 import org.firstinspires.ftc.teamcode.util.TickrateChecker;
 
 import java.util.ArrayList;
@@ -129,12 +131,22 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
         double robotHeading = robotPose.getHeading();
         Pose turretPose = Calculations.getTurretPoseFromBotPose(robotPose, 0, 0);
 
+        double angleToGoal = Calculations.getAngleToGoal(turretPose.getX(), turretPose.getY(), goal.getCoordinate());
+
+        double rawtt = MathUtil.normalizeAngleDeg(Math.toDegrees(follower.getHeading()) - angleToGoal);
+        double tt = Calculations.routeTurret(rawtt);
+
+        double turretAimPosition = tt * ShooterConstants.TURRET_TICKS_PER_DEGREE + turret.startPosition;
+
+        turret.setPosition(turretAimPosition);
+        turret.update();
+
         double distanceToGoal = Calculations.getDistanceFromGoal(turretPose.getX(), turretPose.getY(), goal.getCoordinate());
 
         if (controller1.dpad_upHasJustBeenPressed) {
             distances.add(distanceToGoal);
             positions.add(HOOD_POSITION);
-            velocities.add(HOOD_POSITION);
+            velocities.add(flywheel.getTargetVelocity());
         }
         else if (controller1.dpad_downHasJustBeenPressed && !distances.isEmpty()) {
 

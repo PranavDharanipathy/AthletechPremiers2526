@@ -30,7 +30,7 @@ public class TeleOp_RED extends TeleOpBaseOpMode {
 
         pedroDrive.provideComponents(follower, controller1);
         intake.provideComponents(super.intake, dropDown, blocker /*subsystem*/, controller1);
-        blocker.provideComponents(super.blocker, controller1);
+        blocker.provideComponents(super.blocker, flywheel, controller1);
         tiltLift.provideComponents(lift, controller2);
         shooter.provideComponents(flywheel, turret, hoodAngler, follower, camera, controller1);
         telemetry.provideComponents(super.telemetry);

@@ -70,6 +70,7 @@ public class RedSolo extends NextFTCOpMode {
     public void onStartButtonPressed() {
 
         telemetry.clearAll();
+        ShooterNF.INSTANCE.start();
 
         //auto
         auto().schedule();
@@ -89,7 +90,28 @@ public class RedSolo extends NextFTCOpMode {
 
         return new SequentialGroup(
 
-                new FollowPath(paths.Main)
+                new FollowPath(paths.preload),
+
+                new FollowPath(paths.firstSpikeIntake),
+                new FollowPath(paths.firstSpikeReturn),
+
+                new FollowPath(paths.secondSpikeIntake),
+                new FollowPath(paths.secondSpikeReturn),
+
+                new FollowPath(paths.firstGateIntake),
+                new FollowPath(paths.firstGateReturn),
+
+                new FollowPath(paths.secondGateIntake),
+                new FollowPath(paths.secondGateReturn),
+
+                new FollowPath(paths.thirdGateIntake),
+                new FollowPath(paths.thirdGateReturn),
+
+                new FollowPath(paths.thirdSpikeIntake),
+                new FollowPath(paths.thirdSpikeReturn),
+
+                new FollowPath(paths.hpSpikeIntake),
+                new FollowPath(paths.hpSpikeReturn)
         );
     }
 }

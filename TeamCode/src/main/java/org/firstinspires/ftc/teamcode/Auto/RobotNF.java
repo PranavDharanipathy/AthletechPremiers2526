@@ -37,7 +37,7 @@ public class RobotNF extends SubsystemGroup {
         );
     }
 
-    public final Command shootBallsAtParametricEnd(double shootTime, PathChain pathChain) {
+    public final Command shootBalls(double shootTime, PathChain pathChain) {
 
         return new SequentialGroup(
 

@@ -111,10 +111,15 @@ public class ShooterNF implements Subsystem {
         flywheel.setVelocity(0, true);
     }
 
+    private boolean start = false;
+    public void start() {
+        start = true;
+    }
+
     @Override
     public void periodic() {
 
-        if ((!followerInitialized) || (!goalCoordinatesInitialized)) return;
+        if ((!start) || (!followerInitialized) || (!goalCoordinatesInitialized)) return;
 
         //no auto aim
         if (!autoAim) {
@@ -184,6 +189,11 @@ public class ShooterNF implements Subsystem {
     }
 
     private boolean autoAim = true;
+
+    public Command setAimState(boolean autoAim) {
+
+        return new InstantCommand(() -> this.autoAim = autoAim);
+    }
 
     public Command turretToZero() {
         return new InstantCommand(() -> {

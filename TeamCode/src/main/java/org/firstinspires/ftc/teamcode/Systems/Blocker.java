@@ -4,7 +4,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
 import org.firstinspires.ftc.teamcode.Constants.BlockerConstants;
+import org.firstinspires.ftc.teamcode.Constants.ShooterConstants;
 import org.firstinspires.ftc.teamcode.util.BetterGamepad;
+import org.firstinspires.ftc.teamcode.util.MathUtil;
 import org.firstinspires.ftc.teamcode.util.Subsystem;
 
 public class Blocker extends Subsystem {
@@ -12,6 +14,8 @@ public class Blocker extends Subsystem {
     private boolean isSubsystem;
 
     private Object blocker; //given Blocker (non-subsystem) or Servo data
+
+    private Flywheel flywheel;
 
     private BetterGamepad controller1;
 
@@ -66,21 +70,30 @@ public class Blocker extends Subsystem {
     }
 
     // SUBSYSTEM
-    public void provideComponents(Blocker blocker, BetterGamepad controller1) {
+    public void provideComponents(Blocker blocker, Flywheel flywheel, BetterGamepad controller1) {
 
         this.blocker = blocker;
+
+        this.flywheel = flywheel;
 
         this.controller1 = controller1;
     }
 
+    private boolean eligibleForShoot;
+
     @Override
     public void update() {
 
-        if (controller1.right_bumper()) {
+        if (MathUtil.valueWithinRange(flywheel.getError(), -ShooterConstants.FLYWHEEL_VELOCITY_ALLOWABLE_ERROR, ShooterConstants.FLYWHEEL_VELOCITY_ALLOWABLE_ERROR)) {
+            eligibleForShoot = true;
+        }
+
+        if (controller1.right_bumper() && eligibleForShoot) {
             setState(BlockerState.CLEAR);
         }
         else {
             setState(BlockerState.BLOCK);
+            eligibleForShoot = false;
         }
     }
 }

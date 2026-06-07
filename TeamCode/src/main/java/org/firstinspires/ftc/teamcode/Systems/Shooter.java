@@ -21,6 +21,8 @@ import org.firstinspires.ftc.teamcode.util.EffectivelySubsystem;
 import static org.firstinspires.ftc.teamcode.Constants.CameraConstants.MT1_LOCALIZATION_ELIGIBILITY_MAXIMUM_ROBOT_VELOCITY;
 import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.CLOSE_FLYWHEEL_VELOCITIES;
 import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.CLOSE_HOOD_DISTANCES;
+import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.FAR_FLYWHEEL_VELOCITIES;
+import static org.firstinspires.ftc.teamcode.Constants.ShooterConstants.FAR_HOOD_DISTANCES;
 
 import java.util.List;
 import java.util.function.DoubleBinaryOperator;
@@ -216,8 +218,9 @@ public class Shooter implements EffectivelySubsystem {
 
         double distanceToGoal = Calculations.getDistanceFromGoal(futurePose.getX(), futurePose.getY(), goalCoordinatesForDistance);
 
-        List<Double> distances = CLOSE_HOOD_DISTANCES;
-        List<Double> velocities = CLOSE_FLYWHEEL_VELOCITIES;
+        boolean isClose = futurePose.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER;
+        List<Double> distances = isClose ? CLOSE_HOOD_DISTANCES : FAR_HOOD_DISTANCES;
+        List<Double> velocities = isClose ? CLOSE_FLYWHEEL_VELOCITIES : FAR_FLYWHEEL_VELOCITIES;
 
         if (distanceToGoal < distances.get(0)) {
             return velocities.get(0);
