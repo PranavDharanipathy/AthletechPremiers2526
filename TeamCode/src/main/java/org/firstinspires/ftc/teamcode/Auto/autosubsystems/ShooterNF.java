@@ -142,20 +142,6 @@ public class ShooterNF implements Subsystem {
                         : Hood.AimZone.FAR
         );
 
-        FieldConstants.GoalCoordinatesForDistance goalCoordinatesForDistance =
-                goalCoordinates == FieldConstants.GoalCoordinates.BLUE
-                        ? FieldConstants.GoalCoordinatesForDistance.BLUE
-                        : FieldConstants.GoalCoordinatesForDistance.RED;
-
-        double distanceToGoal = Calculations.getDistanceFromGoal(turretPose.getX(), turretPose.getY(), goalCoordinatesForDistance.getCoordinate());
-
-        //flywheel
-        flywheel.setVelocity(Shooter.getFlywheelTargetVelocityFromInterpolation(currentRobotPose, robotVelocity, robotAcceleration, goalCoordinatesForDistance), false);
-
-        //turret
-        double flywheelTargetVelocity = flywheel.getTargetVelocity();
-        double timeOfFlight = flywheelTargetVelocity != 0 ? distanceToGoal / Models.getBallSpeedFromFlywheel(flywheelTargetVelocity) : 0;
-
         //changing the coordinate that the turret aims at based on targeted zones determined by distance
         Pose goalCoordinate;
         if (currentRobotPose.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
@@ -165,7 +151,22 @@ public class ShooterNF implements Subsystem {
             goalCoordinate = goalCoordinates.getFarCoordinate();
         }
 
-        Pose virtualGoal = Calculations.getVirtualGoalCoordinate(timeOfFlight, robotVelocity, robotAcceleration, goalCoordinate);
+        double distanceToGoal = Calculations.getDistanceFromGoal(turretPose.getX(), turretPose.getY(), goalCoordinate);
+
+        //flywheel
+        flywheel.setVelocity(Shooter.getFlywheelTargetVelocityFromInterpolation(currentRobotPose, robotVelocity, goalCoordinate), false);
+
+        //turret
+        double flywheelCurrentVelocity = flywheel.getCurrentVelocity() > ShooterConstants.FLYWHEEL_CONSIDERATION_VELOCITY ? flywheel.getCurrentVelocity() : 0;
+        double ballSpeed = Models.getBallSpeedFromFlywheel(flywheelCurrentVelocity);
+        double timeOfFlight = flywheelCurrentVelocity != 0 ? distanceToGoal / ballSpeed : 0;
+
+        Pose virtualGoal = Calculations.getVirtualGoalCoordinate(timeOfFlight, robotVelocity, goalCoordinate);
+
+        double distanceToVirtualGoal = Calculations.getDistanceFromGoal(turretPose.getX(), turretPose.getY(), virtualGoal);
+        timeOfFlight = flywheelCurrentVelocity != 0 ? distanceToVirtualGoal / ballSpeed : 0;
+
+        virtualGoal = Calculations.getVirtualGoalCoordinate(timeOfFlight, robotVelocity, goalCoordinate);
 
         double angleToGoal = Calculations.getAngleToGoal(turretPose.getX(), turretPose.getY(), virtualGoal);
 
@@ -174,7 +175,7 @@ public class ShooterNF implements Subsystem {
 
         double turretAimPosition = tt * ShooterConstants.TURRET_TICKS_PER_DEGREE + turret.startPosition;
 
-        turret.setAim(turretAimPosition, virtualGoal, currentRobotPose, robotVelocity);
+        turret.setAim(turretAimPosition, robotVelocity);
 
         //updating
         flywheel.update();

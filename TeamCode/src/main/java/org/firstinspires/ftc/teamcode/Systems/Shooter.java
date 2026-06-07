@@ -125,8 +125,6 @@ public class Shooter implements EffectivelySubsystem {
 
     public double distanceToGoal;
 
-    private FieldConstants.GoalCoordinatesForDistance goalCoordinatesForDistance;
-
     public void update() {
 
         poseSpeedTracker.update();
@@ -168,24 +166,6 @@ public class Shooter implements EffectivelySubsystem {
                 : Hood.AimZone.FAR
         );
 
-        goalCoordinatesForDistance =
-                goalCoordinates == FieldConstants.GoalCoordinates.BLUE
-                        ? FieldConstants.GoalCoordinatesForDistance.BLUE
-                        : FieldConstants.GoalCoordinatesForDistance.RED;
-
-        distanceToGoal = Calculations.getDistanceFromGoal(turretPose.getX(), turretPose.getY(), goalCoordinatesForDistance.getCoordinate());
-
-        //flywheel
-        if (controller1.left_bumperHasJustBeenPressed) shooterToggle = !shooterToggle;
-
-        if (shooterToggle) flywheel.setVelocity(getFlywheelTargetVelocityFromInterpolation(currentRobotPose, robotVelocity, robotAcceleration, goalCoordinatesForDistance), false);
-        else flywheel.setVelocity(0, true);
-
-        //turret
-
-        double flywheelTargetVelocity = flywheel.getTargetVelocity();
-        double timeOfFlight = flywheelTargetVelocity != 0 ? distanceToGoal / Models.getBallSpeedFromFlywheel(flywheelTargetVelocity) : 0;
-
         //changing the coordinate that the turret aims at based on targeted zones determined by distance
         if (currentRobotPose.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
             goalCoordinate = goalCoordinates.getCloseCoordinate(currentRobotPose.getY(), goalCoordinates);
@@ -194,7 +174,26 @@ public class Shooter implements EffectivelySubsystem {
             goalCoordinate = goalCoordinates.getFarCoordinate();
         }
 
-        Pose virtualGoal = Calculations.getVirtualGoalCoordinate(timeOfFlight, robotVelocity, robotAcceleration, goalCoordinate);
+        distanceToGoal = Calculations.getDistanceFromGoal(turretPose.getX(), turretPose.getY(), goalCoordinate);
+
+        //flywheel
+        if (controller1.left_bumperHasJustBeenPressed) shooterToggle = !shooterToggle;
+
+        if (shooterToggle) flywheel.setVelocity(getFlywheelTargetVelocityFromInterpolation(currentRobotPose, robotVelocity, goalCoordinate), false);
+        else flywheel.setVelocity(0, true);
+
+        //turret
+        double flywheelCurrentVelocity = flywheel.getCurrentVelocity() > ShooterConstants.FLYWHEEL_CONSIDERATION_VELOCITY ? flywheel.getCurrentVelocity() : 0;
+        double ballSpeed = Models.getBallSpeedFromFlywheel(flywheelCurrentVelocity);
+        /*initial calculation*/double timeOfFlight = flywheelCurrentVelocity != 0 ? distanceToGoal / ballSpeed : 0;
+
+        //two-pass solution
+        Pose virtualGoal = Calculations.getVirtualGoalCoordinate(timeOfFlight, robotVelocity, goalCoordinate);
+
+        double distanceToVirtualGoal = Calculations.getDistanceFromGoal(turretPose.getX(), turretPose.getY(), virtualGoal);
+        timeOfFlight = flywheelCurrentVelocity != 0 ? distanceToVirtualGoal / ballSpeed : 0;
+
+        virtualGoal = Calculations.getVirtualGoalCoordinate(timeOfFlight, robotVelocity, goalCoordinate);
 
         double angleToGoal = Calculations.getAngleToGoal(turretPose.getX(), turretPose.getY(), virtualGoal);
 
@@ -203,7 +202,7 @@ public class Shooter implements EffectivelySubsystem {
 
         turretAimPosition = tt * ShooterConstants.TURRET_TICKS_PER_DEGREE + turretStartPosition;
 
-        turret.setAim(turretAimPosition, virtualGoal, currentRobotPose, robotVelocity);
+        turret.setAim(turretAimPosition, robotVelocity);
 
         //updating
         flywheel.update();
@@ -211,11 +210,11 @@ public class Shooter implements EffectivelySubsystem {
         turret.update();
     }
 
-    public static double getFlywheelTargetVelocityFromInterpolation(Pose botPose, PoseVelocity robotVelocity, PoseAcceleration robotAcceleration, FieldConstants.GoalCoordinatesForDistance goalCoordinatesForDistance) {
+    public static double getFlywheelTargetVelocityFromInterpolation(Pose botPose, PoseVelocity robotVelocity, Pose goalCoordinatesForDistance) {
 
-        Pose futurePose = Calculations.getFutureBotPose(ShooterConstants.FLYWHEEL_SPEED_ADJUSTMENT_T, botPose, robotVelocity, robotAcceleration);
+        Pose futurePose = Calculations.getFutureBotPose(ShooterConstants.FLYWHEEL_SPEED_ADJUSTMENT_T, botPose, robotVelocity);
 
-        double distanceToGoal = Calculations.getDistanceFromGoal(futurePose.getX(), futurePose.getY(), goalCoordinatesForDistance.getCoordinate());
+        double distanceToGoal = Calculations.getDistanceFromGoal(futurePose.getX(), futurePose.getY(), goalCoordinatesForDistance);
 
         List<Double> distances = CLOSE_HOOD_DISTANCES;
         List<Double> velocities = CLOSE_FLYWHEEL_VELOCITIES;

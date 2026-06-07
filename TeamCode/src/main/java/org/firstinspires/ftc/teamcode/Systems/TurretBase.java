@@ -227,18 +227,19 @@ public class TurretBase {
         if (travelVelocity != velocity) travelVelocity = velocity;
     }
 
-    public void setAim(double position, Pose goalCoordinate, Pose robotPose, PoseVelocity robotVelocity) {
+    public void setAim(double position, /*Pose goalCoordinate, Pose robotPose,*/ PoseVelocity robotVelocity) {
 
-        double translationalVelocityContribution = Calculations.calculateLOSAngularVelocity(
-                goalCoordinate.getX(),
-                goalCoordinate.getY(),
-                robotPose.getX(),
-                robotPose.getY(),
-                robotVelocity.getXVelocity(),
-                robotVelocity.getYVelocity()
-        );
-
-        double velocityDeg = -Math.toDegrees(translationalVelocityContribution + robotVelocity.getAngularVelocity());
+//        double translationalVelocityContribution = Calculations.calculateLOSAngularVelocity(
+//                goalCoordinate.getX(),
+//                goalCoordinate.getY(),
+//                robotPose.getX(),
+//                robotPose.getY(),
+//                robotVelocity.getXVelocity(),
+//                robotVelocity.getYVelocity()
+//        );
+//
+//        double velocityDeg = -Math.toDegrees(translationalVelocityContribution + robotVelocity.getAngularVelocity());
+        double velocityDeg = -Math.toDegrees(robotVelocity.getAngularVelocity());
 
         setPosition(position);
         setVelocity(velocityDeg * ShooterConstants.TURRET_TICKS_PER_DEGREE);

@@ -16,12 +16,12 @@ public class FieldConstants {
     public enum GoalCoordinates {
 
         //        CLOSE ALLIANCE       CLOSE OPPONENT            FAR
-        RED(new Pose(70,70), new Pose(68.5,68), new Pose(61,72)),
-        BLUE(new Pose(-70,70), new Pose(-68.5,68), new Pose(-61,72));
+        RED(new Pose(62.5,60), new Pose(63,61), new Pose(61,72)),
+        BLUE(new Pose(-62.5,60), new Pose(-63,61), new Pose(-61,72));
 
-        private Pose closeAlliance;
-        private Pose closeOpponent;
-        private Pose far;
+        public Pose closeAlliance;
+        public Pose closeOpponent;
+        public Pose far;
 
         GoalCoordinates(Pose closeAlliance, Pose closeOpponent, Pose far) {
 
@@ -125,22 +125,5 @@ public class FieldConstants {
             return isOpponent;
         }
     }
-
-    public enum GoalCoordinatesForDistance {
-
-        RED(new Pose(62.5, 62.5)),
-        BLUE(new Pose(-62.5, 62.5));
-
-        private Pose coord;
-
-        GoalCoordinatesForDistance(Pose coord) {
-            this.coord = coord;
-        }
-
-        public Pose getCoordinate() {
-            return coord;
-        }
-    }
-
 
 }

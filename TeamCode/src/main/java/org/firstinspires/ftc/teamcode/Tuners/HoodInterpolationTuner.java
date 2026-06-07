@@ -45,7 +45,7 @@ public class HoodInterpolationTuner extends TeleOpBaseOpMode {
 
     public enum GOAL {
 
-        RED(FieldConstants.GoalCoordinatesForDistance.RED.getCoordinate()), BLUE(FieldConstants.GoalCoordinatesForDistance.BLUE.getCoordinate());
+        RED(FieldConstants.GoalCoordinates.RED.closeAlliance), BLUE(FieldConstants.GoalCoordinates.BLUE.closeAlliance);
 
         private Pose coord;
 

@@ -30,7 +30,7 @@ public class ShooterConstants {
     public static double TURRET_POSITIONAL_OFFSET = -1.775591;
 
     public static List<Double> CLOSE_HOOD_DISTANCES = new ArrayList<>(List.of(48.5, 58.6, 73.03, 85.6, 98.2));
-    public static List<Double> CLOSE_FLYWHEEL_VELOCITIES = new ArrayList<>(List.of(1300d, 1450d, 1550d, 1630d, 1750d));
+    public static List<Double> CLOSE_FLYWHEEL_VELOCITIES = new ArrayList<>(List.of(1300d, 1450d, 1550d, 1630d, 1800d));
     public static List<Double> CLOSE_HOOD_POSITIONS = new ArrayList<>(List.of(0.0, 0.0, 0.0, 0.0, 0.0));
 
     public static List<Double> FAR_HOOD_DISTANCES = new ArrayList<>(List.of(110.0, 150.0));
@@ -49,9 +49,11 @@ public class ShooterConstants {
     public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_MINIMUM = -0.1;
     public static double FLYWHEEL_VELOCITY_HOOD_CORRECTION_MAXIMUM = 0.1;
 
-    /// in seconds
-    public static double FLYWHEEL_SPEED_ADJUSTMENT_T = 1;
+    public static double FLYWHEEL_CONSIDERATION_VELOCITY = 50;
 
-    public static double FLYWHEEL_SHOOT_SLIP_FACTOR = 0.955;
+    /// in seconds
+    public static double FLYWHEEL_SPEED_ADJUSTMENT_T = 2;
+
+    public static double FLYWHEEL_SHOOT_SLIP_FACTOR = 0.173;
 
 }

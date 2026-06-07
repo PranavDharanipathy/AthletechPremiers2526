@@ -52,8 +52,7 @@ public class PoseSpeedTrackerTesting extends TeleOpBaseOpMode {
                 Calculations.getFutureBotPose(
                         1.3,
                         botPose,
-                        botVel,
-                        botAccel
+                        botVel
                 ).toString()
         );
 

@@ -71,25 +71,20 @@ public class Calculations {
         );
     }
 
-    public static Pose getFutureBotPose(double t, Pose currentRobotPose, PoseVelocity poseVelocity, PoseAcceleration poseAcceleration) {
-
-        final double t2 = 0.5 * t * t;
+    public static Pose getFutureBotPose(double t, Pose currentRobotPose, PoseVelocity poseVelocity) {
 
         return new Pose(
-                currentRobotPose.getX() + (t * poseVelocity.getXVelocity()) + (poseAcceleration.getXAcceleration() * t2),
-                currentRobotPose.getY() + (t * poseVelocity.getYVelocity()) + (poseAcceleration.getYAcceleration() * t2),
-                MathUtil.normalizeAngleRad(currentRobotPose.getHeading() + (t * poseVelocity.getAngularVelocity()) + (poseAcceleration.getAngularAcceleration() * t2))
+                currentRobotPose.getX() + (t * poseVelocity.getXVelocity()),
+                currentRobotPose.getY() + (t * poseVelocity.getYVelocity()),
+                MathUtil.normalizeAngleRad(currentRobotPose.getHeading() + (t * poseVelocity.getAngularVelocity()))
         );
     }
 
-    public static Pose getVirtualGoalCoordinate(double tof, PoseVelocity poseVelocity, PoseAcceleration poseAcceleration, Pose goalCoordinate) {
-
-
-        final double tof2 = 0.5 * tof * tof;
+    public static Pose getVirtualGoalCoordinate(double tof, PoseVelocity poseVelocity, Pose goalCoordinate) {
 
         return new Pose(
-                goalCoordinate.getX() - (tof * poseVelocity.getXVelocity()) - (poseAcceleration.getXAcceleration() * tof2),
-                goalCoordinate.getY() - (tof * poseVelocity.getYVelocity()) - (poseAcceleration.getYAcceleration() * tof2)
+                goalCoordinate.getX() - (tof * poseVelocity.getXVelocity()),
+                goalCoordinate.getY() - (tof * poseVelocity.getYVelocity())
         );
 
     }
