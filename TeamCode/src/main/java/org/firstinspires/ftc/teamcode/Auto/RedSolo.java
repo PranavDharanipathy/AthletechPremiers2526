@@ -13,12 +13,15 @@ import org.firstinspires.ftc.teamcode.Constants.LocalizationConstants;
 import org.firstinspires.ftc.teamcode.Systems.CurrentAlliance;
 import org.firstinspires.ftc.teamcode.Systems.PoseTransfer;
 import org.firstinspires.ftc.teamcode.util.PedroPathing.CancelableFollowPath;
+import org.firstinspires.ftc.teamcode.util.PedroPathing.PowerAdjustedPath;
 
 import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.conditionals.IfElseCommand;
 import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
+import dev.nextftc.core.commands.utility.NullCommand;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
@@ -72,7 +75,7 @@ public class RedSolo extends NextFTCOpMode {
     public void onStartButtonPressed() {
 
         telemetry.clearAll();
-        ShooterNF.INSTANCE.start();
+        ShooterNF.INSTANCE.startShooter();
 
         //auto
         auto().schedule();
@@ -114,32 +117,52 @@ public class RedSolo extends NextFTCOpMode {
 
         return new SequentialGroup(
 
+                IntakeNF.INSTANCE.intake(),
+
+                ShooterNF.INSTANCE.setVel(paths.preload.lastPath().endPose()),
                 new FollowPath(paths.preload),
+                RobotNF.INSTANCE.shootBalls(0.8, paths.preload),
 
+                ShooterNF.INSTANCE.setVel(paths.firstSpikeIntake.lastPath().endPose()),
                 new FollowPath(paths.firstSpikeIntake),
-                new FollowPath(paths.firstSpikeReturn),
+                new PowerAdjustedPath(paths.firstSpikeReturn, 1, 10, 0.65, 1),
+                RobotNF.INSTANCE.shootBalls(0.8, paths.preload),
 
+                ShooterNF.INSTANCE.setVel(paths.secondSpikeIntake.lastPath().endPose()),
                 new FollowPath(paths.secondSpikeIntake),
-                new FollowPath(paths.secondSpikeReturn),
+                new PowerAdjustedPath(paths.secondSpikeReturn, 1, 10, 0.65, 1),
+                RobotNF.INSTANCE.shootBalls(0.8, paths.preload),
 
+                ShooterNF.INSTANCE.setVel(paths.firstGateIntake.lastPath().endPose()),
                 gate(paths.firstGateIntake),
                 new FollowPath(paths.firstGateReturn),
+                RobotNF.INSTANCE.shootBalls(0.8, paths.preload),
 
+                ShooterNF.INSTANCE.setVel(paths.secondGateIntake.lastPath().endPose()),
                 gate(paths.secondGateIntake),
                 new FollowPath(paths.secondGateReturn),
+                RobotNF.INSTANCE.shootBalls(0.8, paths.preload),
 
+                ShooterNF.INSTANCE.setVel(paths.thirdGateIntake.lastPath().endPose()),
                 gate(paths.thirdGateIntake),
                 new FollowPath(paths.thirdGateReturn),
+                RobotNF.INSTANCE.shootBalls(0.8, paths.preload),
 
+                ShooterNF.INSTANCE.setVel(paths.thirdSpikeIntake.lastPath().endPose()),
                 new FollowPath(paths.thirdSpikeIntake),
-                new FollowPath(paths.thirdSpikeReturn),
+                new PowerAdjustedPath(paths.thirdSpikeReturn, 1, 10, 0.65, 1),
+                RobotNF.INSTANCE.shootBalls(0.8, paths.preload),
 
+                ShooterNF.INSTANCE.setVel(paths.hpSpikeIntake.lastPath().endPose()),
                 new FollowPath(paths.hpSpikeIntake),
-                new FollowPath(paths.hpSpikeReturn)
+                new PowerAdjustedPath(paths.hpSpikeReturn, 1, 12, 0.6, 1),
+                RobotNF.INSTANCE.shootBalls(0.8, paths.preload)
         );
     }
 
     private Command gate(PathChain pathChain) {
+
+        CancelableFollowPath path = new CancelableFollowPath(pathChain, true, 2.75);
 
         return new SequentialGroup(
 
@@ -147,9 +170,12 @@ public class RedSolo extends NextFTCOpMode {
                         new SequentialGroup(
                                 new InstantCommand(() -> PedroComponent.follower().setMaxPower(1)),
                                 new Delay(1),
-                                new InstantCommand(() -> PedroComponent.follower().setMaxPower(0.8))
+                                new InstantCommand(() -> PedroComponent.follower().setMaxPower(0.7))
                         ),
-                        new CancelableFollowPath(pathChain, true, 3.33).thenWait(1.5)
+                        new SequentialGroup(
+                                path,
+                                new IfElseCommand(path::getCancelled, new NullCommand(), new Delay(1.5))
+                        )
                 ),
                 new InstantCommand(() -> PedroComponent.follower().setMaxPower(1))
         );

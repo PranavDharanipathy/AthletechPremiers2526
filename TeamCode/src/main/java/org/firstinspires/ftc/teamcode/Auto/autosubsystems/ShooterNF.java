@@ -17,7 +17,6 @@ import org.firstinspires.ftc.teamcode.Systems.HoodAngler;
 import org.firstinspires.ftc.teamcode.Systems.Shooter;
 import org.firstinspires.ftc.teamcode.Systems.TurretBase;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
-import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseAcceleration;
 import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseSpeedTracker;
 import org.firstinspires.ftc.teamcode.util.PedroPathing.PoseVelocity;
 
@@ -99,8 +98,18 @@ public class ShooterNF implements Subsystem {
         //turret.reverse();
     }
 
-    public Command setVel(double vel, boolean allowIntegralReset) {
-        return new InstantCommand(() -> flywheel.setVelocity(vel, allowIntegralReset));
+    public Command setVel(Pose robotPoseAtShoot) {
+
+        Pose goalCoordinate;
+        if (robotPoseAtShoot.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
+            goalCoordinate = goalCoordinates.getCloseCoordinate(robotPoseAtShoot.getX(), goalCoordinates);
+        }
+        else {
+            goalCoordinate = goalCoordinates.getFarCoordinate();
+        }
+
+        double vel = Shooter.getFlywheelTargetVelocityFromInterpolation(robotPoseAtShoot, new PoseVelocity(), goalCoordinate);
+        return new InstantCommand(() -> flywheel.setVelocity(vel, false));
     }
 
     public Command setVel(double vel) {
@@ -112,7 +121,7 @@ public class ShooterNF implements Subsystem {
     }
 
     private boolean start = false;
-    public void start() {
+    public void startShooter() {
         start = true;
     }
 
@@ -133,8 +142,7 @@ public class ShooterNF implements Subsystem {
 
         PoseVelocity robotVelocity = poseSpeedTracker.getPoseVelocity();
 
-        Pose followerAutoPose = follower.getPose();
-        Pose currentRobotPose = new Pose(followerAutoPose.getX()-72, followerAutoPose.getY()-72, followerAutoPose.getHeading());
+        Pose currentRobotPose = follower.getPose().minus(new Pose(72, 72));
         double robotHeadingRad = currentRobotPose.getHeading();
 
         Pose turretPose = Calculations.getTurretPoseFromBotPose(currentRobotPose, turret.getCurrentPosition(), turret.startPosition);
@@ -149,7 +157,7 @@ public class ShooterNF implements Subsystem {
         //changing the coordinate that the turret aims at based on targeted zones determined by distance
         Pose goalCoordinate;
         if (currentRobotPose.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
-            goalCoordinate = goalCoordinates.getCloseCoordinate(currentRobotPose.getY(), goalCoordinates);
+            goalCoordinate = goalCoordinates.getCloseCoordinate(currentRobotPose.getX(), goalCoordinates);
         }
         else {
             goalCoordinate = goalCoordinates.getFarCoordinate();

@@ -31,9 +31,15 @@ public class CancelableFollowPath extends Command {
 
     @Override
     public boolean isDone() {
+        cancelled = timer.seconds() > cancelTime;
+        return !PedroComponent.Companion.follower().isBusy() || cancelled;
+    }
 
-        return !PedroComponent.Companion.follower().isBusy() || timer.seconds() > cancelTime;
+    private boolean cancelled = false;
 
+    /// @return if it got cancelled or not
+    public boolean getCancelled() {
+        return cancelled;
     }
 
     @Override

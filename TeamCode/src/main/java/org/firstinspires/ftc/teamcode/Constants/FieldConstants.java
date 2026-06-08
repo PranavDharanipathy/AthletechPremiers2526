@@ -67,16 +67,16 @@ public class FieldConstants {
             return closeOpponent;
         }
 
-        public Pose getCloseCoordinate(double y, GoalCoordinates allianceUsingGoalCoordinates) {
+        public Pose getCloseCoordinate(double x, GoalCoordinates allianceUsingGoalCoordinates) {
 
-            boolean isOpponent = allianceUsingGoalCoordinates == BLUE ? y < RED_CLOSE_GOAL_COORDINATE_SWITCH : y > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
+            boolean isOpponent = allianceUsingGoalCoordinates == BLUE ? x > RED_CLOSE_GOAL_COORDINATE_SWITCH : x < BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
 
             return isOpponent ? closeOpponent : closeAlliance;
         }
 
-        public Pose getCloseCoordinate(double y, CurrentAlliance.ALLIANCE alliance) {
+        public Pose getCloseCoordinate(double x, CurrentAlliance.ALLIANCE alliance) {
 
-            boolean isOpponent = alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? y < RED_CLOSE_GOAL_COORDINATE_SWITCH : y > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
+            boolean isOpponent = alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? x > RED_CLOSE_GOAL_COORDINATE_SWITCH : x < BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
 
             return isOpponent ? closeOpponent : closeAlliance;
         }
@@ -86,8 +86,8 @@ public class FieldConstants {
         }
 
         // (lateral) y value after which (once y is greater) close goal coordinate switches from alliance to opponent
-        public static double RED_CLOSE_GOAL_COORDINATE_SWITCH = -25;
-        public static double BLUE_CLOSE_GOAL_COORDINATE_SWITCH = 25;
+        public static double RED_CLOSE_GOAL_COORDINATE_SWITCH = 18;
+        public static double BLUE_CLOSE_GOAL_COORDINATE_SWITCH = -18;
 
         public void setRedCloseGoalCoordinateSwitch(double redCloseGoalCoordinateSwitch) {
             RED_CLOSE_GOAL_COORDINATE_SWITCH = redCloseGoalCoordinateSwitch;
@@ -97,30 +97,30 @@ public class FieldConstants {
             BLUE_CLOSE_GOAL_COORDINATE_SWITCH = blueCloseGoalCoordinateSwitch;
         }
 
-        public static boolean onAllianceSide(double y, CurrentAlliance.ALLIANCE alliance) {
+        public static boolean onAllianceSide(double x, CurrentAlliance.ALLIANCE alliance) {
 
-            boolean isAlliance = alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? y > RED_CLOSE_GOAL_COORDINATE_SWITCH : y < BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
-
-            return isAlliance;
-        }
-
-        public boolean onAllianceSide(double y) {
-
-            boolean isAlliance = this == BLUE ? y < RED_CLOSE_GOAL_COORDINATE_SWITCH : y > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
+            boolean isAlliance = alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? x < BLUE_CLOSE_GOAL_COORDINATE_SWITCH : x > RED_CLOSE_GOAL_COORDINATE_SWITCH;
 
             return isAlliance;
         }
 
-        public static boolean onOpponentSide(double y, CurrentAlliance.ALLIANCE alliance) {
+        public boolean onAllianceSide(double x) {
 
-            boolean isOpponent = alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? y < RED_CLOSE_GOAL_COORDINATE_SWITCH : y > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
+            boolean isAlliance = this == BLUE ? x < BLUE_CLOSE_GOAL_COORDINATE_SWITCH : x > RED_CLOSE_GOAL_COORDINATE_SWITCH;
+
+            return isAlliance;
+        }
+
+        public static boolean onOpponentSide(double x, CurrentAlliance.ALLIANCE alliance) {
+
+            boolean isOpponent = alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE ? x > RED_CLOSE_GOAL_COORDINATE_SWITCH : x < BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
 
             return isOpponent;
         }
 
-        public boolean onOpponentSide(double y) {
+        public boolean onOpponentSide(double x) {
 
-            boolean isOpponent = this == BLUE ? y < RED_CLOSE_GOAL_COORDINATE_SWITCH : y > BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
+            boolean isOpponent = this == BLUE ? x > RED_CLOSE_GOAL_COORDINATE_SWITCH : x < BLUE_CLOSE_GOAL_COORDINATE_SWITCH;
 
             return isOpponent;
         }

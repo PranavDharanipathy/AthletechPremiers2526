@@ -5,6 +5,11 @@ public class PoseVelocity {
     private double xVelocity;
     private double yVelocity;
     private double angVelocity;
+
+    public PoseVelocity() {
+        this (0, 0, 0);
+    }
+
     public PoseVelocity(double xVelocity, double yVelocity, double angVelocity) {
 
         this.xVelocity = xVelocity;

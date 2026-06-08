@@ -214,7 +214,7 @@ public class FlywheelTurretDriveTuning extends TeleOpBaseOpMode {
         //changing the coordinate that the turret aims at based on targeted zones determined by distance
         Pose goalCoordinate;
         if (robotPose.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
-            goalCoordinate = goalCoordinates.getCloseCoordinate(robotPose.getY(), goalCoordinates);
+            goalCoordinate = goalCoordinates.getCloseCoordinate(robotPose.getX(), goalCoordinates);
         }
         else {
             goalCoordinate = goalCoordinates.getFarCoordinate();

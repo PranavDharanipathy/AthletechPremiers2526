@@ -169,7 +169,7 @@ public class Shooter implements EffectivelySubsystem {
 
         //changing the coordinate that the turret aims at based on targeted zones determined by distance
         if (currentRobotPose.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
-            goalCoordinate = goalCoordinates.getCloseCoordinate(currentRobotPose.getY(), goalCoordinates);
+            goalCoordinate = goalCoordinates.getCloseCoordinate(currentRobotPose.getX(), goalCoordinates);
         }
         else {
             goalCoordinate = goalCoordinates.getFarCoordinate();
