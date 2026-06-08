@@ -104,7 +104,7 @@ public class ShooterNF implements Subsystem {
     }
 
     public Command setVel(double vel) {
-        return new InstantCommand(() -> flywheel.setVelocity(vel, true));
+        return new InstantCommand(() -> flywheel.setVelocity(vel, false));
     }
 
     public void end() {
@@ -132,7 +132,6 @@ public class ShooterNF implements Subsystem {
         poseSpeedTracker.update();
 
         PoseVelocity robotVelocity = poseSpeedTracker.getPoseVelocity();
-        PoseAcceleration robotAcceleration = poseSpeedTracker.getPoseAcceleration();
 
         Pose followerAutoPose = follower.getPose();
         Pose currentRobotPose = new Pose(followerAutoPose.getX()-72, followerAutoPose.getY()-72, followerAutoPose.getHeading());
@@ -157,9 +156,6 @@ public class ShooterNF implements Subsystem {
         }
 
         double distanceToGoal = Calculations.getDistanceFromGoal(turretPose.getX(), turretPose.getY(), goalCoordinate);
-
-        //flywheel
-        flywheel.setVelocity(Shooter.getFlywheelTargetVelocityFromInterpolation(currentRobotPose, robotVelocity, goalCoordinate), false);
 
         //turret
         double flywheelCurrentVelocity = flywheel.getCurrentVelocity() > ShooterConstants.FLYWHEEL_CONSIDERATION_VELOCITY ? flywheel.getCurrentVelocity() : 0;

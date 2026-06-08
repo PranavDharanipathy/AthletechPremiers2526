@@ -32,8 +32,8 @@ public class LocalizationConstants {
             .translationalPIDFCoefficients(new PIDFCoefficients(0.2, 0, 0.03, 0.1))
             .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.0767,0.00008,0.0045,0.04))
 
-            .headingPIDFCoefficients(new PIDFCoefficients(2,0,0.003,0.1))
-            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(1,0.0007,0.0025,0.025))
+            .headingPIDFCoefficients(new PIDFCoefficients(0.65,0,0.03,0.1))
+            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(0.2,0.00035,0.02,0.02))
 
             .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.071,0.0005,0.000615,0.15,0.065))
 

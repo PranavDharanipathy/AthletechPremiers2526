@@ -34,7 +34,7 @@ public class ShooterConstants {
     public static List<Double> CLOSE_HOOD_POSITIONS = new ArrayList<>(List.of(        0.0,                0.0,              0.0,              0.0,                0.0,               0.0,               0.0,              0.0,                0.0));
 
     public static List<Double> FAR_HOOD_DISTANCES = new ArrayList<>(List.of(126.69848229536962, 153.2564445950438));
-    public static List<Double> FAR_FLYWHEEL_VELOCITIES = new ArrayList<>(List.of(   2150d,            2350d));
+    public static List<Double> FAR_FLYWHEEL_VELOCITIES = new ArrayList<>(List.of(   2100d,            2350d));
     public static List<Double> FAR_HOOD_POSITIONS = new ArrayList<>(List.of(         0.0,              0.0));
 
     public static double FLYWHEEL_VELOCITY_ALLOWABLE_ERROR = 30;

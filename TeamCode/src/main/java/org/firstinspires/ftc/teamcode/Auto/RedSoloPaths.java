@@ -1,16 +1,18 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.HeadingInterpolator;
-import com.pedropathing.paths.PathBuilder;
 import com.pedropathing.paths.PathChain;
 
+@Config
 public class RedSoloPaths {
 
-    private Follower follower;
+    public static double GX = 0;
+    public static double GY = -1;
 
     public PathChain preload;
     public PathChain firstSpikeIntake;
@@ -30,9 +32,7 @@ public class RedSoloPaths {
 
     public RedSoloPaths(Follower follower, Pose startPose) {
 
-        PathBuilder pb = follower.pathBuilder();
-
-        preload = pb.addPath(
+        preload = follower.pathBuilder().addPath(
                 new BezierLine(
                         startPose,
                         new Pose(85.581, 82.220)
@@ -42,12 +42,12 @@ public class RedSoloPaths {
                 HeadingInterpolator.piecewise(
                         new HeadingInterpolator.PiecewiseNode(
                                 0, 0.1,
-                                HeadingInterpolator.constant(Math.toRadians(270))
+                                HeadingInterpolator.constant(Math.toRadians(-104.278))
                         ),
 
                         new HeadingInterpolator.PiecewiseNode(
                                 0.1, 0.3,
-                                HeadingInterpolator.linear(Math.toRadians(270), Math.toRadians(0))
+                                HeadingInterpolator.linear(Math.toRadians(-104.278), Math.toRadians(0))
                         ),
 
                         new HeadingInterpolator.PiecewiseNode(
@@ -58,7 +58,7 @@ public class RedSoloPaths {
         )
         .build();
 
-        firstSpikeIntake = pb.addPath(
+        firstSpikeIntake = follower.pathBuilder().addPath(
                 new BezierLine(
                         new Pose(85.581, 82.220),
                         new Pose(113, 81.828)
@@ -67,7 +67,7 @@ public class RedSoloPaths {
         .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
         .build();
 
-        firstSpikeReturn = pb.addPath(
+        firstSpikeReturn = follower.pathBuilder().addPath(
                 new BezierLine(
                         new Pose(113, 81.828),
                         new Pose(88.451, 82.028)
@@ -76,7 +76,7 @@ public class RedSoloPaths {
         .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
         .build();
 
-        secondSpikeIntake = pb.addPath(
+        secondSpikeIntake = follower.pathBuilder().addPath(
                 new BezierLine(
                         new Pose(88.451, 82.028),
                         new Pose(117.188, 60.235)
@@ -85,7 +85,7 @@ public class RedSoloPaths {
         .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(300))
         .build();
 
-        secondSpikeReturn = pb.addPath(
+        secondSpikeReturn = follower.pathBuilder().addPath(
                 new BezierLine(
                         new Pose(117.188, 60.235),
                         new Pose(88.896, 82.091)
@@ -94,61 +94,64 @@ public class RedSoloPaths {
         .setLinearHeadingInterpolation(Math.toRadians(300), Math.toRadians(320))
         .build();
 
-        firstGateIntake = pb.addPath(
-                new BezierLine(
-                        new Pose(88.896, 82.091),
-                        new Pose(129.983, 60.023)
-                )
+        firstGateIntake = follower.pathBuilder().addPath(
+                        new BezierCurve(
+                                new Pose(88.896, 82.091),
+                                new Pose(101.934, 57.077),
+                                new Pose(126.943+GX, 56.790+GY)
+                        )
         )
-        .setLinearHeadingInterpolation(Math.toRadians(320), Math.toRadians(30))
+        .setLinearHeadingInterpolation(Math.toRadians(320), Math.toRadians(27.09))
         .build();
 
-        firstGateReturn = pb.addPath(
+        firstGateReturn = follower.pathBuilder().addPath(
                 new BezierLine(
-                        new Pose(129.983, 60.023),
+                        new Pose(126.943+GX, 56.790+GY),
                         new Pose(88.890, 82.090)
                 )
         )
-        .setLinearHeadingInterpolation(Math.toRadians(30), Math.toRadians(320))
+        .setLinearHeadingInterpolation(Math.toRadians(27.09), Math.toRadians(320))
         .build();
 
-        secondGateIntake = pb.addPath(
+        secondGateIntake = follower.pathBuilder().addPath(
+                        new BezierCurve(
+                                new Pose(88.890, 82.090),
+                                new Pose(101.934, 57.077),
+                                new Pose(126.943+GX, 56.790+GY)
+                        )
+        )
+        .setLinearHeadingInterpolation(Math.toRadians(320), Math.toRadians(27.09))
+        .build();
+
+        secondGateReturn = follower.pathBuilder().addPath(
                 new BezierLine(
+                        new Pose(126.943+GX, 56.790+GY),
+                        new Pose(88.890, 82.090)
+                )
+        )
+        .setLinearHeadingInterpolation(Math.toRadians(27.09), Math.toRadians(320))
+        .build();
+
+        thirdGateIntake = follower.pathBuilder().addPath(
+                new BezierCurve(
                         new Pose(88.890, 82.090),
-                        new Pose(129.980, 60.020)
+                        new Pose(101.934, 57.077),
+                        new Pose(126.943+GX, 56.790+GY)
                 )
         )
-        .setLinearHeadingInterpolation(Math.toRadians(320), Math.toRadians(30))
+        .setLinearHeadingInterpolation(Math.toRadians(320), Math.toRadians(27.09))
         .build();
 
-        secondGateReturn = pb.addPath(
+        thirdGateReturn = follower.pathBuilder().addPath(
                 new BezierLine(
-                        new Pose(129.980, 60.020),
+                        new Pose(126.943+GX, 56.790+GY),
                         new Pose(88.890, 82.090)
                 )
         )
-        .setLinearHeadingInterpolation(Math.toRadians(30), Math.toRadians(320))
+        .setLinearHeadingInterpolation(Math.toRadians(27.09), Math.toRadians(320))
         .build();
 
-        thirdGateIntake = pb.addPath(
-                new BezierLine(
-                        new Pose(88.890, 82.090),
-                        new Pose(129.980, 60.020)
-                )
-        )
-        .setLinearHeadingInterpolation(Math.toRadians(320), Math.toRadians(30))
-        .build();
-
-        thirdGateReturn = pb.addPath(
-                new BezierLine(
-                        new Pose(129.980, 60.020),
-                        new Pose(88.890, 82.090)
-                )
-        )
-        .setLinearHeadingInterpolation(Math.toRadians(30), Math.toRadians(320))
-        .build();
-
-        thirdSpikeIntake = pb.addPath(
+        thirdSpikeIntake = follower.pathBuilder().addPath(
                 new BezierCurve(
                         new Pose(88.890, 82.090),
                         new Pose(99.811, 36.130),
@@ -158,7 +161,7 @@ public class RedSoloPaths {
         .setTangentHeadingInterpolation()
         .build();
 
-        thirdSpikeReturn = pb.addPath(
+        thirdSpikeReturn = follower.pathBuilder().addPath(
                 new BezierLine(
                         new Pose(120.853, 34.854),
                         new Pose(90.974, 12.065)
@@ -168,19 +171,19 @@ public class RedSoloPaths {
         .setReversed()
         .build();
 
-        hpSpikeIntake = pb.addPath(
+        hpSpikeIntake = follower.pathBuilder().addPath(
                 new BezierCurve(
                         new Pose(90.974, 12.065),
                         new Pose(106.207, 7.871),
-                        new Pose(129.080, 8.117)
+                        new Pose(122.080, 7.8)
                 )
         )
         .setTangentHeadingInterpolation()
         .build();
 
-        hpSpikeReturn = pb.addPath(
+        hpSpikeReturn = follower.pathBuilder().addPath(
                 new BezierLine(
-                        new Pose(129.080, 8.117),
+                        new Pose(122.080, 7.8),
                         new Pose(86.219, 8.667)
                 )
         )

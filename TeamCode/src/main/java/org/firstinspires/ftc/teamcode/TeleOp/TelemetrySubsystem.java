@@ -61,13 +61,14 @@ public class TelemetrySubsystem implements EffectivelySubsystem {
 
         telem.addData("CURRENT ZONE", shooter.getCurrentZoneBasedOnLocation());
 
-        telem.addData(TelemetryMode.RAW_DATA, "on alliance side?", shooter.accessGoalCoordinates().onAllianceSide(shooter.currentRobotPose.getY()));
+        telem.addData(TelemetryMode.INFO, "on alliance side?", shooter.accessGoalCoordinates().onAllianceSide(shooter.currentRobotPose.getY()));
 
-        telem.addData(TelemetryMode.RAW_DATA, "distance to goal", shooter.distanceToGoal);
+        telem.addData(TelemetryMode.INFO, "distance to goal", shooter.distanceToGoal);
 
-        telem.addData(TelemetryMode.RAW_DATA, "hood position", shooter.hood.accessHoodAngler().getPosition());
+        telem.addData(TelemetryMode.INFO, "hood position", shooter.hood.accessHoodAngler().getPosition());
 
-        telem.addData(TelemetryMode.INFO, "flywheel current velocity", "%.0f", shooter.flywheel.getCurrentVelocity());
+        telem.addData(TelemetryMode.INFO, "flywheel current velocity", "%.2f", shooter.flywheel.getCurrentVelocity());
+        telem.addData(TelemetryMode.INFO, "flywheel velocity estimate", "%.2f", shooter.flywheel.getVelocityEstimate());
         telem.addData(TelemetryMode.INFO, "flywheel target velocity", shooter.flywheel.getTargetVelocity());
 
         telem.addData(TelemetryMode.INFO, "turret target angle", shooter.tt);
@@ -75,11 +76,11 @@ public class TelemetrySubsystem implements EffectivelySubsystem {
 
         telem.addData(TelemetryMode.INFO, "current robot pose", "x: %.2f, y: %.2f, heading: %.2f", shooter.currentRobotPose.getX(), shooter.currentRobotPose.getY(), Math.toDegrees(shooter.currentRobotPose.getHeading()));
 
-        telem.addData(TelemetryMode.RAW_DATA, "f p", "%.5f", shooter.flywheel.p);
-        telem.addData(TelemetryMode.RAW_DATA, "f i", "%.5f", shooter.flywheel.i);
-        telem.addData(TelemetryMode.RAW_DATA, "f d", "%.5f", shooter.flywheel.d);
-        telem.addData(TelemetryMode.RAW_DATA, "f v", "%.5f", shooter.flywheel.v);
-        telem.addData(TelemetryMode.RAW_DATA, "flywheel power", shooter.flywheel.getPower());
+        telem.addData(TelemetryMode.INFO, "f p", "%.5f", shooter.flywheel.p);
+        telem.addData(TelemetryMode.INFO, "f i", "%.5f", shooter.flywheel.i);
+        telem.addData(TelemetryMode.INFO, "f d", "%.5f", shooter.flywheel.d);
+        telem.addData(TelemetryMode.INFO, "f v", "%.5f", shooter.flywheel.v);
+        telem.addData(TelemetryMode.INFO, "flywheel power", shooter.flywheel.getPower());
 
         telem.addData(TelemetryMode.RAW_DATA, "turret current position", shooter.turret.getCurrentPosition());
         telem.addData(TelemetryMode.RAW_DATA, "turret target position", shooter.turret.getTargetPosition());

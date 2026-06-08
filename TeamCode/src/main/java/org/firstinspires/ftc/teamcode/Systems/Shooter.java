@@ -132,7 +132,6 @@ public class Shooter implements EffectivelySubsystem {
         poseSpeedTracker.update();
 
         PoseVelocity robotVelocity = poseSpeedTracker.getPoseVelocity();
-        PoseAcceleration robotAcceleration = poseSpeedTracker.getPoseAcceleration();
         double translationalVelocity = Calculations.getRobotTranslationalVelocity(robotVelocity);
 
         if (

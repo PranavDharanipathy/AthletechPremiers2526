@@ -31,7 +31,7 @@ public final class Flywheel {
         this.leftFlywheel.setDirection(ConfigurationConstants.FLYWHEEL_MOTOR_DIRECTIONS[0]);
         this.rightFlywheel.setDirection(ConfigurationConstants.FLYWHEEL_MOTOR_DIRECTIONS[1]);
 
-        encoder = new Encoder(this.leftFlywheel);
+        encoder = new Encoder(this.rightFlywheel);
         encoder.setDirection(Encoder.Direction.FORWARD);
 
         encoder.setupVelocityKalmanFilter(ConfigurationConstants.FLYWHEEL_KALMAN_FILTER_PARAMETERS);

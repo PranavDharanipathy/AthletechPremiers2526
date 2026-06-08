@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Auto;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -10,12 +11,12 @@ import org.firstinspires.ftc.teamcode.Auto.autosubsystems.IntakeNF;
 import org.firstinspires.ftc.teamcode.Auto.autosubsystems.ShooterNF;
 import org.firstinspires.ftc.teamcode.Constants.LocalizationConstants;
 import org.firstinspires.ftc.teamcode.Systems.CurrentAlliance;
+import org.firstinspires.ftc.teamcode.Systems.PoseTransfer;
+import org.firstinspires.ftc.teamcode.util.PedroPathing.CancelableFollowPath;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.Delay;
-import dev.nextftc.core.commands.delays.WaitUntil;
 import dev.nextftc.core.commands.groups.ParallelGroup;
-import dev.nextftc.core.commands.groups.ParallelRaceGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -31,26 +32,26 @@ public class RedSolo extends NextFTCOpMode {
 
     private Telemetry telemetry;
 
+    private RedSoloPaths paths;
+
     public RedSolo() {
         addComponents(
-                new PedroComponent(LocalizationConstants::createFollower),
                 new SubsystemComponent(
                         RobotNF.INSTANCE,
                         IntakeNF.INSTANCE,
                         ShooterNF.INSTANCE
                 ),
+                new PedroComponent(LocalizationConstants::createFollower),
                 BulkReadComponent.INSTANCE
         );
     }
-
-    private RedSoloPaths paths;
 
     @Override
     public void onInit() {
 
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        Pose startPose = new Pose(53.42, 41.05, Math.toRadians(270)).plus(new Pose(72, 72, 0));
+        Pose startPose = new Pose(50.983, 41.155, Math.toRadians(-104.278)).plus(new Pose(72, 72, 0));
         PedroComponent.follower().setStartingPose(startPose);
 
         ShooterNF.INSTANCE.provideFollower(PedroComponent.follower());
@@ -62,7 +63,8 @@ public class RedSolo extends NextFTCOpMode {
     @Override
     public void onWaitForStart() {
 
-        telemetry.addData("turret position", ShooterNF.INSTANCE.turret.getCurrentPosition());
+        telemetry.addData("turret current position", ShooterNF.INSTANCE.turret.getCurrentPosition());
+        telemetry.addData("turret start position", ShooterNF.INSTANCE.turret.startPosition);
         telemetry.update();
     }
 
@@ -76,14 +78,36 @@ public class RedSolo extends NextFTCOpMode {
         auto().schedule();
     }
 
+    private Pose poseRecord = new Pose();
+
     @Override
     public void onUpdate() {
 
+        telemetry.addData("turret target position", ShooterNF.INSTANCE.turret.getTargetPosition());
+        telemetry.addData("turret current position", ShooterNF.INSTANCE.turret.getCurrentPosition());
+        telemetry.addData("turret position error", ShooterNF.INSTANCE.turret.getError());
+
+        telemetry.addData("flywheel target velocity", ShooterNF.INSTANCE.flywheel.getTargetVelocity());
+        telemetry.addData("flywheel current velocity", ShooterNF.INSTANCE.flywheel.getCurrentVelocity());
+        telemetry.addData("flywheel velocity error", ShooterNF.INSTANCE.flywheel.getError());
+
+        Pose botPose = PedroComponent.follower().getPose();
+        if (botPose.getX() != 0 && botPose.getY() != 0 && botPose.getHeading() != 0) {
+            poseRecord = PedroComponent.follower().getPose();
+        }
+        telemetry.addData("bot pose", "x:%.3f, y:%.3f, heading:%.3f", poseRecord.getX(), poseRecord.getY(), Math.toDegrees(poseRecord.getHeading()));
+
+        telemetry.update();
     }
 
     @Override
     public void onStop() {
 
+        RobotNF.INSTANCE.end();
+
+        PoseTransfer.X = poseRecord.getX();
+        PoseTransfer.Y = poseRecord.getY();
+        PoseTransfer.HEADING = poseRecord.getHeading();
     }
 
     private Command auto() {
@@ -98,13 +122,13 @@ public class RedSolo extends NextFTCOpMode {
                 new FollowPath(paths.secondSpikeIntake),
                 new FollowPath(paths.secondSpikeReturn),
 
-                new FollowPath(paths.firstGateIntake),
+                gate(paths.firstGateIntake),
                 new FollowPath(paths.firstGateReturn),
 
-                new FollowPath(paths.secondGateIntake),
+                gate(paths.secondGateIntake),
                 new FollowPath(paths.secondGateReturn),
 
-                new FollowPath(paths.thirdGateIntake),
+                gate(paths.thirdGateIntake),
                 new FollowPath(paths.thirdGateReturn),
 
                 new FollowPath(paths.thirdSpikeIntake),
@@ -114,4 +138,21 @@ public class RedSolo extends NextFTCOpMode {
                 new FollowPath(paths.hpSpikeReturn)
         );
     }
+
+    private Command gate(PathChain pathChain) {
+
+        return new SequentialGroup(
+
+                new ParallelGroup(
+                        new SequentialGroup(
+                                new InstantCommand(() -> PedroComponent.follower().setMaxPower(1)),
+                                new Delay(1),
+                                new InstantCommand(() -> PedroComponent.follower().setMaxPower(0.8))
+                        ),
+                        new CancelableFollowPath(pathChain, true, 3.33).thenWait(1.5)
+                ),
+                new InstantCommand(() -> PedroComponent.follower().setMaxPower(1))
+        );
+    }
+
 }
