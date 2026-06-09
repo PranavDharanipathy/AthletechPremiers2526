@@ -32,7 +32,7 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 
 @Config
 @Autonomous (name = "RedSolo", group = "A_Match", preselectTeleOp = "TeleOp_RED")
-public class RedSolo extends NextFTCOpMode {
+public class RedAlliance extends NextFTCOpMode {
 
     public static double SHOOT_TIME = 0.35;
 
@@ -42,9 +42,9 @@ public class RedSolo extends NextFTCOpMode {
 
     private Telemetry telemetry;
 
-    private RedSoloPaths paths;
+    private RedAlliancePaths paths;
 
-    public RedSolo() {
+    public RedAlliance() {
         addComponents(
                 new SubsystemComponent(
                         RobotNF.INSTANCE,
@@ -67,7 +67,7 @@ public class RedSolo extends NextFTCOpMode {
         ShooterNF.INSTANCE.provideFollower(PedroComponent.follower());
         ShooterNF.INSTANCE.provideAlliance(ALLIANCE);
 
-        paths = new RedSoloPaths(PedroComponent.follower(), startPose);
+        paths = new RedAlliancePaths(PedroComponent.follower(), startPose);
     }
 
     @Override

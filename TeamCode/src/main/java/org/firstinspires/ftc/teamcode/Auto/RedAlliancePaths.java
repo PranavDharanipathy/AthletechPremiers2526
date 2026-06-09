@@ -11,7 +11,7 @@ import com.pedropathing.paths.PathChain;
 import org.firstinspires.ftc.teamcode.Constants.Calculations;
 
 @Config
-public class RedSoloPaths {
+public class RedAlliancePaths {
 
     public static double[] GSX = {0, 0.5, 1};
     public static double[] GSY = {1.5, 1.85, 1.75};
@@ -33,7 +33,7 @@ public class RedSoloPaths {
     public PathChain thirdSpikeIntake;
     public PathChain thirdSpikeReturn;
 
-    public RedSoloPaths(Follower follower, Pose startPose) {
+    public RedAlliancePaths(Follower follower, Pose startPose) {
 
         preload = follower.pathBuilder().addPath(
                 new BezierLine(
