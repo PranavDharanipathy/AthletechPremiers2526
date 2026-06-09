@@ -81,7 +81,8 @@ public class RobotNF extends SubsystemGroup {
                 IntakeNF.INSTANCE.intake(),
                 IntakeNF.INSTANCE.blocker(true),
                 new Delay(shootTime),
-                IntakeNF.INSTANCE.blocker(false)
+                IntakeNF.INSTANCE.blocker(false),
+                new InstantCommand(() -> PedroComponent.follower().setMaxPower(1))
         );
     }
 
@@ -95,7 +96,8 @@ public class RobotNF extends SubsystemGroup {
                 IntakeNF.INSTANCE.intake(),
                 IntakeNF.INSTANCE.blocker(true),
                 new Delay(shootTime),
-                IntakeNF.INSTANCE.blocker(false)
+                IntakeNF.INSTANCE.blocker(false),
+                new InstantCommand(() -> PedroComponent.follower().setMaxPower(1))
         );
     }
 

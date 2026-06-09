@@ -8,7 +8,6 @@ import org.firstinspires.ftc.teamcode.Constants.Calculations;
 import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
 import org.firstinspires.ftc.teamcode.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
-import org.firstinspires.ftc.teamcode.Constants.Models;
 import org.firstinspires.ftc.teamcode.Constants.ShooterConstants;
 import org.firstinspires.ftc.teamcode.Systems.CurrentAlliance;
 import org.firstinspires.ftc.teamcode.Systems.Flywheel;
@@ -144,7 +143,7 @@ public class ShooterNF implements Subsystem {
     }
 
     private double slipFactor = 1;
-    public void setSlipFactor(double slipFactor) {
+    public void setBallSlipFactor(double slipFactor) {
         this.slipFactor = slipFactor;
     }
 

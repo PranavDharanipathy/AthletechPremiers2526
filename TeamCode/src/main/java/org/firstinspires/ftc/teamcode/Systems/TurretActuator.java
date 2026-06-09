@@ -190,7 +190,7 @@ public class TurretActuator {
         error = targetVelocity - currentVelocity;
 
         filteredVoltage = LowPassFilter.getFilteredValue(filteredVoltage, batterVoltageSensor.getVoltage(), voltageFilterAlpha);
-        double voltageScalar = tuningVoltage / LowPassFilter.getFilteredValue(filteredVoltage, tuningVoltage, Math.E / 3);
+        double voltageScalar = tuningVoltage / LowPassFilter.getFilteredValue(filteredVoltage, tuningVoltage, (7d / 20d) * Math.E);
 
         //proportional
         kp = kpClose + kpFar * FastMath.tanh(sharpness * Math.abs(error));

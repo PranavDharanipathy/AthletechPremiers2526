@@ -14,11 +14,12 @@ import org.firstinspires.ftc.teamcode.Constants.LocalizationConstants;
 import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
 import org.firstinspires.ftc.teamcode.Systems.Blocker;
 import org.firstinspires.ftc.teamcode.Systems.Camera;
+import org.firstinspires.ftc.teamcode.Systems.DataTransfer.TurretStartPositionTransfer;
 import org.firstinspires.ftc.teamcode.Systems.Flywheel;
 import org.firstinspires.ftc.teamcode.Systems.HoodAngler;
 import org.firstinspires.ftc.teamcode.Systems.IntakeActuator;
 import org.firstinspires.ftc.teamcode.Systems.Lift;
-import org.firstinspires.ftc.teamcode.Systems.PoseTransfer;
+import org.firstinspires.ftc.teamcode.Systems.DataTransfer.PoseTransfer;
 import org.firstinspires.ftc.teamcode.Systems.TurretBase;
 import org.firstinspires.ftc.teamcode.util.BetterGamepad;
 
@@ -93,7 +94,14 @@ public abstract class TeleOpBaseOpMode extends OpMode {
                 hardwareMap.get(DcMotorEx.class, MapSetterConstants.rightFlywheelMotorDeviceName)
         );
 
-        turret = new TurretBase(hardwareMap);
+        if (TurretStartPositionTransfer.TRANSFERRED) {
+
+            turret = new TurretBase(hardwareMap, TurretStartPositionTransfer.TURRET_START_POSITION);
+            TurretStartPositionTransfer.TRANSFERRED = false;
+        }
+        else {
+            turret = new TurretBase(hardwareMap);
+        }
 
         hoodAngler = new HoodAngler(hardwareMap, MapSetterConstants.hoodAnglerServoDeviceName);
 

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Constants;
 
+import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 
 import org.apache.commons.math3.util.FastMath;
@@ -114,6 +115,25 @@ public class Calculations {
         // go to the closest limit if target position is outside the min and max
         else if (rawtt < ShooterConstants.MIN_TURRET_POSITION_IN_DEGREES) return ShooterConstants.MIN_TURRET_POSITION_IN_DEGREES;
         else return ShooterConstants.MAX_TURRET_POSITION_IN_DEGREES;
+    }
+
+    public static double getTangentAngle(Pose point1, Pose point2) {
+
+        double dx = point2.getX() - point1.getX();
+        double dy = point2.getY() - point1.getY();
+
+        return -FastMath.atan2(dy, dx);
+    }
+
+    public static double getTangentAngle(BezierLine line) {
+
+        final Pose point1 = line.getFirstControlPoint();
+        final Pose point2 = line.getLastControlPoint();
+
+        double dx = point2.getX() - point1.getX();
+        double dy = point2.getY() - point1.getY();
+
+        return -FastMath.atan2(dy, dx);
     }
 
 }
