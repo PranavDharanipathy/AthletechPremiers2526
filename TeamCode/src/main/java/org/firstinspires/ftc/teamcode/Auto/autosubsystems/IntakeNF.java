@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Auto.autosubsystems;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
 import org.firstinspires.ftc.teamcode.Constants.IntakeConstants;
 import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
 import org.firstinspires.ftc.teamcode.Systems.Blocker;
@@ -32,6 +33,11 @@ public class IntakeNF implements Subsystem {
     public void initialize() {
 
         intake = new IntakeActuator(ActiveOpMode.hardwareMap());
+        intake.setVelocityPDFCoefficients(
+                ConfigurationConstants.TRANSFER_PDF_COEFFICIENTS[0],
+                ConfigurationConstants.TRANSFER_PDF_COEFFICIENTS[1],
+                ConfigurationConstants.TRANSFER_PDF_COEFFICIENTS[2]
+        );
 
         blocker = new Blocker(ActiveOpMode.hardwareMap().get(Servo.class, MapSetterConstants.blockerServoDeviceName));
         blocker.setState(Blocker.BlockerState.BLOCK);
@@ -64,7 +70,7 @@ public class IntakeNF implements Subsystem {
         return new InstantCommand(() -> {
             dropDown.setPosition(IntakeConstants.DROPDOWN_INTAKING_POSITION);
             intake.setIntakePower(IntakeConstants.REVERSE_INTAKE_POWER);
-            transferVelocity[0] = IntakeConstants.REVERSE_TRANSFER_POWER;
+            transferVelocity[0] = -IntakeConstants.TRANSFER_VELOCITY;
         });
     }
 
@@ -76,7 +82,8 @@ public class IntakeNF implements Subsystem {
 
         Runnable blockerCmd = shoot ? () -> blocker.setState(Blocker.BlockerState.CLEAR) : () -> blocker.setState(Blocker.BlockerState.BLOCK);
 
-        return new InstantCommand(blockerCmd);
+        return new InstantCommand(blockerCmd)
+                .and(new InstantCommand(() -> dropDown.setPosition(IntakeConstants.DROPDOWN_INTAKING_POSITION)));
     }
 
     public Command stop() {

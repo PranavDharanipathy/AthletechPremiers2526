@@ -98,7 +98,25 @@ public class ShooterNF implements Subsystem {
         //turret.reverse();
     }
 
+    public Command setVel(Pose robotPoseAtShoot, double velIncrement) {
+
+        robotPoseAtShoot = robotPoseAtShoot.minus(new Pose(72, 72));
+
+        Pose goalCoordinate;
+        if (robotPoseAtShoot.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
+            goalCoordinate = goalCoordinates.getCloseCoordinate(robotPoseAtShoot.getX(), goalCoordinates);
+        }
+        else {
+            goalCoordinate = goalCoordinates.getFarCoordinate();
+        }
+
+        double vel = velIncrement + Shooter.getFlywheelTargetVelocityFromInterpolation(robotPoseAtShoot, new PoseVelocity(), goalCoordinate);
+        return new InstantCommand(() -> flywheel.setVelocity(vel, false));
+    }
+
     public Command setVel(Pose robotPoseAtShoot) {
+
+        robotPoseAtShoot = robotPoseAtShoot.minus(new Pose(72, 72));
 
         Pose goalCoordinate;
         if (robotPoseAtShoot.getY() > ShooterConstants.FAR_ZONE_CLOSE_ZONE_BARRIER) {
@@ -123,6 +141,18 @@ public class ShooterNF implements Subsystem {
     private boolean start = false;
     public void startShooter() {
         start = true;
+    }
+
+    private double slipFactor = 1;
+    public void setSlipFactor(double slipFactor) {
+        this.slipFactor = slipFactor;
+    }
+
+    private double getBallSpeedFromFlywheel(double flywheelVelocity) {
+
+        double flywheelRPS = (flywheelVelocity / 28d);
+
+        return slipFactor * flywheelRPS * Math.PI * ConfigurationConstants.FLYWHEEL_DIAMETER;
     }
 
     @Override
@@ -167,7 +197,7 @@ public class ShooterNF implements Subsystem {
 
         //turret
         double flywheelCurrentVelocity = flywheel.getCurrentVelocity() > ShooterConstants.FLYWHEEL_CONSIDERATION_VELOCITY ? flywheel.getCurrentVelocity() : 0;
-        double ballSpeed = Models.getBallSpeedFromFlywheel(flywheelCurrentVelocity);
+        double ballSpeed = getBallSpeedFromFlywheel(flywheelCurrentVelocity);
         double timeOfFlight = flywheelCurrentVelocity != 0 ? distanceToGoal / ballSpeed : 0;
 
         Pose virtualGoal = Calculations.getVirtualGoalCoordinate(timeOfFlight, robotVelocity, goalCoordinate);

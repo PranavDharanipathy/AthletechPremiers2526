@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Auto.autosubsystems.IntakeNF;
 import org.firstinspires.ftc.teamcode.Auto.autosubsystems.ShooterNF;
 import org.firstinspires.ftc.teamcode.Constants.LocalizationConstants;
 import org.firstinspires.ftc.teamcode.Systems.CurrentAlliance;
+import org.firstinspires.ftc.teamcode.Systems.Hood;
 import org.firstinspires.ftc.teamcode.Systems.PoseTransfer;
 import org.firstinspires.ftc.teamcode.util.PedroPathing.CancelableFollowPath;
 import org.firstinspires.ftc.teamcode.util.PedroPathing.PowerAdjustedPath;
@@ -18,6 +20,7 @@ import org.firstinspires.ftc.teamcode.util.PedroPathing.PowerAdjustedPath;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.conditionals.IfElseCommand;
 import dev.nextftc.core.commands.delays.Delay;
+import dev.nextftc.core.commands.delays.WaitUntil;
 import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
@@ -28,8 +31,13 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
+@Config
 @Autonomous (name = "RedSolo", group = "A_Match", preselectTeleOp = "TeleOp_RED")
 public class RedSolo extends NextFTCOpMode {
+
+    public static double SHOOT_TIME = 0.75;
+
+    public static double[] SLIP_FACTOR = {0.83, 0.35, 0.52, 0.49, 0.49, 0.49, 0.6, 0.6};
 
     private static final CurrentAlliance.ALLIANCE ALLIANCE = CurrentAlliance.ALLIANCE.RED_ALLIANCE;
 
@@ -99,7 +107,6 @@ public class RedSolo extends NextFTCOpMode {
             poseRecord = PedroComponent.follower().getPose();
         }
         telemetry.addData("bot pose", "x:%.3f, y:%.3f, heading:%.3f", poseRecord.getX(), poseRecord.getY(), Math.toDegrees(poseRecord.getHeading()));
-
         telemetry.update();
     }
 
@@ -119,44 +126,76 @@ public class RedSolo extends NextFTCOpMode {
 
                 IntakeNF.INSTANCE.intake(),
 
-                ShooterNF.INSTANCE.setVel(paths.preload.lastPath().endPose()),
-                new FollowPath(paths.preload),
-                RobotNF.INSTANCE.shootBalls(0.8, paths.preload),
+                ShooterNF.INSTANCE.setVel(paths.preload.endPose(), 40),
+                new InstantCommand(() -> ShooterNF.INSTANCE.setSlipFactor(SLIP_FACTOR[0])),
+                new FollowPath(paths.preload, true),
+                new WaitUntil(() -> Math.abs(ShooterNF.INSTANCE.flywheel.getError()) < 50),
+                RobotNF.INSTANCE.shootBalls(SHOOT_TIME),
 
-                ShooterNF.INSTANCE.setVel(paths.firstSpikeIntake.lastPath().endPose()),
+                ShooterNF.INSTANCE.setVel(paths.firstSpikeReturn.endPose()),
+                new InstantCommand(() -> ShooterNF.INSTANCE.setSlipFactor(SLIP_FACTOR[1])),
                 new FollowPath(paths.firstSpikeIntake),
-                new PowerAdjustedPath(paths.firstSpikeReturn, 1, 10, 0.65, 1),
-                RobotNF.INSTANCE.shootBalls(0.8, paths.preload),
+                new ParallelGroup(
+                    RobotNF.INSTANCE.delayedIdle(0.6),
+                    new PowerAdjustedPath(paths.firstSpikeReturn, 1, 10, 0.9, 1),
+                    RobotNF.INSTANCE.shootBalls(SHOOT_TIME, paths.firstSpikeReturn)
+                ),
 
-                ShooterNF.INSTANCE.setVel(paths.secondSpikeIntake.lastPath().endPose()),
+                ShooterNF.INSTANCE.setVel(paths.secondSpikeReturn.endPose()),
+                new InstantCommand(() -> ShooterNF.INSTANCE.setSlipFactor(SLIP_FACTOR[2])),
                 new FollowPath(paths.secondSpikeIntake),
-                new PowerAdjustedPath(paths.secondSpikeReturn, 1, 10, 0.65, 1),
-                RobotNF.INSTANCE.shootBalls(0.8, paths.preload),
+                new ParallelGroup(
+                    RobotNF.INSTANCE.delayedIdle(0.6),
+                    new PowerAdjustedPath(paths.secondSpikeReturn, 1, 10, 0.9, 1),
+                    RobotNF.INSTANCE.cruiseShootBalls(SHOOT_TIME, 0.9, paths.secondSpikeReturn)
+                ),
 
-                ShooterNF.INSTANCE.setVel(paths.firstGateIntake.lastPath().endPose()),
+                ShooterNF.INSTANCE.setVel(paths.firstGateReturn.endPose()),
+                new InstantCommand(() -> ShooterNF.INSTANCE.setSlipFactor(SLIP_FACTOR[3])),
                 gate(paths.firstGateIntake),
-                new FollowPath(paths.firstGateReturn),
-                RobotNF.INSTANCE.shootBalls(0.8, paths.preload),
+                new ParallelGroup(
+                    RobotNF.INSTANCE.delayedIdle(0.6),
+                    new FollowPath(paths.firstGateReturn),
+                    RobotNF.INSTANCE.cruiseShootBalls(SHOOT_TIME, 0.9, paths.firstGateReturn)
+                ),
 
-                ShooterNF.INSTANCE.setVel(paths.secondGateIntake.lastPath().endPose()),
+                ShooterNF.INSTANCE.setVel(paths.secondGateReturn.endPose()),
+                new InstantCommand(() -> ShooterNF.INSTANCE.setSlipFactor(SLIP_FACTOR[4])),
                 gate(paths.secondGateIntake),
-                new FollowPath(paths.secondGateReturn),
-                RobotNF.INSTANCE.shootBalls(0.8, paths.preload),
+                new ParallelGroup(
+                    RobotNF.INSTANCE.delayedIdle(0.6),
+                    new FollowPath(paths.secondGateReturn),
+                    RobotNF.INSTANCE.cruiseShootBalls(SHOOT_TIME, 0.9, paths.secondGateReturn)
+                ),
 
-                ShooterNF.INSTANCE.setVel(paths.thirdGateIntake.lastPath().endPose()),
+                new InstantCommand(() -> ShooterNF.INSTANCE.hood.setAimZone(Hood.AimZone.FAR)),
+
+                ShooterNF.INSTANCE.setVel(paths.thirdGateReturn.endPose()),
+                new InstantCommand(() -> ShooterNF.INSTANCE.setSlipFactor(SLIP_FACTOR[5])),
                 gate(paths.thirdGateIntake),
-                new FollowPath(paths.thirdGateReturn),
-                RobotNF.INSTANCE.shootBalls(0.8, paths.preload),
+                new ParallelGroup(
+                    RobotNF.INSTANCE.delayedIdle(0.6),
+                    new FollowPath(paths.thirdGateReturn),
+                    RobotNF.INSTANCE.cruiseShootBalls(SHOOT_TIME, 0.9, paths.thirdGateReturn)
+                ),
 
-                ShooterNF.INSTANCE.setVel(paths.thirdSpikeIntake.lastPath().endPose()),
+                ShooterNF.INSTANCE.setVel(paths.thirdSpikeReturn.endPose()),
+                new InstantCommand(() -> ShooterNF.INSTANCE.setSlipFactor(SLIP_FACTOR[6])),
                 new FollowPath(paths.thirdSpikeIntake),
-                new PowerAdjustedPath(paths.thirdSpikeReturn, 1, 10, 0.65, 1),
-                RobotNF.INSTANCE.shootBalls(0.8, paths.preload),
+                new ParallelGroup(
+                    RobotNF.INSTANCE.delayedIdle(0.6),
+                    new PowerAdjustedPath(paths.thirdSpikeReturn, 1, 10, 0.9, 1),
+                    RobotNF.INSTANCE.cruiseShootBalls(SHOOT_TIME, 0.9, paths.thirdSpikeReturn)
+                ),
 
-                ShooterNF.INSTANCE.setVel(paths.hpSpikeIntake.lastPath().endPose()),
+                ShooterNF.INSTANCE.setVel(paths.hpSpikeReturn.endPose()),
+                new InstantCommand(() -> ShooterNF.INSTANCE.setSlipFactor(SLIP_FACTOR[7])),
                 new FollowPath(paths.hpSpikeIntake),
-                new PowerAdjustedPath(paths.hpSpikeReturn, 1, 12, 0.6, 1),
-                RobotNF.INSTANCE.shootBalls(0.8, paths.preload)
+                new ParallelGroup(
+                    RobotNF.INSTANCE.delayedIdle(0.6),
+                    new PowerAdjustedPath(paths.hpSpikeReturn, 1, 12, 0.9, 1),
+                    RobotNF.INSTANCE.cruiseShootBalls(SHOOT_TIME, 0.9, paths.hpSpikeReturn)
+                )
         );
     }
 

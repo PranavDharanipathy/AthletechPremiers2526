@@ -45,7 +45,7 @@ public class LocalizationConstants {
 
             ;
 
-    public static PathConstraints PATH_CONSTANTS = new PathConstraints(0.994, 50, 1, 1);
+    public static PathConstraints PATH_CONSTANTS = new PathConstraints(0.994, 50, 1, 1.4);
     public static MecanumConstants DRIVE_CONSTANTS = new MecanumConstants()
             .maxPower(1)
             .leftFrontMotorName(MapSetterConstants.leftFrontMotorDeviceName)
