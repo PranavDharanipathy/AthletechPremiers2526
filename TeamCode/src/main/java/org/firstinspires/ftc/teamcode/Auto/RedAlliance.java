@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Auto.autosubsystems.ShooterNF;
 import org.firstinspires.ftc.teamcode.Constants.LocalizationConstants;
 import org.firstinspires.ftc.teamcode.Systems.CurrentAlliance;
 import org.firstinspires.ftc.teamcode.Systems.DataTransfer.PoseTransfer;
+import org.firstinspires.ftc.teamcode.Systems.DataTransfer.TurretStartPositionTransfer;
 import org.firstinspires.ftc.teamcode.util.PedroPathing.CancelableFollowPath;
 import org.firstinspires.ftc.teamcode.util.PedroPathing.PowerAdjustedPath;
 
@@ -31,7 +32,7 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
 @Config
-@Autonomous (name = "RedSolo", group = "A_Match", preselectTeleOp = "TeleOp_RED")
+@Autonomous (name = "RedAlliance", group = "A_Match", preselectTeleOp = "TeleOp_RED")
 public class RedAlliance extends NextFTCOpMode {
 
     public static double SHOOT_TIME = 0.35;
@@ -117,6 +118,9 @@ public class RedAlliance extends NextFTCOpMode {
         PoseTransfer.X = poseRecord.getX();
         PoseTransfer.Y = poseRecord.getY();
         PoseTransfer.HEADING = poseRecord.getHeading();
+
+        TurretStartPositionTransfer.TURRET_START_POSITION = ShooterNF.INSTANCE.turret.startPosition;
+        TurretStartPositionTransfer.TRANSFERRED = true;
     }
 
     private Command auto() {
