@@ -51,7 +51,7 @@ public class RedAlliance extends NextFTCOpMode {
                         IntakeNF.INSTANCE,
                         ShooterNF.INSTANCE
                 ),
-                new PedroComponent(LocalizationConstants::createFollower),
+                new PedroComponent(LocalizationConstants::createHardFollower),
                 BulkReadComponent.INSTANCE
         );
     }

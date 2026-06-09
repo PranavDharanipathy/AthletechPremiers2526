@@ -18,7 +18,34 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Configurable
 public class LocalizationConstants {
 
-    public static FollowerConstants FOLLOWER_CONSTANTS = new FollowerConstants()
+    public static FollowerConstants SOFT_FOLLOWER_CONSTANTS = new FollowerConstants()
+
+            .mass(14.2)
+
+            .forwardZeroPowerAcceleration(-79.89422798598751)
+            .lateralZeroPowerAcceleration(-60.18572705204171)
+
+            .useSecondaryTranslationalPIDF(true)
+            .useSecondaryHeadingPIDF(true)
+            .useSecondaryDrivePIDF(false)
+
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.2, 0, 0.03, 0.1))
+            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.0767,0.00008,0.0045,0.04))
+
+            .headingPIDFCoefficients(new PIDFCoefficients(0.65,0,0.03,0.1))
+            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(0.2,0.00035,0.02,0.02))
+
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.071,0.0005,0.000615,0.15,0.065))
+
+            .translationalPIDFSwitch(3)
+            .headingPIDFSwitch(0.19)
+            .drivePIDFSwitch(13)
+
+            .centripetalScaling(0.0003)
+
+            ;
+
+    public static FollowerConstants HARD_FOLLOWER_CONSTANTS = new FollowerConstants()
 
             .mass(14.2)
 
@@ -70,7 +97,15 @@ public class LocalizationConstants {
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
-        return new FollowerBuilder(FOLLOWER_CONSTANTS, hardwareMap)
+        return new FollowerBuilder(SOFT_FOLLOWER_CONSTANTS, hardwareMap)
+                .pathConstraints(PATH_CONSTANTS)
+                .mecanumDrivetrain(DRIVE_CONSTANTS)
+                .pinpointLocalizer(LOCALIZER_CONSTANTS)
+                .build();
+    }
+
+    public static Follower createHardFollower(HardwareMap hardwareMap) {
+        return new FollowerBuilder(HARD_FOLLOWER_CONSTANTS, hardwareMap)
                 .pathConstraints(PATH_CONSTANTS)
                 .mecanumDrivetrain(DRIVE_CONSTANTS)
                 .pinpointLocalizer(LOCALIZER_CONSTANTS)
