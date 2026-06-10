@@ -14,9 +14,9 @@ import org.firstinspires.ftc.teamcode.Constants.Calculations;
 public class RedSoloPaths {
 
     public static double[] GSX = {0, 0.5, 1};
-    public static double[] GSY = {1.5, 1.85, 1.75};
+    public static double[] GSY = {1.5, 1.4, 1.4};
     public static double[] GX = {4, 5, 5};
-    public static double[] GY = {-1.5, -0.4, 0};
+    public static double[] GY = {-1.5, -1.5, -1.2};
     public static double[] GHEADING_DEG = {17, 17, 16};
 
     public PathChain preload;
