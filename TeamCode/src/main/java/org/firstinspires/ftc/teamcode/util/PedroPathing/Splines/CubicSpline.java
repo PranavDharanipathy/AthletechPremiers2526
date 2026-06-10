@@ -44,6 +44,47 @@ public class CubicSpline extends CustomCurve {
         );
     }
 
+    private Pose catmullRom(
+            Pose p0,
+            Pose p1,
+            Pose p2,
+            Pose p3,
+            double t
+    ) {
+        double t2 = t * t;
+        double t3 = t2 * t;
+
+        double x =
+                0.5 * (
+                        2 * p1.getX()
+                                + (-p0.getX() + p2.getX()) * t
+                                + (2 * p0.getX()
+                                - 5 * p1.getX()
+                                + 4 * p2.getX()
+                                - p3.getX()) * t2
+                                + (-p0.getX()
+                                + 3 * p1.getX()
+                                - 3 * p2.getX()
+                                + p3.getX()) * t3
+                );
+
+        double y =
+                0.5 * (
+                        2 * p1.getY()
+                                + (-p0.getY() + p2.getY()) * t
+                                + (2 * p0.getY()
+                                - 5 * p1.getY()
+                                + 4 * p2.getY()
+                                - p3.getY()) * t2
+                                + (-p0.getY()
+                                + 3 * p1.getY()
+                                - 3 * p2.getY()
+                                + p3.getY()) * t3
+                );
+
+        return new Pose(x, y);
+    }
+
     @Override
     public Pose getPose(double t) {
         t = Math.max(0.0, Math.min(1.0, t));
@@ -53,70 +94,49 @@ public class CubicSpline extends CustomCurve {
         Pose p2 = getControlPoints().get(2);
         Pose p3 = getControlPoints().get(3);
 
-        double u = 1.0 - t;
+        if (t <= 1.0 / 3.0) {
+            double localT = t * 3.0;
+            return catmullRom(p0, p0, p1, p2, localT);
+        }
 
-        double x =
-                u*u*u * p0.getX()
-                        + 3*u*u*t * p1.getX()
-                        + 3*u*t*t * p2.getX()
-                        + t*t*t * p3.getX();
+        if (t <= 2.0 / 3.0) {
+            double localT = (t - 1.0 / 3.0) * 3.0;
+            return catmullRom(p0, p1, p2, p3, localT);
+        }
 
-        double y =
-                u*u*u * p0.getY()
-                        + 3*u*u*t * p1.getY()
-                        + 3*u*t*t * p2.getY()
-                        + t*t*t * p3.getY();
-
-        return new Pose(x, y);
+        double localT = (t - 2.0 / 3.0) * 3.0;
+        return catmullRom(p1, p2, p3, p3, localT);
     }
 
     @Override
     public Vector getDerivative(double t) {
-        t = Math.max(0.0, Math.min(1.0, t));
+        double dt = 1e-5;
 
-        Pose p0 = getControlPoints().get(0);
-        Pose p1 = getControlPoints().get(1);
-        Pose p2 = getControlPoints().get(2);
-        Pose p3 = getControlPoints().get(3);
-
-        double u = 1.0 - t;
-
-        double dx =
-                3*u*u*(p1.getX()-p0.getX())
-                        + 6*u*t*(p2.getX()-p1.getX())
-                        + 3*t*t*(p3.getX()-p2.getX());
-
-        double dy =
-                3*u*u*(p1.getY()-p0.getY())
-                        + 6*u*t*(p2.getY()-p1.getY())
-                        + 3*t*t*(p3.getY()-p2.getY());
+        Pose a = getPose(Math.max(0, t - dt));
+        Pose b = getPose(Math.min(1, t + dt));
 
         Vector out = new Vector();
-        out.setOrthogonalComponents(dx, dy);
+        out.setOrthogonalComponents(
+                (b.getX() - a.getX()) / (2 * dt),
+                (b.getY() - a.getY()) / (2 * dt)
+        );
+
         return out;
     }
 
     @Override
     public Vector getSecondDerivative(double t) {
-        t = Math.max(0.0, Math.min(1.0, t));
+        double dt = 1e-4;
 
-        Pose p0 = getControlPoints().get(0);
-        Pose p1 = getControlPoints().get(1);
-        Pose p2 = getControlPoints().get(2);
-        Pose p3 = getControlPoints().get(3);
-
-        double u = 1.0 - t;
-
-        double ddx =
-                6*u*(p2.getX()-2*p1.getX()+p0.getX())
-                        + 6*t*(p3.getX()-2*p2.getX()+p1.getX());
-
-        double ddy =
-                6*u*(p2.getY()-2*p1.getY()+p0.getY())
-                        + 6*t*(p3.getY()-2*p2.getY()+p1.getY());
+        Vector d1 = getDerivative(Math.max(0, t - dt));
+        Vector d2 = getDerivative(Math.min(1, t + dt));
 
         Vector out = new Vector();
-        out.setOrthogonalComponents(ddx, ddy);
+        out.setOrthogonalComponents(
+                (d2.getXComponent() - d1.getXComponent()) / (2 * dt),
+                (d2.getYComponent() - d1.getYComponent()) / (2 * dt)
+        );
+
         return out;
     }
 }
