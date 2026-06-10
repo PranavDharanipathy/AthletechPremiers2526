@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Auto.autosubsystems;
 
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
@@ -14,7 +13,6 @@ import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.ftc.ActiveOpMode;
 import dev.nextftc.hardware.impl.ServoEx;
-import dev.nextftc.hardware.powerable.SetPower;
 
 
 public class IntakeNF implements Subsystem {
@@ -45,7 +43,7 @@ public class IntakeNF implements Subsystem {
         dropDown = new ServoEx(MapSetterConstants.intakeDropDownServoDeviceName);
     }
 
-    private double[] transferVelocity = {0, IntakeConstants.TRANSFER_VELOCITY};
+    private double[] transferVelocity = {0, IntakeConstants.CLOSE_TRANSFER_VELOCITY};
 
     public Command custom(double intakePower, double transferVelocity) {
 
@@ -70,7 +68,7 @@ public class IntakeNF implements Subsystem {
         return new InstantCommand(() -> {
             dropDown.setPosition(IntakeConstants.DROPDOWN_INTAKING_POSITION);
             intake.setIntakePower(IntakeConstants.REVERSE_INTAKE_POWER);
-            transferVelocity[0] = -IntakeConstants.TRANSFER_VELOCITY;
+            transferVelocity[0] = -IntakeConstants.CLOSE_TRANSFER_VELOCITY;
         });
     }
 

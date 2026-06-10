@@ -50,7 +50,7 @@ public class SimpleDriveTest extends TeleOpBaseOpMode {
                 motors[3],
                 controller1
         );
-        intake.provideComponents(super.intake, dropDown, blocker /*subsystem*/, controller1);
+        intake.provideComponents(super.intake, dropDown, blocker /*subsystem*/, follower, controller1);
         blocker.provideComponents(super.blocker, flywheel, controller1);
         setUpLynxModule();
     }
@@ -72,7 +72,7 @@ public class SimpleDriveTest extends TeleOpBaseOpMode {
 
     }
 
-    private double hoodPosition = 0.9;
+    private double hoodPosition = 0.0;
     private void hood() {
 
         if (controller1.dpad_upHasJustBeenPressed) {
@@ -85,7 +85,7 @@ public class SimpleDriveTest extends TeleOpBaseOpMode {
         hoodAngler.setPosition(hoodPosition);
     }
 
-    private double flywheelVelocity = 1700;
+    private double flywheelVelocity = 1500;
 
     private void flywheel() {
 

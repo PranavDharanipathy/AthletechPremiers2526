@@ -28,7 +28,7 @@ public class TeleOp_BLUE extends TeleOpBaseOpMode {
         applyComponentTraits();
 
         pedroDrive.provideComponents(follower, controller1);
-        intake.provideComponents(super.intake, dropDown, blocker /*subsystem*/, controller1);
+        intake.provideComponents(super.intake, dropDown, blocker /*subsystem*/, follower, controller1);
         blocker.provideComponents(super.blocker, flywheel, controller1);
         tiltLift.provideComponents(lift, controller2);
         shooter.provideComponents(flywheel, turret, hoodAngler, follower, camera, controller1);
@@ -53,8 +53,8 @@ public class TeleOp_BLUE extends TeleOpBaseOpMode {
         //controller2.getInformation();
 
         blocker.update();
-        intake.update();
         follower.update();
+        intake.update();
         shooter.update();
         tiltLift.update();
         pedroDrive.update();

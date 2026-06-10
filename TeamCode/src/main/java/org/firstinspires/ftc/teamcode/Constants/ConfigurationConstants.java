@@ -78,7 +78,7 @@ public class ConfigurationConstants {
     public static double FLYWHEEL_STABILITY_MARGIN_OF_ERROR = 10;
 
     public static double[] TURRET_VELOCITY_COEFFICIENTS = {
-            0.0000008,
+            0.000000833,//0.0000008
             0.00000015,
             0.93,
             0.0000001,
@@ -87,13 +87,13 @@ public class ConfigurationConstants {
             0.25,
             0.0000000035,
             0.0785,
-            0.0000016,
-            0.0000016,
+            0.0000024,
+            0.000002,
             12.35,
             0.5,
-            0.05,
+            0.06,
             0.0479477,
-            0.00000883825,
+            0.00000913825,
             0.209937788789,
     };
 
@@ -102,8 +102,8 @@ public class ConfigurationConstants {
     public static TurretBasePIDFCoefficients TURRET_POSITIONAL_COEFFICIENTS = new TurretBasePIDFCoefficients(
             4,
             5,
-            new double[] {0.007, 0.007},
-            new double[] {0.0015, 0.0015},
+            new double[] {0.008, 0.008},
+            new double[] {0.002, 0.002},
             300,
             400,
             0.04,

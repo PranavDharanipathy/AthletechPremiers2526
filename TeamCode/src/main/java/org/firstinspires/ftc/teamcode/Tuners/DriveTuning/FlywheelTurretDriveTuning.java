@@ -107,7 +107,7 @@ public class FlywheelTurretDriveTuning extends TeleOpBaseOpMode {
         applyComponentTraits();
 
         blocker.provideComponents(super.blocker, flywheel, controller1);
-        intake.provideComponents(super.intake, dropDown, blocker, controller1);
+        intake.provideComponents(super.intake, dropDown, blocker /*subsystem*/, follower, controller1);
         pedroDrive.provideComponents(follower, controller1);
 
         //setup lynx module
@@ -162,9 +162,9 @@ public class FlywheelTurretDriveTuning extends TeleOpBaseOpMode {
         flywheel.setVelocityPIDVSCoefficients(flywheelCoefficients);
 
         hoodAngler.setSafePosition(HOOD_POSITION);
-        intake.update();
         blocker.update();
         follower.update();
+        intake.update();
         turret();
         flywheel.setVelocity(FLYWHEEL_VELOCITY, true);
         flywheel.update();
