@@ -18,7 +18,13 @@ public class ConfigurationConstants {
 
     public static Servo.Direction INTAKE_DROPDOWN_SERVO_DIRECTION = Servo.Direction.FORWARD;
 
-    public static Servo.Direction LIFT_SERVO_DIRECTION = Servo.Direction.REVERSE;
+    /// Index 0 is the left crservo.
+    /// <p>
+    /// Index 1 is the right crservo.
+    public static DcMotorSimple.Direction[] LIFT_DIRECTIONS = {
+            DcMotorSimple.Direction.FORWARD,
+            DcMotorSimple.Direction.REVERSE
+    };
 
     /// Index 0 is the left crservo.
     /// <p>
@@ -53,8 +59,8 @@ public class ConfigurationConstants {
     public static double FLYWHEEL_MOTOR_RPM = 6000;
 
     public static FlywheelPIDVSCoefficients FLYWHEEL_PIDVS_COEFFICIENTS = new FlywheelPIDVSCoefficients(
-            0.00125,//0.0011
-            0.00125,//0.0012
+            0.0016,//0.00125
+            0.0013,//0.00125
             0,
             0.000915,
             0.0000635,
@@ -62,7 +68,7 @@ public class ConfigurationConstants {
             0.00001,
             1.6,
             100,
-            100,
+            60,//100
             0.05,
             0.945,
             0.65,
@@ -78,8 +84,8 @@ public class ConfigurationConstants {
     public static double FLYWHEEL_STABILITY_MARGIN_OF_ERROR = 10;
 
     public static double[] TURRET_VELOCITY_COEFFICIENTS = {
-            0.000000833,//0.0000008
-            0.00000015,
+            0.00000085,
+            0.00000017,
             0.93,
             0.0000001,
             0,
@@ -87,13 +93,13 @@ public class ConfigurationConstants {
             0.25,
             0.0000000035,
             0.0785,
-            0.0000024,
+            0.0000012,
             0.000002,
             12.35,
             0.5,
             0.06,
             0.0479477,
-            0.00000913825,
+            0.00000853825,
             0.209937788789,
     };
 
@@ -101,9 +107,9 @@ public class ConfigurationConstants {
 
     public static TurretBasePIDFCoefficients TURRET_POSITIONAL_COEFFICIENTS = new TurretBasePIDFCoefficients(
             4,
-            5,
-            new double[] {0.008, 0.008},
-            new double[] {0.002, 0.002},
+            4.5,
+            new double[] {0.003, 0.003},
+            new double[] {0.00025, 0.0002},
             300,
             400,
             0.04,

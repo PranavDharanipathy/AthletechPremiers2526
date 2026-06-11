@@ -18,7 +18,7 @@ public class TeleOp_TEST extends TeleOpBaseOpMode {
 
     private final Intake intake = new Intake();
     private final Blocker blocker = new Blocker().asSubsystem();
-    private final Lift tiltLift = new Lift().asSubsystem();
+    private final Lift tiltLift = new Lift();
     private final Shooter shooter = new Shooter();
     private final PedroDrive pedroDrive = new PedroDrive();
     private final TelemetrySubsystem telemetry = new TelemetrySubsystem();
@@ -32,7 +32,7 @@ public class TeleOp_TEST extends TeleOpBaseOpMode {
         pedroDrive.provideComponents(follower, controller1);
         intake.provideComponents(super.intake, dropDown, blocker /*subsystem*/, follower, controller1);
         blocker.provideComponents(super.blocker, flywheel, controller1);
-        tiltLift.provideComponents(lift, controller2);
+        tiltLift.provideComponents(leftLift, rightLift, controller1);
         shooter.provideComponents(flywheel, turret, hoodAngler, follower, camera, controller1);
         telemetry.provideComponents(super.telemetry, true, controller2);
         setUpLynxModule();

@@ -29,9 +29,12 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
 import org.firstinspires.ftc.teamcode.Constants.LocalizationConstants;
+import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 import java.util.ArrayList;
@@ -1180,11 +1183,25 @@ class Line extends OpMode {
     public static double DISTANCE = 40;
     private boolean forward = true;
 
+    private DcMotor[] flywheel = new DcMotor[2];
+    private DcMotor intake;
+    private DcMotor transfer;
+
     private Path forwards;
     private Path backwards;
 
     @Override
     public void init() {
+
+        intake = hardwareMap.get(DcMotor.class, MapSetterConstants.intakeMotorDeviceName);
+        transfer = hardwareMap.get(DcMotor.class, MapSetterConstants.transferMotorDeviceName);
+
+        flywheel[0] = hardwareMap.get(DcMotor.class, MapSetterConstants.leftFlywheelMotorDeviceName);
+        flywheel[1] = hardwareMap.get(DcMotor.class, MapSetterConstants.rightFlywheelMotorDeviceName);
+
+        flywheel[0].setDirection(ConfigurationConstants.FLYWHEEL_MOTOR_DIRECTIONS[0]);
+        flywheel[1].setDirection(ConfigurationConstants.FLYWHEEL_MOTOR_DIRECTIONS[1]);
+
         follower.setStartingPose(new Pose(72, 72));
     }
 
@@ -1201,6 +1218,13 @@ class Line extends OpMode {
 
     @Override
     public void start() {
+
+        intake.setPower(1);
+        transfer.setPower(1);
+
+        flywheel[0].setPower(1);
+        flywheel[1].setPower(1);
+
         follower.activateAllPIDFs();
         forwards = new Path(new BezierLine(new Pose(72,72), new Pose(DISTANCE + 72,72)));
         forwards.setConstantHeadingInterpolation(0);

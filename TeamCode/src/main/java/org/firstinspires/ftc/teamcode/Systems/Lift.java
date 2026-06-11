@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Systems;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
@@ -9,88 +10,29 @@ import org.firstinspires.ftc.teamcode.util.Subsystem;
 
 public class Lift extends Subsystem {
 
-    private boolean isSubsystem;
+    private CRServo leftLift;
+    private CRServo rightLift;
 
-    private Object lift; //given Lift (non-subsystem) or Servo data
+    private BetterGamepad controller1;
 
-    private BetterGamepad controller2;
+    public void provideComponents(CRServo leftLift, CRServo rightLift, BetterGamepad controller1) {
 
-    public Lift(Servo lift) {
+        this.leftLift = leftLift;
+        this.rightLift = rightLift;
 
-        isSubsystem = false;
-
-        lift.setDirection(ConfigurationConstants.LIFT_SERVO_DIRECTION);
-        this.lift = lift;
+        this.controller1 = controller1;
     }
-    public Lift() {}
-
-    public Lift asSubsystem() {
-        isSubsystem = true;
-        return this;
-    }
-
-    // COMPONENT
-    public enum LiftState {
-        RETRACTED(LiftConstants.LIFT_RETRACTED_POSITION), LIFT(LiftConstants.LIFT_LIFT_POSITION);
-
-        private double position;
-
-        LiftState(double position) {
-            this.position = position;
-        }
-
-        public double getPosition() {
-            return position;
-        }
-    }
-
-    private LiftState state;
-
-    public void setState(LiftState state) {
-
-        if (this.state == state) return;
-
-        this.state = state;
-
-        if (isSubsystem) {
-
-            ((Lift) lift).setState(state);
-        }
-        else {
-            ((Servo) lift).setPosition(this.state.getPosition());
-        }
-    }
-
-    public LiftState getState() {
-        return state;
-    }
-
-    // SUBSYSTEM
-    public void provideComponents(Lift lift, BetterGamepad controller2) {
-
-        this.lift = lift;
-
-        this.controller2 = controller2;
-    }
-
-    private boolean liftToggle = false;
-
-    private boolean initiallyRetract = true;
 
     @Override
     public void update() {
 
-        if (initiallyRetract) {
-            setState(LiftState.RETRACTED);
-            initiallyRetract = false;
+        if (controller1.b()) {
+            leftLift.setPower(LiftConstants.LIFT_TILT_POWER);
+            rightLift.setPower(LiftConstants.LIFT_TILT_POWER);
         }
-
-        if (controller2.right_triggerHasJustBeenPressed) {
-
-            if (liftToggle) setState(LiftState.RETRACTED);
-            else setState(LiftState.LIFT);
-
-            liftToggle = !liftToggle;
+        else {
+            leftLift.setPower(0);
+            rightLift.setPower(0);
         }
 
     }

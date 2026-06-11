@@ -33,7 +33,8 @@ public class MapSetterConstants {
 
     public static String intakeDropDownServoDeviceName = "drop_down";
 
-    public static String liftServoDeviceName = "tilt";
+    public static String leftLiftServoDeviceName = "left_lift";
+    public static String rightLiftServoDeviceName = "right_lift";
 
     public static String intakeMotorDeviceName = "intake";
     public static String transferMotorDeviceName = "transfer";

@@ -35,7 +35,7 @@ public class LocalizationConstants {
             .headingPIDFCoefficients(new PIDFCoefficients(1,0,0.02,0.1))
             .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(0.4,0.00035,0.01,0.02))
 
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.011,0.0005,0.00061,0.15,0.065))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.0062/*0.011*/,0.0005,0.00061,0.15,0.065))
 
             .translationalPIDFSwitch(3)
             .headingPIDFSwitch(0.18)
@@ -72,7 +72,8 @@ public class LocalizationConstants {
 
             ;
 
-    public static PathConstraints PATH_CONSTANTS = new PathConstraints(0.994, 50, 1, 1.4);
+    public static PathConstraints HARD_PATH_CONSTRAINTS = new PathConstraints(0.994, 50, 1, 1.4);
+    public static PathConstraints SOFT_PATH_CONSTRAINTS = new PathConstraints(0.994, 50, 1.5, 1.5);
     public static MecanumConstants DRIVE_CONSTANTS = new MecanumConstants()
             .maxPower(1)
             .leftFrontMotorName(MapSetterConstants.leftFrontMotorDeviceName)
@@ -98,7 +99,7 @@ public class LocalizationConstants {
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(SOFT_FOLLOWER_CONSTANTS, hardwareMap)
-                .pathConstraints(PATH_CONSTANTS)
+                .pathConstraints(SOFT_PATH_CONSTRAINTS)
                 .mecanumDrivetrain(DRIVE_CONSTANTS)
                 .pinpointLocalizer(LOCALIZER_CONSTANTS)
                 .build();
@@ -106,7 +107,7 @@ public class LocalizationConstants {
 
     public static Follower createHardFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(HARD_FOLLOWER_CONSTANTS, hardwareMap)
-                .pathConstraints(PATH_CONSTANTS)
+                .pathConstraints(HARD_PATH_CONSTRAINTS)
                 .mecanumDrivetrain(DRIVE_CONSTANTS)
                 .pinpointLocalizer(LOCALIZER_CONSTANTS)
                 .build();

@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Constants;
 
-import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Curve;
 import com.pedropathing.geometry.Pose;
 
 import org.apache.commons.math3.util.FastMath;
@@ -125,7 +125,7 @@ public class Calculations {
         return -FastMath.atan2(dy, dx);
     }
 
-    public static double getTangentAngle(BezierLine line) {
+    public static double getTangentAngle(Curve line) {
 
         final Pose point1 = line.getFirstControlPoint();
         final Pose point2 = line.getLastControlPoint();

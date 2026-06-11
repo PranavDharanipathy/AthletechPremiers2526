@@ -4,6 +4,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -38,7 +39,7 @@ public abstract class TeleOpBaseOpMode extends OpMode {
     public Servo dropDown;
 
     public Blocker blocker;
-    public Lift lift;
+    public CRServo leftLift, rightLift;
 
     public Camera camera;
 
@@ -85,7 +86,8 @@ public abstract class TeleOpBaseOpMode extends OpMode {
 
         blocker = new Blocker(hardwareMap.get(Servo.class, MapSetterConstants.blockerServoDeviceName));
 
-        lift = new Lift(hardwareMap.get(Servo.class, MapSetterConstants.liftServoDeviceName));
+        leftLift = hardwareMap.get(CRServo.class, MapSetterConstants.leftLiftServoDeviceName);
+        rightLift = hardwareMap.get(CRServo.class, MapSetterConstants.rightLiftServoDeviceName);
 
         camera = new Camera(follower, Camera.from(hardwareMap, MapSetterConstants.limelight3AUSBDeviceName));
 
@@ -141,6 +143,9 @@ public abstract class TeleOpBaseOpMode extends OpMode {
         turret.setVelocityCoefficients(ConfigurationConstants.TURRET_VELOCITY_COEFFICIENTS);
         turret.setPositionalCoefficients(ConfigurationConstants.TURRET_POSITIONAL_COEFFICIENTS);
         //turret.reverse();
+
+        leftLift.setDirection(ConfigurationConstants.LIFT_DIRECTIONS[0]);
+        rightLift.setDirection(ConfigurationConstants.LIFT_DIRECTIONS[1]);
 
     }
 
