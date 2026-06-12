@@ -30,7 +30,7 @@ public class ShooterConstants {
     public static double TURRET_POSITIONAL_OFFSET = -1.775591;
 
     public static List<Double> CLOSE_HOOD_DISTANCES = new ArrayList<>(List.of(51.71503320693509, 56.29514009214838, 60.899456934836486, 68.99167060900542, 74.57368259902958, 80.60268703640344, 91.2495467341891, 100.4429764662134));
-    public static List<Double> CLOSE_FLYWHEEL_VELOCITIES = new ArrayList<>(List.of(1310.0, 1335.0, 1385.0, 1450.0, 1460.0, 1490.0, 1590.0, 1670.0));
+    public static List<Double> CLOSE_FLYWHEEL_VELOCITIES = new ArrayList<>(List.of(1300.0, 1330.0, 1380.0, 1440.0, 1455.0, 1485.0, 1590.0, 1665.0));
     public static List<Double> CLOSE_HOOD_POSITIONS = new ArrayList<>(List.of(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0));
 
     public static List<Double> FAR_HOOD_DISTANCES = new ArrayList<>(List.of(129.81996319765165, 147.06468898031446, 160.80781309896958));

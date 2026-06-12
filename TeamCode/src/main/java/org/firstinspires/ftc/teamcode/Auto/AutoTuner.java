@@ -32,7 +32,7 @@ public class AutoTuner extends OpMode {
         follower = LocalizationConstants.createFollower(hardwareMap);
 
         Pose startPose = new Pose(START_X, START_Y, Math.toRadians(START_HEADING_DEG));
-        if (START_FROM_CENTER) startPose = startPose.plus(new Pose(72, 72, 0));
+        if (!START_FROM_CENTER) startPose = startPose.plus(new Pose(72, 72, 0));
 
         follower.setStartingPose(startPose);
         follower.update();
