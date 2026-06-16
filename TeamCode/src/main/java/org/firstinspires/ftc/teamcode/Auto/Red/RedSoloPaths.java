@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto;
+package org.firstinspires.ftc.teamcode.Auto.Red;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;

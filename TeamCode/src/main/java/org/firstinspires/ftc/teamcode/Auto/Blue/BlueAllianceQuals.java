@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto;
+package org.firstinspires.ftc.teamcode.Auto.Blue;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -8,6 +8,7 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Auto.RobotNF;
 import org.firstinspires.ftc.teamcode.Auto.autosubsystems.IntakeNF;
 import org.firstinspires.ftc.teamcode.Auto.autosubsystems.ShooterNF;
 import org.firstinspires.ftc.teamcode.Constants.LocalizationConstants;
@@ -32,20 +33,20 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
 @Config
-@Autonomous (name = "RedAlliance QUAL", group = "A_Match", preselectTeleOp = "TeleOp_RED")
-public class RedAllianceQuals extends NextFTCOpMode {
+@Autonomous (name = "BlueAlliance QUAL", group = "A_Match", preselectTeleOp = "TeleOp_BLUE")
+public class BlueAllianceQuals extends NextFTCOpMode {
 
     public static double SHOOT_TIME = 0.3;
 
-    public static double[] SLIP_FACTOR = {0.75, 0.198, 0.4, 0.4, 0.4, 0.4, 0.195};
+    public static double[] SLIP_FACTOR = {0.74, 0.18, 0.38, 0.38, 0.38, 0.38, 0.195};
 
-    private static final CurrentAlliance.ALLIANCE ALLIANCE = CurrentAlliance.ALLIANCE.RED_ALLIANCE;
+    private static final CurrentAlliance.ALLIANCE ALLIANCE = CurrentAlliance.ALLIANCE.BLUE_ALLIANCE;
 
     private Telemetry telemetry;
 
-    private RedAllianceQualsPaths paths;
+    private BlueAllianceQualsPaths paths;
 
-    public RedAllianceQuals() {
+    public BlueAllianceQuals() {
         addComponents(
                 new SubsystemComponent(
                         RobotNF.INSTANCE,
@@ -62,13 +63,13 @@ public class RedAllianceQuals extends NextFTCOpMode {
 
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        Pose startPose = new Pose(49.727, 36.201, Math.toRadians(0)).plus(new Pose(72, 72, 0));
+        Pose startPose = new Pose(53.985, 40.005, Math.toRadians(0)).plus(new Pose(72, 72, 0)).mirror(144);
         PedroComponent.follower().setStartingPose(startPose);
 
         ShooterNF.INSTANCE.provideFollower(PedroComponent.follower());
         ShooterNF.INSTANCE.provideAlliance(ALLIANCE);
 
-        paths = new RedAllianceQualsPaths(PedroComponent.follower(), startPose);
+        paths = new BlueAllianceQualsPaths(PedroComponent.follower(), startPose);
     }
 
     @Override
@@ -216,7 +217,7 @@ public class RedAllianceQuals extends NextFTCOpMode {
                 new ParallelGroup(
                         RobotNF.INSTANCE.delayedIdle(0.45),
                         new PowerAdjustedPath(paths.fourthGateReturn, 1, 5, 0.95, 1),
-                        RobotNF.INSTANCE.shootBalls(0.6, 8, paths.fourthGateReturn)
+                        RobotNF.INSTANCE.shootBalls(0.6, 9, paths.fourthGateReturn)
                 ),
 
                 new InstantCommand(ShooterNF.INSTANCE.turretToZero())

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto;
+package org.firstinspires.ftc.teamcode.Auto.Red;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.Follower;
@@ -9,13 +9,13 @@ import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.PathChain;
 
 @Config
-public class RedAllianceQualsPaths {
+public class RedAlliancePlayOffsPaths {
 
-    public static double[] GSX = {0, 0.5, 1, 1};
-    public static double[] GSY = {1.5, 1.6, 1.7, 1.7};
-    public static double[] GX = {1, 1, 1, 1};
-    public static double[] GY = {-1, -1, 0, 0.5};
-    public static double[] GHEADING_DEG = {16, 16, 16, 16};
+    public static double[] GSX = {0, 0.5, 1, 1, 1};
+    public static double[] GSY = {1.5, 1.6, 1.7, 1.7, 1.7};
+    public static double[] GX = {1, 1, 1, 1, 1};
+    public static double[] GY = {-1, -1, 0, 0.5, 0.5};
+    public static double[] GHEADING_DEG = {16, 16, 16, 16, 16};
 
     public PathChain preload;
     public PathChain firstSpikeIntake;
@@ -30,8 +30,10 @@ public class RedAllianceQualsPaths {
     public PathChain thirdGateReturn;
     public PathChain fourthGateIntake;
     public PathChain fourthGateReturn;
+    public PathChain fifthGateIntake;
+    public PathChain fifthGateReturn;
 
-    public RedAllianceQualsPaths(Follower follower, Pose startPose) {
+    public RedAlliancePlayOffsPaths(Follower follower, Pose startPose) {
 
         preload = follower.pathBuilder().addPath(
                         new BezierLine(
@@ -189,11 +191,29 @@ public class RedAllianceQualsPaths {
         fourthGateReturn = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(126.943+GX[3], 56.790+GY[3]),
-                                new Pose(89, 108)
+                                new Pose(89, 76)
                         )
                 )
-                .setTangentHeadingInterpolation()
-                .setReversed()
+                .setLinearHeadingInterpolation(Math.toRadians(GHEADING_DEG[3]), Math.toRadians(343))
+                .build();
+
+        fifthGateIntake = follower.pathBuilder().addPath(
+                        new BezierCurve(
+                                new Pose(89, 76),
+                                new Pose(101.934+GSX[4], 57.3+GSY[4]),
+                                new Pose(126.943+GX[4], 56.790+GY[4])
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(343), Math.toRadians(GHEADING_DEG[4]))
+                .build();
+
+        fifthGateReturn = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(126.943+GX[4], 56.790+GY[4]),
+                                new Pose(89, 93)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(GHEADING_DEG[4]), Math.toRadians(343))
                 .build();
     }
 }

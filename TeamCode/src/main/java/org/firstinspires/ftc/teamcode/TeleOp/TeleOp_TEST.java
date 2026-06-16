@@ -33,7 +33,7 @@ public class TeleOp_TEST extends TeleOpBaseOpMode {
         intake.provideComponents(super.intake, dropDown, blocker /*subsystem*/, follower, controller1);
         blocker.provideComponents(super.blocker, flywheel, controller1);
         tiltLift.provideComponents(leftLift, rightLift, controller1);
-        shooter.provideComponents(flywheel, turret, hoodAngler, follower, camera, controller1);
+        shooter.provideComponents(flywheel, turret, hoodAngler, follower, camera, controller1, controller2);
         telemetry.provideComponents(super.telemetry, true, controller2);
         setUpLynxModule();
     }

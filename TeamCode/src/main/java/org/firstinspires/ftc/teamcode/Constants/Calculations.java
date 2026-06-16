@@ -136,4 +136,9 @@ public class Calculations {
         return -FastMath.atan2(dy, dx);
     }
 
+    /// mirrors in Pedro coordinate system
+    public static double mirrorHeading(double angDeg) {
+        return Math.toRadians(180d - angDeg);
+    }
+
 }

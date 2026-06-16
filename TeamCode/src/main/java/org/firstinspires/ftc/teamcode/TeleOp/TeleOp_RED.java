@@ -32,7 +32,7 @@ public class TeleOp_RED extends TeleOpBaseOpMode {
         intake.provideComponents(super.intake, dropDown, blocker /*subsystem*/, follower, controller1);
         blocker.provideComponents(super.blocker, flywheel, controller1);
         tiltLift.provideComponents(leftLift, rightLift, controller1);
-        shooter.provideComponents(flywheel, turret, hoodAngler, follower, camera, controller1);
+        shooter.provideComponents(flywheel, turret, hoodAngler, follower, camera, controller1, controller2);
         telemetry.provideComponents(super.telemetry);
         setUpLynxModule();
     }
@@ -51,7 +51,7 @@ public class TeleOp_RED extends TeleOpBaseOpMode {
         clearCacheOfLynxModule();
 
         controller1.getInformation();
-        //controller2.getInformation();
+        controller2.getInformation();
 
         blocker.update();
         follower.update();
@@ -60,7 +60,7 @@ public class TeleOp_RED extends TeleOpBaseOpMode {
         tiltLift.update();
         pedroDrive.update();
 
-        telemetry.runInstance();
+        telemetry.runInstance(shooter, pedroDrive);
     }
 
 }

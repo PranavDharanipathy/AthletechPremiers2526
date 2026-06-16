@@ -14,5 +14,5 @@ public class IntakeConstants {
     public static double REVERSE_TRANSFER_POWER = -0.8372;
 
     public static double DROPDOWN_INTAKING_POSITION = 0;
-    public static double DROPDOWN_IDLE_POSITION = 0.16;
+    public static double DROPDOWN_IDLE_POSITION = 0.21;//0.16
 }

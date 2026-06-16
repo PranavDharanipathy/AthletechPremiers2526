@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Constants.CameraConstants;
 import org.firstinspires.ftc.teamcode.Constants.ConfigurationConstants;
 import org.firstinspires.ftc.teamcode.Constants.LocalizationConstants;
 import org.firstinspires.ftc.teamcode.Constants.MapSetterConstants;
+import org.firstinspires.ftc.teamcode.Constants.ShooterConstants;
 import org.firstinspires.ftc.teamcode.Systems.Blocker;
 import org.firstinspires.ftc.teamcode.Systems.Camera;
 import org.firstinspires.ftc.teamcode.Systems.DataTransfer.TurretStartPositionTransfer;
@@ -146,6 +147,8 @@ public abstract class TeleOpBaseOpMode extends OpMode {
 
         leftLift.setDirection(ConfigurationConstants.LIFT_DIRECTIONS[0]);
         rightLift.setDirection(ConfigurationConstants.LIFT_DIRECTIONS[1]);
+
+        hoodAngler.setSafePosition(ShooterConstants.HOOD_ANGLER_MAX_POSITION);//
 
     }
 

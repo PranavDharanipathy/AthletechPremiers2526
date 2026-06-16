@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto;
+package org.firstinspires.ftc.teamcode.Auto.Red;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -8,6 +8,7 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Auto.RobotNF;
 import org.firstinspires.ftc.teamcode.Auto.autosubsystems.IntakeNF;
 import org.firstinspires.ftc.teamcode.Auto.autosubsystems.ShooterNF;
 import org.firstinspires.ftc.teamcode.Constants.LocalizationConstants;
@@ -32,27 +33,27 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
 @Config
-@Autonomous (name = "RedAlliance PLAYOFF", group = "A_Match", preselectTeleOp = "TeleOp_RED")
-public class RedAlliancePlayOffs extends NextFTCOpMode {
+@Autonomous (name = "RedSolo", group = "A_Match", preselectTeleOp = "TeleOp_RED")
+public class RedSolo extends NextFTCOpMode {
 
-    public static double SHOOT_TIME = 0.3;
+    public static double SHOOT_TIME = 0.35;
 
-    public static double[] SLIP_FACTOR = {0.75, 0.198, 0.4, 0.4, 0.4, 0.4, 0.4, 0.38};
+    public static double[] SLIP_FACTOR = {0.7, 0.198, 0.43, 0.4, 0.4, 0.4, 0.2};
 
     private static final CurrentAlliance.ALLIANCE ALLIANCE = CurrentAlliance.ALLIANCE.RED_ALLIANCE;
 
     private Telemetry telemetry;
 
-    private RedAlliancePlayOffsPaths paths;
+    private RedSoloPaths paths;
 
-    public RedAlliancePlayOffs() {
+    public RedSolo() {
         addComponents(
                 new SubsystemComponent(
                         RobotNF.INSTANCE,
                         IntakeNF.INSTANCE,
                         ShooterNF.INSTANCE
                 ),
-                new PedroComponent(LocalizationConstants::createFollower),
+                new PedroComponent(LocalizationConstants::createHardFollower),
                 BulkReadComponent.INSTANCE
         );
     }
@@ -62,13 +63,13 @@ public class RedAlliancePlayOffs extends NextFTCOpMode {
 
         telemetry = new MultipleTelemetry(super.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        Pose startPose = new Pose(49.727, 36.201, Math.toRadians(0)).plus(new Pose(72, 72, 0));
+        Pose startPose = new Pose(50.983, 41.155, Math.toRadians(-104.278)).plus(new Pose(72, 72, 0));
         PedroComponent.follower().setStartingPose(startPose);
 
         ShooterNF.INSTANCE.provideFollower(PedroComponent.follower());
         ShooterNF.INSTANCE.provideAlliance(ALLIANCE);
 
-        paths = new RedAlliancePlayOffsPaths(PedroComponent.follower(), startPose);
+        paths = new RedSoloPaths(PedroComponent.follower(), startPose);
     }
 
     @Override
@@ -131,36 +132,35 @@ public class RedAlliancePlayOffs extends NextFTCOpMode {
 
                 ShooterNF.INSTANCE.setVel(paths.preload.endPose(), 40),
                 new InstantCommand(() -> ShooterNF.INSTANCE.setBallSlipFactor(SLIP_FACTOR[0])),
-                new ParallelGroup(
-                        new FollowPath(paths.preload, true),
-                        preloadShoot(paths.preload)
-                ),
+                new FollowPath(paths.preload, true),
+                new WaitUntil(() -> Math.abs(ShooterNF.INSTANCE.flywheel.getError()) < 50),
+                RobotNF.INSTANCE.shootBalls(SHOOT_TIME),
 
                 ShooterNF.INSTANCE.setVel(paths.firstSpikeReturn.endPose()),
                 new InstantCommand(() -> ShooterNF.INSTANCE.setBallSlipFactor(SLIP_FACTOR[1])),
                 new FollowPath(paths.firstSpikeIntake),
                 new ParallelGroup(
-                        RobotNF.INSTANCE.delayedIdle(0.45),
-                        cruiseShootBalls(
-                                new double[] {SHOOT_TIME, 0.12},
-                                1,
-                                paths.firstSpikeReturn,
-                                new PowerAdjustedPath(paths.firstSpikeReturn, 1, 10, 0.833, 1),
-                                new SequentialGroup(
-                                        ShooterNF.INSTANCE.setVel(paths.secondSpikeReturn.endPose(), 25),
-                                        new InstantCommand(() -> ShooterNF.INSTANCE.setBallSlipFactor(SLIP_FACTOR[2])),
-                                        new FollowPath(paths.secondSpikeIntake)
-                                )
-                        )
+                    RobotNF.INSTANCE.delayedIdle(0.66),
+                    cruiseShootBalls(
+                            new double[] {SHOOT_TIME, 0.35},
+                            0.833,
+                            paths.firstSpikeReturn,
+                            new PowerAdjustedPath(paths.firstSpikeReturn, 1, 10, 0.8, 1),
+                            new SequentialGroup(
+                                    ShooterNF.INSTANCE.setVel(paths.secondSpikeReturn.endPose(), 25),
+                                    new InstantCommand(() -> ShooterNF.INSTANCE.setBallSlipFactor(SLIP_FACTOR[2])),
+                                    new FollowPath(paths.secondSpikeIntake)
+                            )
+                    )
                 ),
 
                 new ParallelGroup(
-                        RobotNF.INSTANCE.delayedIdle(0.45),
+                        RobotNF.INSTANCE.delayedIdle(0.66),
                         cruiseShootBalls(
-                                new double[] {SHOOT_TIME, 0.12},
-                                1,
+                                new double[] {SHOOT_TIME, 0.35},
+                                0.88,
                                 paths.secondSpikeReturn,
-                                new PowerAdjustedPath(paths.secondSpikeReturn, 1, 5, 0.945, 1),
+                                new PowerAdjustedPath(paths.secondSpikeReturn, 1, 5, 0.92, 1),
                                 new SequentialGroup(
                                         ShooterNF.INSTANCE.setVel(paths.firstGateReturn.endPose()),
                                         new InstantCommand(() -> ShooterNF.INSTANCE.setBallSlipFactor(SLIP_FACTOR[3])),
@@ -170,12 +170,12 @@ public class RedAlliancePlayOffs extends NextFTCOpMode {
                 ),
 
                 new ParallelGroup(
-                        RobotNF.INSTANCE.delayedIdle(0.45),
+                        RobotNF.INSTANCE.delayedIdle(0.66),
                         cruiseShootBalls(
-                                new double[] {SHOOT_TIME, 0.12},
-                                1,
+                                new double[] {SHOOT_TIME, 0.35},
+                                0.92,
                                 paths.firstGateReturn,
-                                new PowerAdjustedPath(paths.firstGateReturn, 1, 5, 0.945, 1),
+                                new PowerAdjustedPath(paths.firstGateReturn, 1, 5, 0.93, 1),
                                 new SequentialGroup(
                                         ShooterNF.INSTANCE.setVel(paths.secondGateReturn.endPose()),
                                         new InstantCommand(() -> ShooterNF.INSTANCE.setBallSlipFactor(SLIP_FACTOR[4])),
@@ -185,12 +185,12 @@ public class RedAlliancePlayOffs extends NextFTCOpMode {
                 ),
 
                 new ParallelGroup(
-                        RobotNF.INSTANCE.delayedIdle(0.45),
+                        RobotNF.INSTANCE.delayedIdle(0.66),
                         cruiseShootBalls(
-                                new double[] {SHOOT_TIME, 0.12},
-                                1,
+                                new double[] {SHOOT_TIME, 0.35},
+                                0.92,
                                 paths.secondGateReturn,
-                                new PowerAdjustedPath(paths.secondGateReturn, 1, 5, 0.945, 1),
+                                new PowerAdjustedPath(paths.secondGateReturn, 1, 5, 0.93, 1),
                                 new SequentialGroup(
                                         ShooterNF.INSTANCE.setVel(paths.thirdGateReturn.endPose()),
                                         new InstantCommand(() -> ShooterNF.INSTANCE.setBallSlipFactor(SLIP_FACTOR[5])),
@@ -200,39 +200,24 @@ public class RedAlliancePlayOffs extends NextFTCOpMode {
                 ),
 
                 new ParallelGroup(
-                        RobotNF.INSTANCE.delayedIdle(0.45),
+                        RobotNF.INSTANCE.delayedIdle(0.66),
                         cruiseShootBalls(
-                                new double[] {SHOOT_TIME, 0.12},
-                                1,
+                                new double[] {SHOOT_TIME, 0.35},
+                                0.833,
                                 paths.thirdGateReturn,
-                                new PowerAdjustedPath(paths.thirdGateReturn, 1, 5, 0.945, 1),
+                                new PowerAdjustedPath(paths.thirdGateReturn, 1, 5, 0.93, 1),
                                 new SequentialGroup(
-                                        ShooterNF.INSTANCE.setVel(paths.fourthGateReturn.endPose()),
+                                        ShooterNF.INSTANCE.setVel(paths.thirdSpikeReturn.endPose(), 15),
                                         new InstantCommand(() -> ShooterNF.INSTANCE.setBallSlipFactor(SLIP_FACTOR[6])),
-                                        gate(paths.fourthGateIntake)
+                                        new FollowPath(paths.thirdSpikeIntake)
                                 )
                         )
                 ),
 
                 new ParallelGroup(
-                        RobotNF.INSTANCE.delayedIdle(0.45),
-                        cruiseShootBalls(
-                                new double[] {SHOOT_TIME, 0.12},
-                                1,
-                                paths.fourthGateReturn,
-                                new PowerAdjustedPath(paths.fourthGateReturn, 1, 5, 0.945, 1),
-                                new SequentialGroup(
-                                        ShooterNF.INSTANCE.setVel(paths.fourthGateReturn.endPose()),
-                                        new InstantCommand(() -> ShooterNF.INSTANCE.setBallSlipFactor(SLIP_FACTOR[7])),
-                                        gate(paths.fifthGateIntake)
-                                )
-                        )
-                ),
-
-                new ParallelGroup(
-                        RobotNF.INSTANCE.delayedIdle(0.45),
-                        new FollowPath(paths.fifthGateReturn),
-                        RobotNF.INSTANCE.shootBalls(0.6, 5, paths.fifthGateReturn)
+                        RobotNF.INSTANCE.delayedIdle(0.6),
+                        new PowerAdjustedPath(paths.thirdSpikeReturn, 1, 5, 0.88, 1),
+                        RobotNF.INSTANCE.shootBalls(0.75, 8, paths.thirdSpikeReturn)
                 ),
 
                 new InstantCommand(ShooterNF.INSTANCE.turretToZero())
@@ -241,7 +226,7 @@ public class RedAlliancePlayOffs extends NextFTCOpMode {
 
     private Command gate(PathChain pathChain) {
 
-        CancelableFollowPath path = new CancelableFollowPath(pathChain, true, 2.5);
+        CancelableFollowPath path = new CancelableFollowPath(pathChain, true, 2.75);
 
         return new SequentialGroup(
 
@@ -253,7 +238,7 @@ public class RedAlliancePlayOffs extends NextFTCOpMode {
                         ),
                         new SequentialGroup(
                                 path,
-                                new IfElseCommand(path::getCancelled, new NullCommand(), new Delay(1.25))
+                                new IfElseCommand(path::getCancelled, new NullCommand(), new Delay(1.5))
                         )
                 ),
                 new InstantCommand(() -> PedroComponent.follower().setMaxPower(1))
@@ -285,25 +270,6 @@ public class RedAlliancePlayOffs extends NextFTCOpMode {
                         new Delay(shootTime[1]).then(IntakeNF.INSTANCE.blocker(false)),
                         nextPathCmdBlock
                 )
-        );
-    }
-
-    private Command preloadShoot(PathChain preloadPath) {
-
-        return new SequentialGroup(
-
-                new WaitUntil(() ->
-                        Math.abs(ShooterNF.INSTANCE.flywheel.getError()) < 50 &&
-                        preloadPath.lastPath().isAtParametricEnd()
-                ),
-
-                //new Delay(0.0),
-
-                IntakeNF.INSTANCE.intake(),
-
-                IntakeNF.INSTANCE.blocker(true),
-                new Delay(SHOOT_TIME),
-                IntakeNF.INSTANCE.blocker(false)
         );
     }
 

@@ -29,7 +29,7 @@ import java.util.function.DoubleBinaryOperator;
 
 public class Shooter implements EffectivelySubsystem {
 
-    private BetterGamepad controller1;
+    private BetterGamepad controller1, controller2;
 
     public Flywheel flywheel;
 
@@ -43,7 +43,7 @@ public class Shooter implements EffectivelySubsystem {
 
     public PoseEstimator poseEstimator;
 
-    public void provideComponents(Flywheel flywheel, TurretBase turret, HoodAngler hoodAngler, Follower follower, Camera unstartedCamera, BetterGamepad controller1) {
+    public void provideComponents(Flywheel flywheel, TurretBase turret, HoodAngler hoodAngler, Follower follower, Camera unstartedCamera, BetterGamepad controller1, BetterGamepad controller2) {
 
         this.follower = follower;
         camera = unstartedCamera;
@@ -69,6 +69,7 @@ public class Shooter implements EffectivelySubsystem {
         );
 
         this.controller1 = controller1;
+        this.controller2 = controller2;
 
     }
 
@@ -127,6 +128,8 @@ public class Shooter implements EffectivelySubsystem {
 
     public double distanceToGoal;
 
+    private boolean autoAim = true;
+
     public void update() {
 
         poseSpeedTracker.update();
@@ -156,7 +159,7 @@ public class Shooter implements EffectivelySubsystem {
 
         double turretCurrentPosition = turret.getCurrentPosition(); //used to calculate turret pose
 
-        //goalAimUpdate();
+        goalAimUpdate();
 
         turretPose = Calculations.getTurretPoseFromBotPose(currentRobotPose, turretCurrentPosition, turretStartPosition);
 
@@ -201,7 +204,8 @@ public class Shooter implements EffectivelySubsystem {
         double rawtt = MathUtil.normalizeAngleDeg(Math.toDegrees(robotHeadingRad) - angleToGoal);
         tt = Calculations.routeTurret(rawtt);
 
-        turretAimPosition = tt * ShooterConstants.TURRET_TICKS_PER_DEGREE + turretStartPosition;
+        if (controller2.right_bumperHasJustBeenPressed) autoAim = !autoAim;
+        turretAimPosition = autoAim ? tt * ShooterConstants.TURRET_TICKS_PER_DEGREE + turretStartPosition : turretStartPosition;
 
         turret.setAim(turretAimPosition, robotVelocity);
 
@@ -252,12 +256,12 @@ public class Shooter implements EffectivelySubsystem {
 
     private void goalAimUpdate() {
 
-//        if (controller2.dpad_leftHasJustBeenPressed) {
-//            turretStartPosition+=ShooterConstants.TURRET_HOME_POSITION_INCREMENT;
-//        }
-//        else if (controller2.dpad_rightHasJustBeenPressed) {
-//            turretStartPosition-=ShooterConstants.TURRET_HOME_POSITION_INCREMENT;
-//        }
+        if (controller2.dpad_leftHasJustBeenPressed) {
+            turretStartPosition-=ShooterConstants.TURRET_HOME_POSITION_INCREMENT;
+        }
+        else if (controller2.dpad_rightHasJustBeenPressed) {
+            turretStartPosition+=ShooterConstants.TURRET_HOME_POSITION_INCREMENT;
+        }
 
 //        if (alliance == CurrentAlliance.ALLIANCE.BLUE_ALLIANCE) {
 //            goalPositionalIncrementBlue(controller2);
